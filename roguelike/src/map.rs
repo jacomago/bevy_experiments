@@ -15,6 +15,13 @@ pub struct Map {
     pub tiles: Array<TileType, Ix2>,
 }
 
+pub fn in_bounds(point: Point) -> bool {
+    point.x >= 0
+        && SCREEN_WIDTH > point.x.try_into().unwrap()
+        && point.y >= 0
+        && SCREEN_HEIGHT > point.y.try_into().unwrap()
+}
+
 impl Map {
     pub fn new() -> Self {
         Self {
@@ -25,15 +32,8 @@ impl Map {
         }
     }
 
-    pub fn in_bounds(&self, point: Point) -> bool {
-        point.x >= 0
-            && SCREEN_WIDTH > point.x.try_into().unwrap()
-            && point.y >= 0
-            && SCREEN_HEIGHT > point.y.try_into().unwrap()
-    }
-
     pub fn can_enter_tile(&self, point: Point) -> bool {
-        self.in_bounds(point)
+        in_bounds(point)
             && self
                 .tiles
                 .get((point.x as usize, point.y as usize))

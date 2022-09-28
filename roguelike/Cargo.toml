@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 bevy = { version = "0.8" }
 bevy_shader_utils = { version = "0.3" }
+bracket-lib = "~0.8.1"

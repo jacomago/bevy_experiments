@@ -1,12 +1,14 @@
 #![warn(clippy::all, clippy::pedantic)]
 
 mod map;
+mod player;
 
 mod prelude {
     pub use bracket_lib::prelude::*;
     pub const SCREEN_WIDTH: usize = 80;
     pub const SCREEN_HEIGHT: usize = 50;
     pub use crate::map::*;
+    pub use crate::player::*;
 }
 
 use prelude::*;

@@ -28,10 +28,10 @@ impl Map {
             for x in 0..SCREEN_WIDTH {
                 match self.tiles.get((y, x)) {
                     Some(t) => match t {
-                        TileType::Wall => {
+                        TileType::Floor => {
                             ctx.set(x, y, YELLOW, BLACK, to_cp437('.'));
                         }
-                        TileType::Floor => {
+                        TileType::Wall => {
                             ctx.set(x, y, GREEN, BLACK, to_cp437('#'));
                         }
                     },

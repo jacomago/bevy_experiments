@@ -26,7 +26,7 @@ impl Map {
     pub fn render(&self, ctx: &mut BTerm) {
         for y in 0..SCREEN_HEIGHT {
             for x in 0..SCREEN_WIDTH {
-                match self.tiles.get((x, y)) {
+                match self.tiles.get((y, x)) {
                     Some(t) => match t {
                         TileType::Wall => {
                             ctx.set(x, y, YELLOW, BLACK, to_cp437('.'));

@@ -1,9 +1,8 @@
 use std::usize;
 
-use ndarray::{Array, Dim, Ix2};
+use ndarray::{Array,  Ix2};
 
 use crate::prelude::*;
-const NUM_TILES: usize = (SCREEN_HEIGHT * SCREEN_WIDTH) as usize;
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum TileType {

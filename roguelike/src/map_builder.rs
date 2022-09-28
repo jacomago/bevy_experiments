@@ -63,8 +63,8 @@ impl MapBuilder {
                 Direction::Horizontal => (x_or_y, inc),
                 Direction::Vertical => (inc, x_or_y),
             };
-            if let Some(z) = self.map.tiles.get(pair) {
-                self.map.tiles[pair] = TileType::Floor;
+            if let Some(tile) = self.map.tiles.get_mut(pair) {
+                *tile = TileType::Floor;
             }
         }
     }

@@ -1,6 +1,6 @@
 use std::usize;
 
-use ndarray::{Array,  Ix2};
+use ndarray::{Array, Ix2};
 
 use crate::prelude::*;
 
@@ -35,7 +35,7 @@ impl Map {
         in_bounds(point)
             && self
                 .tiles
-                .get((point.x as usize, point.y as usize))
+                .get((point.y as usize, point.x as usize))
                 .map(|&s| s == TileType::Floor)
                 .unwrap_or(false)
     }

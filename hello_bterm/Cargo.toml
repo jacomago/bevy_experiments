@@ -1,7 +1,9 @@
-[workspace]
-name = "bevy_experiments"
+[package]
+name = "hello_bterm"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-members = ["shader_example", "roguelike", "hello_bterm"]
+
+[dependencies]
+bracket-lib = "~0.8.1"

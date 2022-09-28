@@ -2,7 +2,7 @@
 
 ## short Description
 
-A dungeon crawler with proc gen levels, and fighting other aliens.
+A dungeon crawler with proc-gen levels, and fighting other aliens.
 
 ## Story
 

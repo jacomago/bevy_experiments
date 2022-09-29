@@ -10,6 +10,7 @@ impl Player {
     }
 
     pub fn render(&self, ctx: &mut BTerm) {
+        ctx.set_active_console(1);
         ctx.set(
             self.position.x,
             self.position.y,
@@ -19,7 +20,7 @@ impl Player {
         );
     }
 
-    pub fn update(&mut self, ctx: &mut BTerm, map: &Map) {
+    pub fn update(&mut self, ctx: &mut BTerm, map: &Map, camera: &mut Camera) {
         if let Some(key) = ctx.key {
             let delta = match key {
                 VirtualKeyCode::Left => Point::new(-1, 0),
@@ -31,6 +32,7 @@ impl Player {
             let new_position = self.position + delta;
             if map.can_enter_tile(new_position) {
                 self.position = new_position;
+                camera.on_player_move(new_position);
             }
         }
     }

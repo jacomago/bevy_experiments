@@ -56,8 +56,8 @@ impl Map {
                 texture_atlas: texture_atlas_handle.clone(),
                 sprite: TextureAtlasSprite {
                     index: match *t {
-                        TileType::Floor => 47,
-                        TileType::Wall => 36,
+                        TileType::Floor => 46,
+                        TileType::Wall => 35,
                     },
                     ..default()
                 },

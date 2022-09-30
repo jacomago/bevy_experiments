@@ -26,7 +26,7 @@ pub fn move_player(
                 translation: Vec3::new(
                     (game.player.position.x * TILE_SIZE) as f32,
                     (game.player.position.y * TILE_SIZE) as f32,
-                    1.0,
+                    0.0,
                 ),
                 ..default()
             };

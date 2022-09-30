@@ -17,6 +17,7 @@ mod prelude {
     pub use crate::player::*;
     pub use bevy::prelude::*;
 }
+use bevy_inspector_egui::WorldInspectorPlugin;
 use prelude::*;
 use rand::thread_rng;
 
@@ -60,7 +61,7 @@ fn setup(
                     translation: Vec3::new(
                         (game.player.position.x * TILE_SIZE) as f32,
                         (game.player.position.y * TILE_SIZE) as f32,
-                        1.0,
+                        0.0,
                     ),
                     ..default()
                 },
@@ -81,6 +82,7 @@ fn main() {
     App::new()
         .init_resource::<Game>()
         .add_plugins(DefaultPlugins)
+        .add_plugin(WorldInspectorPlugin::new())
         .add_state(GameState::Playing)
         .add_startup_system(setup_camera)
         .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup))

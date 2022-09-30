@@ -20,7 +20,7 @@ pub fn focus_camera(
         match transform {
             Some(t) => {
                 for mut transform in transforms.p0().iter_mut() {
-                    *transform = transform.looking_at(t, Vec3::Y);
+                    *transform = Transform::from_translation(t);
                 }
             }
             None => {}

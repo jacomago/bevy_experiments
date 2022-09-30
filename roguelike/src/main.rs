@@ -45,7 +45,7 @@ impl GameState for State {
         ctx.cls();
         self.player.update(ctx, &self.map, &mut self.camera);
         self.map.render(ctx, &self.camera);
-        self.player.render(ctx);
+        self.player.render(ctx, &self.camera);
     }
 }
 

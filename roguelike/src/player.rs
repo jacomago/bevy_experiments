@@ -24,8 +24,8 @@ pub fn move_player(
             game.player.position = new_position;
             *transforms.get_mut(game.player.entity.unwrap()).unwrap() = Transform {
                 translation: Vec3::new(
-                    game.player.position.x as f32,
-                    game.player.position.y as f32,
+                    (game.player.position.x * TILE_SIZE) as f32,
+                    (game.player.position.y * TILE_SIZE) as f32,
                     1.0,
                 ),
                 ..default()

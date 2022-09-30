@@ -2,6 +2,10 @@ use bevy::prelude::*;
 
 use crate::Game;
 
+pub fn setup_camera(mut commands: Commands) {
+    commands.spawn_bundle(Camera2dBundle::default());
+}
+
 // change the focus of the camera
 pub fn focus_camera(
     game: ResMut<Game>,

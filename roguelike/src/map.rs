@@ -46,14 +46,18 @@ impl Map {
         self.tiles.indexed_iter().for_each(|((x, y), t)| {
             commands.spawn_bundle(SpriteSheetBundle {
                 transform: Transform {
-                    translation: Vec3::new(x as f32, y as f32, 0.0),
+                    translation: Vec3::new(
+                        (x as i32 * TILE_SIZE) as f32,
+                        (y as i32 * TILE_SIZE) as f32,
+                        0.0,
+                    ),
                     ..default()
                 },
                 texture_atlas: texture_atlas_handle.clone(),
                 sprite: TextureAtlasSprite {
                     index: match *t {
-                        TileType::Floor => 3,
-                        TileType::Wall => 4,
+                        TileType::Floor => 47,
+                        TileType::Wall => 36,
                     },
                     ..default()
                 },

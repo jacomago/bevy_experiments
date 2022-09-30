@@ -10,6 +10,7 @@ mod prelude {
     pub const SCREEN_HEIGHT: usize = 50;
     pub const DISPLAY_WIDTH: usize = SCREEN_WIDTH / 2;
     pub const DISPLAY_HEIGHT: usize = SCREEN_HEIGHT / 2;
+    pub const TILE_SIZE: i32 = 32;
     pub use crate::camera::*;
     pub use crate::map::*;
     pub use crate::map_builder::*;
@@ -31,10 +32,6 @@ enum GameState {
     GameOver,
 }
 
-fn setup_camera(mut commands: Commands) {
-    commands.spawn_bundle(Camera2dBundle::default());
-}
-
 fn setup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -47,7 +44,12 @@ fn setup(
     game.player.position = map_builder.player_start;
 
     let texture_handle = asset_server.load("images/dungeonfont.png");
-    let texture_atlas = TextureAtlas::from_grid(texture_handle, Vec2::new(32.0, 32.0), 16, 17);
+    let texture_atlas = TextureAtlas::from_grid(
+        texture_handle,
+        Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
+        16,
+        17,
+    );
 
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
@@ -56,8 +58,8 @@ fn setup(
             .spawn_bundle(SpriteSheetBundle {
                 transform: Transform {
                     translation: Vec3::new(
-                        game.player.position.x as f32,
-                        game.player.position.y as f32,
+                        (game.player.position.x * TILE_SIZE) as f32,
+                        (game.player.position.y * TILE_SIZE) as f32,
                         1.0,
                     ),
                     ..default()
@@ -73,8 +75,6 @@ fn setup(
     );
 
     game.map.setup(commands, &texture_atlas_handle);
-
-
 }
 
 fn main() {
@@ -93,15 +93,6 @@ fn main() {
         .add_system_set(SystemSet::on_exit(GameState::GameOver).with_system(teardown))
         .add_system(bevy::window::close_on_esc)
         .run();
-    // let context = BTermBuilder::new()
-    //     .with_title("Alien Cake")
-    //     .with_fps_cap(30.0)
-    //     .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
-    //     .with_resource_path("assets/images/")
-    //     .with_font("dungeonfont.png", 32, 32)
-    //     .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
-    //     .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
-    //     .build()?;
 }
 
 // remove all entities that are not a camera

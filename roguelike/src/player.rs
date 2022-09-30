@@ -1,39 +1,35 @@
-use crate::prelude::*;
+use crate::{prelude::*, Game};
 
+#[derive(Default)]
 pub struct Player {
-    pub position: Point,
+    pub entity: Option<Entity>,
+    pub position: IVec2,
 }
 
-impl Player {
-    pub fn new(position: Point) -> Self {
-        Self { position }
-    }
-
-    pub fn render(&self, ctx: &mut BTerm, camera: &Camera) {
-        ctx.set_active_console(1);
-        ctx.set(
-            self.position.x - camera.left_x,
-            self.position.y - camera.top_y,
-            WHITE,
-            BLACK,
-            to_cp437('@'),
-        );
-    }
-
-    pub fn update(&mut self, ctx: &mut BTerm, map: &Map, camera: &mut Camera) {
-        if let Some(key) = ctx.key {
-            let delta = match key {
-                VirtualKeyCode::Left => Point::new(-1, 0),
-                VirtualKeyCode::Right => Point::new(1, 0),
-                VirtualKeyCode::Up => Point::new(0, -1),
-                VirtualKeyCode::Down => Point::new(0, 1),
-                _ => Point::zero(),
+pub fn move_player(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut game: ResMut<Game>,
+    mut transforms: Query<&mut Transform>,
+) {
+    keyboard_input.get_just_pressed().for_each(|k| {
+        let delta = match k {
+            KeyCode::Left => IVec2::new(-1, 0),
+            KeyCode::Right => IVec2::new(1, 0),
+            KeyCode::Up => IVec2::new(0, -1),
+            KeyCode::Down => IVec2::new(0, 1),
+            _ => IVec2::ZERO,
+        };
+        let new_position = game.player.position + delta;
+        if game.map.can_enter_tile(new_position) {
+            game.player.position = new_position;
+            *transforms.get_mut(game.player.entity.unwrap()).unwrap() = Transform {
+                translation: Vec3::new(
+                    game.player.position.x as f32,
+                    game.player.position.y as f32,
+                    1.0,
+                ),
+                ..default()
             };
-            let new_position = self.position + delta;
-            if map.can_enter_tile(new_position) {
-                self.position = new_position;
-                camera.on_player_move(new_position);
-            }
         }
-    }
+    });
 }

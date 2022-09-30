@@ -1,10 +1,13 @@
+use nannou_core::prelude::Rect;
+use rand::{rngs::ThreadRng, Rng};
+
 use crate::prelude::*;
 const NUM_ROOMS: usize = 20;
 
 pub struct MapBuilder {
     pub map: Map,
     pub rooms: Vec<Rect>,
-    pub player_start: Point,
+    pub player_start: IVec2,
 }
 
 enum Direction {
@@ -13,16 +16,16 @@ enum Direction {
 }
 
 impl MapBuilder {
-    pub fn new(rng: &mut RandomNumberGenerator) -> Self {
+    pub fn new(rng: &mut ThreadRng) -> Self {
         let mut mb = MapBuilder {
             map: Map::new(),
             rooms: Vec::new(),
-            player_start: Point::zero(),
+            player_start: IVec2::ZERO,
         };
         mb.fill(TileType::Wall);
         mb.build_random_rooms(rng);
         mb.build_corridors(rng);
-        mb.player_start = mb.rooms[0].center();
+        mb.player_start = bevy::prelude::IVec2::from_array(mb.rooms[0].xy().as_i32().to_array());
         mb
     }
 
@@ -30,27 +33,34 @@ impl MapBuilder {
         self.map.tiles.iter_mut().for_each(|t| *t = tile);
     }
 
-    fn build_random_rooms(&mut self, rng: &mut RandomNumberGenerator) {
+    fn build_random_rooms(&mut self, rng: &mut ThreadRng) {
         while NUM_ROOMS > self.rooms.len() {
-            let room = Rect::with_size(
-                rng.range(1, SCREEN_WIDTH),
-                rng.range(1, SCREEN_HEIGHT),
-                rng.range(2, 10),
-                rng.range(2, 10),
+            let room = Rect::from_x_y_w_h(
+                rng.gen_range(1..SCREEN_WIDTH) as f32,
+                rng.gen_range(1..SCREEN_HEIGHT) as f32,
+                rng.gen_range(2..10) as f32,
+                rng.gen_range(2..10) as f32,
             );
             let mut overlap = false;
             for r in self.rooms.iter() {
-                if r.intersect(&room) {
+                if r.overlap(room).is_some() {
                     overlap = true;
                     break;
                 }
             }
             if !overlap {
-                room.for_each(|p| {
-                    if in_bounds(p) {
-                        self.map.tiles[[p.y as usize, p.x as usize]] = TileType::Floor;
-                    }
-                });
+                (room.left() as i32..room.right() as i32)
+                    .into_iter()
+                    .for_each(|x| {
+                        (room.bottom() as i32..room.top() as i32)
+                            .into_iter()
+                            .for_each(|y| {
+                                if in_bounds(IVec2::from_array([x, y])) {
+                                    self.map.tiles[[y as usize, x as usize]] = TileType::Floor;
+                                }
+                            })
+                    });
+
                 self.rooms.push(room);
             }
         }
@@ -69,14 +79,14 @@ impl MapBuilder {
         }
     }
 
-    fn build_corridors(&mut self, rng: &mut RandomNumberGenerator) {
+    fn build_corridors(&mut self, rng: &mut ThreadRng) {
         let mut rooms = self.rooms.clone();
-        rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
+        rooms.sort_by(|a, b| (a.xy().x as i32).cmp(&(b.xy().x as i32)));
         for (i, room) in rooms.iter().enumerate().skip(1) {
-            let prev = rooms[i - 1].center();
-            let new = room.center();
+            let prev = rooms[i - 1].xy();
+            let new = room.xy();
 
-            if rng.range(0, 2) == 1 {
+            if rng.gen_range(0..2) == 1 {
                 self.apply_tunnel(
                     prev.x as usize,
                     new.x as usize,

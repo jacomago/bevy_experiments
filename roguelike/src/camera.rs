@@ -1,26 +1,26 @@
-use crate::prelude::*;
+use bevy::prelude::*;
 
-pub struct Camera {
-    pub left_x: i32,
-    pub right_x: i32,
-    pub top_y: i32,
-    pub bottom_y: i32,
-}
+use crate::Game;
 
-impl Camera {
-    pub fn new(player_position: Point) -> Self {
-        Self {
-            left_x: player_position.x - DISPLAY_WIDTH as i32 / 2,
-            right_x: player_position.x + DISPLAY_WIDTH as i32 / 2,
-            top_y: player_position.y - DISPLAY_HEIGHT as i32 / 2,
-            bottom_y: player_position.y + DISPLAY_HEIGHT as i32 / 2,
+// change the focus of the camera
+pub fn focus_camera(
+    game: ResMut<Game>,
+    mut transforms: ParamSet<(Query<&mut Transform, With<Camera2d>>, Query<&Transform>)>,
+) {
+    // if there is both a player and a bonus, target the mid-point of them
+    if let Some(player_entity) = game.player.entity {
+        let mut transform = None;
+        if let Ok(player_transform) = transforms.p1().get(player_entity) {
+            transform = Some(player_transform.translation);
         }
-    }
-
-    pub fn on_player_move(&mut self, player_position: Point) {
-        self.left_x = player_position.x - DISPLAY_WIDTH as i32 / 2;
-        self.right_x = player_position.x + DISPLAY_WIDTH as i32 / 2;
-        self.top_y = player_position.y - DISPLAY_HEIGHT as i32 / 2;
-        self.bottom_y = player_position.y + DISPLAY_HEIGHT as i32 / 2;
+        match transform {
+            Some(t) => {
+                for mut transform in transforms.p0().iter_mut() {
+                    *transform = transform.looking_at(t, Vec3::Y);
+                }
+            }
+            None => {}
+        }
+        // otherwise, target the middle
     }
 }

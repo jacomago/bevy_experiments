@@ -6,7 +6,6 @@ mod map_builder;
 mod player;
 
 mod prelude {
-    pub use bracket_lib::prelude::*;
     pub const SCREEN_WIDTH: usize = 80;
     pub const SCREEN_HEIGHT: usize = 50;
     pub const DISPLAY_WIDTH: usize = SCREEN_WIDTH / 2;
@@ -15,50 +14,99 @@ mod prelude {
     pub use crate::map::*;
     pub use crate::map_builder::*;
     pub use crate::player::*;
+    pub use bevy::prelude::*;
 }
-
 use prelude::*;
+use rand::thread_rng;
 
-struct State {
+#[derive(Default)]
+pub struct Game {
     map: Map,
     player: Player,
-    camera: Camera,
 }
 
-impl State {
-    fn new() -> Self {
-        let mut rng = RandomNumberGenerator::new();
-        let map_builder = MapBuilder::new(&mut rng);
-        Self {
-            map: map_builder.map,
-            player: Player::new(map_builder.player_start),
-            camera: Camera::new(map_builder.player_start),
-        }
+#[derive(Clone, Eq, PartialEq, Debug, Hash)]
+enum GameState {
+    Playing,
+    GameOver,
+}
+
+fn setup_camera(mut commands: Commands) {
+    commands.spawn_bundle(Camera2dBundle::default());
+}
+
+fn setup(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut game: ResMut<Game>,
+) {
+    let mut rng = thread_rng();
+    let map_builder = MapBuilder::new(&mut rng);
+    game.map = map_builder.map;
+    game.player.position = map_builder.player_start;
+
+    let texture_handle = asset_server.load("images/dungeonfont.png");
+    let texture_atlas = TextureAtlas::from_grid(texture_handle, Vec2::new(32.0, 32.0), 16, 17);
+
+    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+
+    game.player.entity = Some(
+        commands
+            .spawn_bundle(SpriteSheetBundle {
+                transform: Transform {
+                    translation: Vec3::new(
+                        game.player.position.x as f32,
+                        game.player.position.y as f32,
+                        1.0,
+                    ),
+                    ..default()
+                },
+                texture_atlas: texture_atlas_handle.clone(),
+                sprite: TextureAtlasSprite {
+                    index: 1,
+                    ..default()
+                },
+                ..default()
+            })
+            .id(),
+    );
+
+    game.map.setup(commands, &texture_atlas_handle);
+
+
+}
+
+fn main() {
+    App::new()
+        .init_resource::<Game>()
+        .add_plugins(DefaultPlugins)
+        .add_state(GameState::Playing)
+        .add_startup_system(setup_camera)
+        .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup))
+        .add_system_set(
+            SystemSet::on_update(GameState::Playing)
+                .with_system(move_player)
+                .with_system(focus_camera),
+        )
+        .add_system_set(SystemSet::on_exit(GameState::Playing).with_system(teardown))
+        .add_system_set(SystemSet::on_exit(GameState::GameOver).with_system(teardown))
+        .add_system(bevy::window::close_on_esc)
+        .run();
+    // let context = BTermBuilder::new()
+    //     .with_title("Alien Cake")
+    //     .with_fps_cap(30.0)
+    //     .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    //     .with_resource_path("assets/images/")
+    //     .with_font("dungeonfont.png", 32, 32)
+    //     .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
+    //     .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
+    //     .build()?;
+}
+
+// remove all entities that are not a camera
+fn teardown(mut commands: Commands, entities: Query<Entity, Without<Camera>>) {
+    for entity in &entities {
+        commands.entity(entity).despawn_recursive();
     }
-}
-
-impl GameState for State {
-    fn tick(&mut self, ctx: &mut BTerm) {
-        ctx.set_active_console(0);
-        ctx.cls();
-        ctx.set_active_console(1);
-        ctx.cls();
-        self.player.update(ctx, &self.map, &mut self.camera);
-        self.map.render(ctx, &self.camera);
-        self.player.render(ctx, &self.camera);
-    }
-}
-
-fn main() -> BError {
-    let context = BTermBuilder::new()
-        .with_title("Alien Cake")
-        .with_fps_cap(30.0)
-        .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
-        .with_resource_path("assets/images/")
-        .with_font("dungeonfont.png", 32, 32)
-        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
-        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png")
-        .build()?;
-
-    main_loop(context, State::new())
 }

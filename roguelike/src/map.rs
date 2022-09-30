@@ -4,17 +4,19 @@ use ndarray::{Array, Ix2};
 
 use crate::prelude::*;
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Default)]
 pub enum TileType {
     Wall,
+    #[default]
     Floor,
 }
 
+#[derive(Default)]
 pub struct Map {
     pub tiles: Array<TileType, Ix2>,
 }
 
-pub fn in_bounds(point: Point) -> bool {
+pub fn in_bounds(point: IVec2) -> bool {
     point.x >= 0
         && SCREEN_WIDTH > point.x.try_into().unwrap()
         && point.y >= 0
@@ -31,7 +33,7 @@ impl Map {
         }
     }
 
-    pub fn can_enter_tile(&self, point: Point) -> bool {
+    pub fn can_enter_tile(&self, point: IVec2) -> bool {
         in_bounds(point)
             && self
                 .tiles
@@ -40,34 +42,23 @@ impl Map {
                 .unwrap_or(false)
     }
 
-    pub fn render(&self, ctx: &mut BTerm, camera: &Camera) {
-        ctx.set_active_console(0);
-        for y in camera.top_y..camera.bottom_y {
-            for x in camera.left_x..camera.right_x {
-                match self.tiles.get((y as usize, x as usize)) {
-                    Some(t) => match t {
-                        TileType::Floor => {
-                            ctx.set(
-                                x - camera.left_x,
-                                y - camera.top_y,
-                                YELLOW,
-                                BLACK,
-                                to_cp437('.'),
-                            );
-                        }
-                        TileType::Wall => {
-                            ctx.set(
-                                x - camera.left_x,
-                                y - camera.top_y,
-                                GREEN,
-                                BLACK,
-                                to_cp437('#'),
-                            );
-                        }
+    pub fn setup(&self, mut commands: Commands, texture_atlas_handle: &Handle<TextureAtlas>) {
+        self.tiles.indexed_iter().for_each(|((x, y), t)| {
+            commands.spawn_bundle(SpriteSheetBundle {
+                transform: Transform {
+                    translation: Vec3::new(x as f32, y as f32, 0.0),
+                    ..default()
+                },
+                texture_atlas: texture_atlas_handle.clone(),
+                sprite: TextureAtlasSprite {
+                    index: match *t {
+                        TileType::Floor => 3,
+                        TileType::Wall => 4,
                     },
-                    None => {}
-                }
-            }
-        }
+                    ..default()
+                },
+                ..default()
+            });
+        });
     }
 }

@@ -6,10 +6,11 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = { version = "0.8" , features = ["dynamic"]}
+nannou_core = "0.18"
+bevy = { version = "0.8", features = ["dynamic"] }
 bevy_shader_utils = { version = "0.3" }
-bracket-lib = "~0.8.1"
 ndarray = { version = "0.15.6" }
+rand = "0.8.5"
 
 [profile.dev]
 opt-level = 1

@@ -8,8 +8,6 @@ mod player;
 mod prelude {
     pub const SCREEN_WIDTH: usize = 80;
     pub const SCREEN_HEIGHT: usize = 50;
-    pub const DISPLAY_WIDTH: usize = SCREEN_WIDTH / 2;
-    pub const DISPLAY_HEIGHT: usize = SCREEN_HEIGHT / 2;
     pub const TILE_SIZE: i32 = 32;
     pub const MAP_Z: f32 = 0.0;
     pub const PLAYER_Z: f32 = 1.0;

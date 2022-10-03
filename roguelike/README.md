@@ -1,5 +1,7 @@
 # Alien Cake
 
+Based on [Rust in Action](https://www.manning.com/books/rust-in-action)
+
 ## short Description
 
 A dungeon crawler with proc-gen levels, and fighting other aliens.

@@ -11,6 +11,8 @@ mod prelude {
     pub const DISPLAY_WIDTH: usize = SCREEN_WIDTH / 2;
     pub const DISPLAY_HEIGHT: usize = SCREEN_HEIGHT / 2;
     pub const TILE_SIZE: i32 = 32;
+    pub const MAP_Z: f32 = 0.0;
+    pub const PLAYER_Z: f32 = 1.0;
     pub use crate::camera::*;
     pub use crate::map::*;
     pub use crate::map_builder::*;
@@ -61,7 +63,7 @@ fn setup(
                     translation: Vec3::new(
                         (game.player.position.x * TILE_SIZE) as f32,
                         (game.player.position.y * TILE_SIZE) as f32,
-                        0.0,
+                        PLAYER_Z,
                     ),
                     ..default()
                 },

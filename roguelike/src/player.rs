@@ -15,8 +15,8 @@ pub fn move_player(
         let delta = match k {
             KeyCode::Left => IVec2::new(-1, 0),
             KeyCode::Right => IVec2::new(1, 0),
-            KeyCode::Up => IVec2::new(0, -1),
-            KeyCode::Down => IVec2::new(0, 1),
+            KeyCode::Up => IVec2::new(0, 1),
+            KeyCode::Down => IVec2::new(0, -1),
             _ => IVec2::ZERO,
         };
         let new_position = game.player.position + delta;

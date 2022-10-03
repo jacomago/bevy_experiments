@@ -43,7 +43,7 @@ impl Map {
     }
 
     pub fn setup(&self, mut commands: Commands, texture_atlas_handle: &Handle<TextureAtlas>) {
-        self.tiles.indexed_iter().for_each(|((x, y), t)| {
+        self.tiles.indexed_iter().for_each(|((y, x), t)| {
             commands.spawn_bundle(SpriteSheetBundle {
                 transform: Transform {
                     translation: Vec3::new(

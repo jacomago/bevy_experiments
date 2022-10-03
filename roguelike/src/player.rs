@@ -1,9 +1,36 @@
 use crate::{prelude::*, Game};
 
+const PLAYER_SPRITE_INDEX: usize = 1;
+
 #[derive(Default)]
 pub struct Player {
     pub entity: Option<Entity>,
     pub position: IVec2,
+}
+
+impl Player {
+    pub fn setup(&mut self, commands: &mut Commands, texture_atlas_handle: &Handle<TextureAtlas>) {
+        self.entity = Some(
+            commands
+                .spawn_bundle(SpriteSheetBundle {
+                    transform: Transform {
+                        translation: Vec3::new(
+                            (self.position.x * TILE_SIZE) as f32,
+                            (self.position.y * TILE_SIZE) as f32,
+                            PLAYER_Z,
+                        ),
+                        ..default()
+                    },
+                    texture_atlas: texture_atlas_handle.clone(),
+                    sprite: TextureAtlasSprite {
+                        index: PLAYER_SPRITE_INDEX,
+                        ..default()
+                    },
+                    ..default()
+                })
+                .id(),
+        );
+    }
 }
 
 pub fn move_player(

@@ -4,6 +4,9 @@ use ndarray::{Array, Ix2};
 
 use crate::prelude::*;
 
+const WALL_SPRITE_INDEX: usize = 35;
+const FLOOR_SPRITE_INDEX: usize = 46;
+
 #[derive(Copy, Clone, PartialEq, Default)]
 pub enum TileType {
     Wall,
@@ -42,22 +45,22 @@ impl Map {
                 .unwrap_or(false)
     }
 
-    pub fn setup(&self, mut commands: Commands, texture_atlas_handle: &Handle<TextureAtlas>) {
+    pub fn setup(&self, commands: &mut Commands, texture_atlas_handle: &Handle<TextureAtlas>) {
         self.tiles.indexed_iter().for_each(|((y, x), t)| {
             commands.spawn_bundle(SpriteSheetBundle {
                 transform: Transform {
                     translation: Vec3::new(
                         (x as i32 * TILE_SIZE) as f32,
                         (y as i32 * TILE_SIZE) as f32,
-                        0.0,
+                        MAP_Z,
                     ),
                     ..default()
                 },
                 texture_atlas: texture_atlas_handle.clone(),
                 sprite: TextureAtlasSprite {
                     index: match *t {
-                        TileType::Floor => 46,
-                        TileType::Wall => 35,
+                        TileType::Floor => FLOOR_SPRITE_INDEX,
+                        TileType::Wall => WALL_SPRITE_INDEX,
                     },
                     ..default()
                 },

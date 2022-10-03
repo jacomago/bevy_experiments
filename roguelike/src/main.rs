@@ -56,28 +56,8 @@ fn setup(
 
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
 
-    game.player.entity = Some(
-        commands
-            .spawn_bundle(SpriteSheetBundle {
-                transform: Transform {
-                    translation: Vec3::new(
-                        (game.player.position.x * TILE_SIZE) as f32,
-                        (game.player.position.y * TILE_SIZE) as f32,
-                        PLAYER_Z,
-                    ),
-                    ..default()
-                },
-                texture_atlas: texture_atlas_handle.clone(),
-                sprite: TextureAtlasSprite {
-                    index: 1,
-                    ..default()
-                },
-                ..default()
-            })
-            .id(),
-    );
-
-    game.map.setup(commands, &texture_atlas_handle);
+    game.player.setup(&mut commands, &texture_atlas_handle);
+    game.map.setup(&mut commands, &texture_atlas_handle);
 }
 
 fn main() {

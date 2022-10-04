@@ -25,7 +25,6 @@ use rand::thread_rng;
 #[derive(Default)]
 pub struct Game {
     map: Map,
-    player: Player,
 }
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
@@ -60,7 +59,7 @@ fn setup(
 
     let texture_atlas_handle = sprite_sheet_setup(asset_server, texture_atlases);
 
-    game.player.setup(&mut commands, &texture_atlas_handle, &map_builder);
+    player::setup(&mut commands, &texture_atlas_handle, map_builder.player_start);
 
     game.map = map_builder.map;
     game.map.setup(&mut commands, &texture_atlas_handle);

@@ -27,7 +27,11 @@ pub struct PlayerBundle {
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_player))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(move_player));
+            .add_system_set(
+                SystemSet::on_update(GameState::Playing)
+                    .with_system(move_player)
+                    .with_system(focus_camera),
+            );
     }
 }
 
@@ -79,4 +83,18 @@ fn move_player(
         transform.translation += movement;
         position.position = new_position.position;
     }
+}
+
+// change the focus of the camera to the player
+pub fn focus_camera(
+    mut transforms: ParamSet<(
+        Query<&mut Transform, With<Camera2d>>,
+        Query<&Transform, With<Player>>,
+    )>,
+) {
+    let binding = transforms.p1();
+    let translation = binding.single().translation;
+    let mut binding = transforms.p0();
+    let mut camera_transform = binding.single_mut();
+    *camera_transform = Transform::from_translation(translation);
 }

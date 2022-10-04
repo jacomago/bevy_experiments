@@ -3,6 +3,7 @@ mod audio;
 mod loading;
 mod map;
 mod menu;
+mod monsters;
 mod player;
 
 use crate::actions::ActionsPlugin;
@@ -16,6 +17,7 @@ use bevy::app::App;
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
 use map::tile_map::MapPlugin;
+use monsters::MonstersPlugin;
 
 pub const TILE_SIZE: i32 = 32;
 
@@ -42,6 +44,7 @@ impl Plugin for GamePlugin {
             .add_plugin(ActionsPlugin)
             .add_plugin(InternalAudioPlugin)
             .add_plugin(MapPlugin)
+            .add_plugin(MonstersPlugin)
             .add_plugin(PlayerPlugin);
 
         #[cfg(debug_assertions)]

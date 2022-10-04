@@ -1,9 +1,24 @@
-use nannou_core::prelude::Rect;
+use crate::loading::TextureAtlasAssets;
+use crate::map::map_builder::MapBuilder;
+use crate::map::map_position::MapPosition;
+use crate::player::Player;
+use crate::GameState;
 
-use crate::prelude::{map_position::MapPosition, *};
+use bevy::prelude::*;
 
 const MONSTER_SPRITE_INDEX: usize = 69;
+const MONSTERS_Z: f32 = 1.;
 
+pub struct MonstersPlugin;
+
+/// This plugin handles player related stuff like movement
+/// Player logic is only active during the State `GameState::Playing`
+impl Plugin for MonstersPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_monsters))
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(collisions));
+    }
+}
 #[derive(Component, Default)]
 pub struct Monster;
 
@@ -27,21 +42,21 @@ pub fn collisions(
         .for_each(|(e, _, _)| commands.entity(e).despawn_recursive());
 }
 
-pub fn setup(commands: &mut Commands, texture_atlas_handle: &Handle<TextureAtlas>, rooms: &[Rect]) {
-    rooms.iter().skip(1).for_each(|room| {
-        let position = bevy::prelude::IVec2::from_array(room.xy().as_i32().to_array());
+fn spawn_monsters(
+    mut commands: Commands,
+    textures: Res<TextureAtlasAssets>,
+    map_builder: Res<MapBuilder>,
+) {
+    map_builder.rooms.iter().skip(1).for_each(|room| {
+        let position = MapPosition::new(room.x() as i32, room.y() as i32);
         commands.spawn_bundle(MonsterBundle {
-            position: MapPosition { position },
+            position,
             sprite: SpriteSheetBundle {
                 transform: Transform {
-                    translation: Vec3::new(
-                        (position.x * TILE_SIZE) as f32,
-                        (position.y * TILE_SIZE) as f32,
-                        MONSTER_Z,
-                    ),
+                    translation: position.translation(MONSTERS_Z),
                     ..default()
                 },
-                texture_atlas: texture_atlas_handle.clone(),
+                texture_atlas: textures.texture_atlas.clone(),
                 sprite: TextureAtlasSprite {
                     index: MONSTER_SPRITE_INDEX,
                     ..default()

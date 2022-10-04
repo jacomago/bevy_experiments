@@ -40,3 +40,10 @@ pub struct TextureAssets {
     #[asset(path = "textures/bevy.png")]
     pub texture_bevy: Handle<Image>,
 }
+
+#[derive(AssetCollection)]
+pub struct TextureAtlasAssets {
+    #[asset(texture_atlas(tile_size_x = 32., tile_size_y = 32., columns = 16, rows = 16,))]
+    #[asset(path = "textures/dungeonfont.png")]
+    pub texture_atlas: Handle<TextureAtlas>,
+}

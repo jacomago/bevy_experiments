@@ -1,11 +1,12 @@
 use crate::actions::Actions;
-use crate::loading::TextureAssets;
+use crate::loading::TextureAtlasAssets;
 use crate::map::map_position::MapPosition;
-use crate::GameState;
+use crate::{GameState, TILE_SIZE};
 
 use bevy::prelude::*;
 
 const PLAYER_SPRITE_INDEX: usize = 64;
+const PLAYER_Z: f32 = 1;
 
 pub struct PlayerPlugin;
 
@@ -29,14 +30,29 @@ impl Plugin for PlayerPlugin {
     }
 }
 
-fn spawn_player(mut commands: Commands, textures: Res<TextureAssets>) {
-    commands
-        .spawn_bundle(SpriteBundle {
-            texture: textures.texture_bevy.clone(),
-            transform: Transform::from_translation(Vec3::new(0., 0., 1.)),
-            ..Default::default()
-        })
-        .insert(Player);
+fn spawn_player(mut commands: Commands, textures: Res<TextureAtlasAssets>, player_start: IVec2) {
+    commands.spawn_bundle(PlayerBundle {
+        position: MapPosition {
+            position: player_start,
+        },
+        sprite: SpriteSheetBundle {
+            transform: Transform {
+                translation: Vec3::new(
+                    (player_start.x * TILE_SIZE) as f32,
+                    (player_start.y * TILE_SIZE) as f32,
+                    PLAYER_Z,
+                ),
+                ..default()
+            },
+            texture_atlas: textures.texture_atlas,
+            sprite: TextureAtlasSprite {
+                index: PLAYER_SPRITE_INDEX,
+                ..default()
+            },
+            ..default()
+        },
+        ..default()
+    });
 }
 
 fn move_player(

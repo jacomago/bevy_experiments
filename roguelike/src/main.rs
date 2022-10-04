@@ -1,7 +1,8 @@
 mod camera;
+mod collision;
 mod map;
-mod player;
 mod monsters;
+mod player;
 
 mod prelude {
     pub const SCREEN_WIDTH: usize = 80;
@@ -11,9 +12,10 @@ mod prelude {
     pub const PLAYER_Z: f32 = 1.0;
     pub const MONSTER_Z: f32 = 1.0;
     pub use crate::camera::*;
+    pub use crate::collision::*;
     pub use crate::map::*;
-    pub use crate::player::*;
     pub use crate::monsters::*;
+    pub use crate::player::*;
     pub use bevy::prelude::*;
 }
 
@@ -61,11 +63,7 @@ fn setup(
         &texture_atlas_handle,
         map_builder.player_start,
     );
-    monsters::setup(
-        &mut commands,
-        &texture_atlas_handle,
-        &map_builder.rooms,
-    );
+    monsters::setup(&mut commands, &texture_atlas_handle, &map_builder.rooms);
 
     game.map = map_builder.map;
     game.map.setup(&mut commands, &texture_atlas_handle);
@@ -82,7 +80,8 @@ fn main() {
         .add_system_set(
             SystemSet::on_update(GameState::Playing)
                 .with_system(move_player)
-                .with_system(focus_camera),
+                .with_system(focus_camera)
+                .with_system(collisions),
         )
         .add_system_set(SystemSet::on_exit(GameState::Playing).with_system(teardown))
         .add_system_set(SystemSet::on_exit(GameState::GameOver).with_system(teardown))

@@ -17,6 +17,7 @@ mod prelude {
     pub use crate::player::*;
     pub use bevy::prelude::*;
 }
+
 use bevy_inspector_egui::WorldInspectorPlugin;
 use prelude::*;
 use rand::thread_rng;
@@ -33,17 +34,10 @@ enum GameState {
     GameOver,
 }
 
-fn setup(
-    mut commands: Commands,
+fn sprite_sheet_setup(
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    mut game: ResMut<Game>,
-) {
-    let mut rng = thread_rng();
-    let map_builder = MapBuilder::new(&mut rng);
-    game.map = map_builder.map;
-    game.player.position = map_builder.player_start;
-
+) -> Handle<TextureAtlas> {
     let texture_handle = asset_server.load("images/dungeonfont.png");
     let texture_atlas = TextureAtlas::from_grid(
         texture_handle,
@@ -52,9 +46,23 @@ fn setup(
         17,
     );
 
-    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+    return texture_atlases.add(texture_atlas);
+}
 
-    game.player.setup(&mut commands, &texture_atlas_handle);
+fn setup(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut game: ResMut<Game>,
+) {
+    let mut rng = thread_rng();
+    let map_builder = MapBuilder::new(&mut rng);
+
+    let texture_atlas_handle = sprite_sheet_setup(asset_server, texture_atlases);
+
+    game.player.setup(&mut commands, &texture_atlas_handle, &map_builder);
+
+    game.map = map_builder.map;
     game.map.setup(&mut commands, &texture_atlas_handle);
 }
 

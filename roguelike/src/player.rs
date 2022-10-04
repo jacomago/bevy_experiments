@@ -9,7 +9,13 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn setup(&mut self, commands: &mut Commands, texture_atlas_handle: &Handle<TextureAtlas>) {
+    pub fn setup(
+        &mut self,
+        commands: &mut Commands,
+        texture_atlas_handle: &Handle<TextureAtlas>,
+        map_builder: &MapBuilder,
+    ) {
+        self.position = map_builder.player_start;
         self.entity = Some(
             commands
                 .spawn_bundle(SpriteSheetBundle {

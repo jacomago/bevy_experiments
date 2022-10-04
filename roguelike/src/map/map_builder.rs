@@ -4,12 +4,12 @@ use nannou_core::prelude::Rect;
 use rand::thread_rng;
 use rand::{rngs::ThreadRng, Rng};
 
-use super::map::{in_bounds, Map, TileType};
+use super::tile_map::{in_bounds, TileMap, TileType};
 
 const NUM_ROOMS: usize = 20;
 
 pub struct MapBuilder {
-    pub map: Map,
+    pub map: TileMap,
     pub rooms: Vec<Rect>,
     pub player_start: IVec2,
 }
@@ -23,7 +23,7 @@ impl MapBuilder {
     pub fn new() -> Self {
         let mut rng = thread_rng();
         let mut mb = MapBuilder {
-            map: Map::new(),
+            map: TileMap::new(),
             rooms: Vec::new(),
             player_start: IVec2::ZERO,
         };

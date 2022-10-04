@@ -7,7 +7,7 @@ use crate::prelude::*;
 const WALL_SPRITE_INDEX: usize = 35;
 const FLOOR_SPRITE_INDEX: usize = 46;
 
-#[derive(Copy, Clone, PartialEq, Default)]
+#[derive(Copy, Clone, PartialEq, Eq, Default)]
 pub enum TileType {
     Wall,
     #[default]
@@ -15,7 +15,7 @@ pub enum TileType {
 }
 
 #[derive(Default)]
-pub struct Map {
+pub struct TileMap {
     pub tiles: Array<TileType, Ix2>,
 }
 
@@ -26,7 +26,7 @@ pub fn in_bounds(point: IVec2) -> bool {
         && SCREEN_HEIGHT > point.y.try_into().unwrap()
 }
 
-impl Map {
+impl TileMap {
     pub fn new() -> Self {
         Self {
             tiles: Array::<TileType, Ix2>::from_elem(

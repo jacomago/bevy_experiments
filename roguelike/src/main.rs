@@ -1,4 +1,3 @@
-#![warn(clippy::all, clippy::pedantic)]
 mod camera;
 mod map;
 mod player;
@@ -16,11 +15,11 @@ mod prelude {
 }
 
 use bevy_inspector_egui::WorldInspectorPlugin;
-use prelude::{map::Map, map_builder::MapBuilder, *};
+use prelude::{map_builder::MapBuilder, tile_map::TileMap, *};
 
 #[derive(Default)]
 pub struct Game {
-    map: Map,
+    map: TileMap,
 }
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
@@ -30,7 +29,7 @@ enum GameState {
 }
 
 fn sprite_sheet_setup(
-    asset_server: Res<AssetServer>,
+    asset_server: &Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) -> Handle<TextureAtlas> {
     let texture_handle = asset_server.load("images/dungeonfont.png");
@@ -41,7 +40,7 @@ fn sprite_sheet_setup(
         17,
     );
 
-    return texture_atlases.add(texture_atlas);
+    texture_atlases.add(texture_atlas)
 }
 
 fn setup(
@@ -52,7 +51,7 @@ fn setup(
 ) {
     let map_builder = MapBuilder::new();
 
-    let texture_atlas_handle = sprite_sheet_setup(asset_server, texture_atlases);
+    let texture_atlas_handle = sprite_sheet_setup(&asset_server, texture_atlases);
 
     player::setup(
         &mut commands,

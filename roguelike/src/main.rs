@@ -1,6 +1,7 @@
 mod camera;
 mod map;
 mod player;
+mod monsters;
 
 mod prelude {
     pub const SCREEN_WIDTH: usize = 80;
@@ -8,9 +9,11 @@ mod prelude {
     pub const TILE_SIZE: i32 = 32;
     pub const MAP_Z: f32 = 0.0;
     pub const PLAYER_Z: f32 = 1.0;
+    pub const MONSTER_Z: f32 = 1.0;
     pub use crate::camera::*;
     pub use crate::map::*;
     pub use crate::player::*;
+    pub use crate::monsters::*;
     pub use bevy::prelude::*;
 }
 
@@ -57,6 +60,11 @@ fn setup(
         &mut commands,
         &texture_atlas_handle,
         map_builder.player_start,
+    );
+    monsters::setup(
+        &mut commands,
+        &texture_atlas_handle,
+        &map_builder.rooms,
     );
 
     game.map = map_builder.map;

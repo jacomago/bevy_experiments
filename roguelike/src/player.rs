@@ -3,7 +3,7 @@ use crate::{
     Game,
 };
 
-const PLAYER_SPRITE_INDEX: usize = 1;
+const PLAYER_SPRITE_INDEX: usize = 64;
 
 #[derive(Component, Default)]
 pub struct Player;

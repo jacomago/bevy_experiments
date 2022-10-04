@@ -1,8 +1,6 @@
 #![warn(clippy::all, clippy::pedantic)]
-
 mod camera;
 mod map;
-mod map_builder;
 mod player;
 
 mod prelude {
@@ -13,14 +11,12 @@ mod prelude {
     pub const PLAYER_Z: f32 = 1.0;
     pub use crate::camera::*;
     pub use crate::map::*;
-    pub use crate::map_builder::*;
     pub use crate::player::*;
     pub use bevy::prelude::*;
 }
 
 use bevy_inspector_egui::WorldInspectorPlugin;
-use prelude::*;
-use rand::thread_rng;
+use prelude::{map::Map, map_builder::MapBuilder, *};
 
 #[derive(Default)]
 pub struct Game {
@@ -54,12 +50,15 @@ fn setup(
     texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut game: ResMut<Game>,
 ) {
-    let mut rng = thread_rng();
-    let map_builder = MapBuilder::new(&mut rng);
+    let map_builder = MapBuilder::new();
 
     let texture_atlas_handle = sprite_sheet_setup(asset_server, texture_atlases);
 
-    player::setup(&mut commands, &texture_atlas_handle, map_builder.player_start);
+    player::setup(
+        &mut commands,
+        &texture_atlas_handle,
+        map_builder.player_start,
+    );
 
     game.map = map_builder.map;
     game.map.setup(&mut commands, &texture_atlas_handle);

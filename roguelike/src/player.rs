@@ -1,4 +1,7 @@
-use crate::{prelude::*, Game};
+use crate::{
+    prelude::{map_position::MapPosition, *},
+    Game,
+};
 
 const PLAYER_SPRITE_INDEX: usize = 1;
 
@@ -11,11 +14,6 @@ pub struct PlayerBundle {
     pub position: MapPosition,
     #[bundle]
     sprite: SpriteSheetBundle,
-}
-
-#[derive(Component, Default)]
-pub struct MapPosition {
-    pub position: IVec2,
 }
 
 pub fn setup(

@@ -1,7 +1,11 @@
+use crate::prelude::*;
+
 use nannou_core::prelude::Rect;
+use rand::thread_rng;
 use rand::{rngs::ThreadRng, Rng};
 
-use crate::prelude::*;
+use super::map::{in_bounds, Map, TileType};
+
 const NUM_ROOMS: usize = 20;
 
 pub struct MapBuilder {
@@ -16,15 +20,16 @@ enum Direction {
 }
 
 impl MapBuilder {
-    pub fn new(rng: &mut ThreadRng) -> Self {
+    pub fn new() -> Self {
+        let mut rng = thread_rng();
         let mut mb = MapBuilder {
             map: Map::new(),
             rooms: Vec::new(),
             player_start: IVec2::ZERO,
         };
         mb.fill(TileType::Wall);
-        mb.build_random_rooms(rng);
-        mb.build_corridors(rng);
+        mb.build_random_rooms(&mut rng);
+        mb.build_corridors(&mut rng);
         mb.player_start = bevy::prelude::IVec2::from_array(mb.rooms[0].xy().as_i32().to_array());
         mb
     }

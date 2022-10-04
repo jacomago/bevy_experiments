@@ -3,9 +3,9 @@ use std::usize;
 use bevy::prelude::*;
 use ndarray::{Array, Ix2};
 
-use crate::{loading::TextureAtlasAssets, GameState, TILE_SIZE};
+use crate::{loading::TextureAtlasAssets, GameState};
 
-use super::map_builder::MapBuilder;
+use super::{map_builder::MapBuilder, map_position::MapPosition};
 
 const MAP_Z: f32 = 0.0;
 const WALL_SPRITE_INDEX: usize = 35;
@@ -53,13 +53,10 @@ pub fn spawn_map(
         .tiles
         .indexed_iter()
         .for_each(|((y, x), t)| {
+            let position = MapPosition::new(x.try_into().unwrap(), y.try_into().unwrap());
             commands.spawn_bundle(SpriteSheetBundle {
                 transform: Transform {
-                    translation: Vec3::new(
-                        (x as i32 * TILE_SIZE) as f32,
-                        (y as i32 * TILE_SIZE) as f32,
-                        MAP_Z,
-                    ),
+                    translation: position.translation(MAP_Z),
                     ..default()
                 },
                 texture_atlas: textures.texture_atlas.clone(),
@@ -82,11 +79,11 @@ impl TileMap {
         }
     }
 
-    pub fn can_enter_tile(&self, point: IVec2) -> bool {
-        in_bounds(point)
+    pub fn can_enter_tile(&self, point: MapPosition) -> bool {
+        in_bounds(point.position)
             && self
                 .tiles
-                .get((point.y as usize, point.x as usize))
+                .get((point.position.y as usize, point.position.x as usize))
                 .map(|&s| s == TileType::Floor)
                 .unwrap_or(false)
     }

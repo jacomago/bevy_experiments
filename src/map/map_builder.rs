@@ -4,14 +4,15 @@ use nannou_core::prelude::Rect;
 use rand::thread_rng;
 use rand::{rngs::ThreadRng, Rng};
 
-use super::tile_map::{in_bounds, TileMap, TileType, MAP_WIDTH, MAP_HEIGHT};
+use super::map_position::MapPosition;
+use super::tile_map::{in_bounds, TileMap, TileType, MAP_HEIGHT, MAP_WIDTH};
 
 const NUM_ROOMS: usize = 20;
 
 pub struct MapBuilder {
     pub map: TileMap,
     pub rooms: Vec<Rect>,
-    pub player_start: IVec2,
+    pub player_start: MapPosition,
 }
 
 enum Direction {
@@ -25,12 +26,12 @@ impl MapBuilder {
         let mut mb = MapBuilder {
             map: TileMap::new(),
             rooms: Vec::new(),
-            player_start: IVec2::ZERO,
+            player_start: MapPosition::default(),
         };
         mb.fill(TileType::Wall);
         mb.build_random_rooms(&mut rng);
         mb.build_corridors(&mut rng);
-        mb.player_start = bevy::prelude::IVec2::from_array(mb.rooms[0].xy().as_i32().to_array());
+        mb.player_start = MapPosition::new(mb.rooms[0].x() as i32, mb.rooms[0].y() as i32);
         mb
     }
 

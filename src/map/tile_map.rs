@@ -1,9 +1,11 @@
 use std::usize;
 
+use bevy::prelude::*;
 use ndarray::{Array, Ix2};
 
-use crate::prelude::*;
+use crate::TILE_SIZE;
 
+const MAP_Z: f32 = 0.0;
 const WALL_SPRITE_INDEX: usize = 35;
 const FLOOR_SPRITE_INDEX: usize = 46;
 
@@ -19,18 +21,22 @@ pub struct TileMap {
     pub tiles: Array<TileType, Ix2>,
 }
 
+pub const MAP_WIDTH: usize = 80;
+pub const MAP_HEIGHT: usize = 50;
+
+
 pub fn in_bounds(point: IVec2) -> bool {
     point.x >= 0
-        && SCREEN_WIDTH > point.x.try_into().unwrap()
+        && MAP_WIDTH > point.x.try_into().unwrap()
         && point.y >= 0
-        && SCREEN_HEIGHT > point.y.try_into().unwrap()
+        && MAP_HEIGHT > point.y.try_into().unwrap()
 }
 
 impl TileMap {
     pub fn new() -> Self {
         Self {
             tiles: Array::<TileType, Ix2>::from_elem(
-                (SCREEN_HEIGHT, SCREEN_WIDTH),
+                (MAP_HEIGHT, MAP_WIDTH),
                 TileType::Floor,
             ),
         }

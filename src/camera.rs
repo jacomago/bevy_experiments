@@ -3,7 +3,16 @@ use bevy::prelude::*;
 use crate::prelude::Player;
 
 pub fn setup_camera(mut commands: Commands) {
-    commands.spawn_bundle(Camera2dBundle::default());
+    commands.spawn_bundle(Camera2dBundle {
+        projection: OrthographicProjection {
+            scaling_mode: ScalingMode::Auto {
+                min_width: SCREEN_WIDTH,
+                min_height: SCREEN_HEIGHT,
+            },
+            ..default()
+        },
+        ..default()
+    });
 }
 
 // change the focus of the camera to the player

@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use bevy::prelude::*;
 
 #[derive(Component, Default, PartialEq, Eq)]
 pub struct MapPosition {

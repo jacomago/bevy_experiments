@@ -1,10 +1,10 @@
-use crate::prelude::*;
+use bevy::prelude::*;
 
 use nannou_core::prelude::Rect;
 use rand::thread_rng;
 use rand::{rngs::ThreadRng, Rng};
 
-use super::tile_map::{in_bounds, TileMap, TileType};
+use super::tile_map::{in_bounds, TileMap, TileType, MAP_WIDTH, MAP_HEIGHT};
 
 const NUM_ROOMS: usize = 20;
 
@@ -41,8 +41,8 @@ impl MapBuilder {
     fn build_random_rooms(&mut self, rng: &mut ThreadRng) {
         while NUM_ROOMS > self.rooms.len() {
             let room = Rect::from_x_y_w_h(
-                rng.gen_range(1..SCREEN_WIDTH) as f32,
-                rng.gen_range(1..SCREEN_HEIGHT) as f32,
+                rng.gen_range(1..MAP_WIDTH) as f32,
+                rng.gen_range(1..MAP_HEIGHT) as f32,
                 rng.gen_range(2..10) as f32,
                 rng.gen_range(2..10) as f32,
             );

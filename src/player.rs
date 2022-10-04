@@ -1,12 +1,13 @@
 use crate::actions::Actions;
 use crate::loading::TextureAtlasAssets;
+use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
 use crate::{GameState, TILE_SIZE};
 
 use bevy::prelude::*;
 
 const PLAYER_SPRITE_INDEX: usize = 64;
-const PLAYER_Z: f32 = 1;
+const PLAYER_Z: f32 = 1.;
 
 pub struct PlayerPlugin;
 
@@ -30,7 +31,12 @@ impl Plugin for PlayerPlugin {
     }
 }
 
-fn spawn_player(mut commands: Commands, textures: Res<TextureAtlasAssets>, player_start: IVec2) {
+fn spawn_player(
+    mut commands: Commands,
+    textures: Res<TextureAtlasAssets>,
+    map_builder: Res<MapBuilder>,
+) {
+    let player_start = map_builder.player_start;
     commands.spawn_bundle(PlayerBundle {
         position: MapPosition {
             position: player_start,
@@ -44,7 +50,7 @@ fn spawn_player(mut commands: Commands, textures: Res<TextureAtlasAssets>, playe
                 ),
                 ..default()
             },
-            texture_atlas: textures.texture_atlas,
+            texture_atlas: textures.texture_atlas.clone(),
             sprite: TextureAtlasSprite {
                 index: PLAYER_SPRITE_INDEX,
                 ..default()
@@ -58,6 +64,7 @@ fn spawn_player(mut commands: Commands, textures: Res<TextureAtlasAssets>, playe
 fn move_player(
     time: Res<Time>,
     actions: Res<Actions>,
+    map_builder: Res<MapBuilder>,
     mut player_query: Query<&mut Transform, With<Player>>,
 ) {
     if actions.player_movement.is_none() {
@@ -70,6 +77,10 @@ fn move_player(
         0.,
     );
     for mut player_transform in &mut player_query {
-        player_transform.translation += movement;
+        let new_position = player_transform.translation + movement;
+        if map_builder.map.can_enter_tile(new_position) {
+            
+            player_transform.translation += movement;
+        }
     }
 }

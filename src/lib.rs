@@ -15,6 +15,7 @@ use bevy::app::App;
 #[cfg(debug_assertions)]
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
+use map::tile_map::MapPlugin;
 
 pub const TILE_SIZE: i32 = 32;
 
@@ -40,6 +41,7 @@ impl Plugin for GamePlugin {
             .add_plugin(MenuPlugin)
             .add_plugin(ActionsPlugin)
             .add_plugin(InternalAudioPlugin)
+            .add_plugin(MapPlugin)
             .add_plugin(PlayerPlugin);
 
         #[cfg(debug_assertions)]

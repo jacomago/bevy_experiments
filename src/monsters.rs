@@ -15,11 +15,19 @@ pub struct MonsterBundle {
     sprite: SpriteSheetBundle,
 }
 
-pub fn setup(
-    commands: &mut Commands,
-    texture_atlas_handle: &Handle<TextureAtlas>,
-    rooms: &[Rect],
+pub fn collisions(
+    mut commands: Commands,
+    monsters: Query<(Entity, &MapPosition, With<Monster>)>,
+    player_position_query: Query<&MapPosition, With<Player>>,
 ) {
+    let player_position = player_position_query.single();
+    monsters
+        .iter()
+        .filter(|(_, p, _)| *p == player_position)
+        .for_each(|(e, _, _)| commands.entity(e).despawn_recursive());
+}
+
+pub fn setup(commands: &mut Commands, texture_atlas_handle: &Handle<TextureAtlas>, rooms: &[Rect]) {
     rooms.iter().skip(1).for_each(|room| {
         let position = bevy::prelude::IVec2::from_array(room.xy().as_i32().to_array());
         commands.spawn_bundle(MonsterBundle {

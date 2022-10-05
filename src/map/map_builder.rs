@@ -48,7 +48,7 @@ impl MapBuilder {
                 rng.gen_range(2..10) as f32,
             );
             let mut overlap = false;
-            for r in self.rooms.iter() {
+            for r in &self.rooms {
                 if r.overlap(room).is_some() {
                     overlap = true;
                     break;
@@ -64,7 +64,7 @@ impl MapBuilder {
                                 if in_bounds(IVec2::from_array([x, y])) {
                                     self.map.tiles[[y as usize, x as usize]] = TileType::Floor;
                                 }
-                            })
+                            });
                     });
 
                 self.rooms.push(room);
@@ -72,7 +72,7 @@ impl MapBuilder {
         }
     }
 
-    fn apply_tunnel(&mut self, inc1: usize, inc2: usize, x_or_y: usize, direction: Direction) {
+    fn apply_tunnel(&mut self, inc1: usize, inc2: usize, x_or_y: usize, direction: &Direction) {
         use std::cmp::{max, min};
         for inc in min(inc1, inc2)..max(inc1, inc2) {
             let pair = match direction {
@@ -97,26 +97,26 @@ impl MapBuilder {
                     prev.x as usize,
                     new.x as usize,
                     prev.y as usize,
-                    Direction::Horizontal,
+                    &Direction::Horizontal,
                 );
                 self.apply_tunnel(
                     prev.y as usize,
                     new.y as usize,
                     new.x as usize,
-                    Direction::Vertical,
+                    &Direction::Vertical,
                 );
             } else {
                 self.apply_tunnel(
                     prev.x as usize,
                     new.x as usize,
                     new.y as usize,
-                    Direction::Horizontal,
+                    &Direction::Horizontal,
                 );
                 self.apply_tunnel(
                     prev.y as usize,
                     new.y as usize,
                     prev.x as usize,
-                    Direction::Vertical,
+                    &Direction::Vertical,
                 );
             }
         }

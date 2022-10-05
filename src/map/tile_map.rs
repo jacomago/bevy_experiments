@@ -84,7 +84,6 @@ impl TileMap {
             && self
                 .tiles
                 .get((point.position.y as usize, point.position.x as usize))
-                .map(|&s| s == TileType::Floor)
-                .unwrap_or(false)
+                .map_or(false, |&s| s == TileType::Floor)
     }
 }

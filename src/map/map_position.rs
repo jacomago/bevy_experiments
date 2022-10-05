@@ -14,7 +14,7 @@ impl MapPosition {
         }
     }
 
-    pub fn translation(&self, z: f32) -> Vec3 {
+    pub fn translation(self, z: f32) -> Vec3 {
         Vec3::new(
             (self.position.x * TILE_SIZE) as f32,
             (self.position.y * TILE_SIZE) as f32,

@@ -1,3 +1,5 @@
+// #![warn(clippy::pedantic)] // turn on for extra hints
+
 mod actions;
 mod audio;
 mod camera;

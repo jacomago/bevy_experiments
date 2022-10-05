@@ -4,7 +4,8 @@ use crate::map::map_position::MapPosition;
 use crate::player::Player;
 use crate::GameState;
 
-use bevy::prelude::*;
+use bevy::{math::ivec2, prelude::*};
+use rand::{thread_rng, Rng};
 
 const MONSTER_SPRITE_INDEX: usize = 69;
 const MONSTERS_Z: f32 = 1.;
@@ -16,7 +17,11 @@ pub struct MonstersPlugin;
 impl Plugin for MonstersPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_monsters))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(collisions));
+            .add_system_set(
+                SystemSet::on_update(GameState::Playing)
+                    .with_system(collisions)
+                    .with_system(random_move),
+            );
     }
 }
 #[derive(Component, Default)]
@@ -65,5 +70,26 @@ fn spawn_monsters(
             },
             ..default()
         });
+    });
+}
+
+fn random_move(
+    mut monsters: Query<(&mut Transform, &mut MapPosition, With<Monster>)>,
+    map_builder: Res<MapBuilder>,
+) {
+    let mut rng = thread_rng();
+    monsters.iter_mut().for_each(|(mut t, mut p, _)| {
+        let destination = MapPosition::from_ivec2(
+            match rng.gen_range(0..4) {
+                0 => ivec2(-1, 0),
+                1 => ivec2(1, 0),
+                2 => ivec2(0, -1),
+                _ => ivec2(0, 1),
+            } + p.position,
+        );
+        if map_builder.map.can_enter_tile(destination) {
+            *p = destination;
+            t.translation = destination.translation(MONSTERS_Z);
+        }
     });
 }

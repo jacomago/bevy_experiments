@@ -28,4 +28,8 @@ impl MapPosition {
             translation.y as i32 / TILE_SIZE,
         )
     }
+
+    pub fn from_ivec2(position: IVec2) -> Self {
+        Self { position }
+    }
 }

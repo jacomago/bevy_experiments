@@ -60,7 +60,6 @@ fn spawn_player(
 }
 
 fn move_player(
-    time: Res<Time>,
     actions: Res<Actions>,
     map_builder: Res<MapBuilder>,
     mut player_query: Query<(&mut Transform, &mut MapPosition, With<Player>)>,
@@ -68,19 +67,11 @@ fn move_player(
     if actions.player_movement.is_none() {
         return;
     }
-    let speed = 150.;
-    let step_size = speed * time.delta_seconds();
-    let movement = Vec3::new(
-        actions.player_movement.unwrap().x * step_size,
-        actions.player_movement.unwrap().y * step_size,
-        0.,
-    );
+    let movement = actions.player_movement.unwrap().as_ivec2();
     let (mut transform, mut position, _) = player_query.single_mut();
-    let new_translation = transform.translation + movement;
-    let new_position = MapPosition::from_translation(new_translation);
-
+    let new_position = MapPosition::from_ivec2(position.position + movement);
     if map_builder.map.can_enter_tile(new_position) {
-        transform.translation += movement;
+        transform.translation = new_position.translation(PLAYER_Z);
         position.position = new_position.position;
     }
 }

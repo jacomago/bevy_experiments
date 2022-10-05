@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::TILE_SIZE;
 
-#[derive(Component, Default, PartialEq, Eq, Clone, Copy)]
+#[derive(Component, Default, PartialEq, Eq, Clone, Copy, Debug)]
 pub struct MapPosition {
     pub position: IVec2,
 }
@@ -19,13 +19,6 @@ impl MapPosition {
             (self.position.x * TILE_SIZE) as f32,
             (self.position.y * TILE_SIZE) as f32,
             z,
-        )
-    }
-
-    pub fn from_translation(translation: Vec3) -> Self {
-        MapPosition::new(
-            translation.x as i32 / TILE_SIZE,
-            translation.y as i32 / TILE_SIZE,
         )
     }
 

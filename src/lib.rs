@@ -1,5 +1,6 @@
 mod actions;
 mod audio;
+mod camera;
 mod loading;
 mod map;
 mod menu;
@@ -16,8 +17,9 @@ use crate::player::PlayerPlugin;
 
 use bevy::app::App;
 #[cfg(debug_assertions)]
-use bevy::diagnostic::{LogDiagnosticsPlugin};
+use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::prelude::*;
+use camera::CameraPlugin;
 use map::tile_map::MapPlugin;
 use monsters::MonstersPlugin;
 use stages::StagePlugin;
@@ -49,6 +51,7 @@ impl Plugin for GamePlugin {
             .add_plugin(InternalAudioPlugin)
             .add_plugin(StagePlugin)
             .add_plugin(SystemsPlugin)
+            .add_plugin(CameraPlugin)
             .add_plugin(MapPlugin)
             .add_plugin(MonstersPlugin)
             .add_plugin(PlayerPlugin);

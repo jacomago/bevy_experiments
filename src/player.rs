@@ -3,14 +3,13 @@ use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
 use crate::stages::{GameStage, TurnState};
-use crate::systems::movement::{movement, WantsToMove};
+use crate::systems::movement::{movement, WantsToMove, CHARACTER_Z};
 use crate::GameState;
 
 use bevy::prelude::*;
 use iyes_loopless::prelude::*;
 
 const PLAYER_SPRITE_INDEX: usize = 64;
-const PLAYER_Z: f32 = 1.;
 
 pub struct PlayerPlugin;
 
@@ -39,7 +38,6 @@ impl Plugin for PlayerPlugin {
                 ConditionSet::new()
                     .run_if_resource_equals(TurnState::PlayerTurn)
                     .with_system(movement)
-                    .with_system(focus_camera)
                     .into(),
             );
     }
@@ -55,7 +53,7 @@ fn spawn_player(
         position: player_start,
         sprite: SpriteSheetBundle {
             transform: Transform {
-                translation: player_start.translation(PLAYER_Z),
+                translation: player_start.translation(CHARACTER_Z),
                 ..default()
             },
             texture_atlas: textures.texture_atlas.clone(),
@@ -86,20 +84,5 @@ fn player_input(
         entity,
         destination: new_position,
     });
-
     commands.insert_resource(TurnState::PlayerTurn);
-}
-
-// change the focus of the camera to the player
-pub fn focus_camera(
-    mut transforms: ParamSet<(
-        Query<&mut Transform, With<Camera2d>>,
-        Query<&Transform, With<Player>>,
-    )>,
-) {
-    let binding = transforms.p1();
-    let translation = binding.single().translation;
-    let mut binding = transforms.p0();
-    let mut camera_transform = binding.single_mut();
-    *camera_transform = Transform::from_translation(translation);
 }

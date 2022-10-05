@@ -1,8 +1,12 @@
 use bevy::prelude::*;
 
-use crate::map::{map_builder::MapBuilder, map_position::MapPosition};
+use crate::{
+    camera::focus_camera,
+    map::{map_builder::MapBuilder, map_position::MapPosition},
+    player::Player,
+};
 
-const CHARACTER_Z: f32 = 1.;
+pub const CHARACTER_Z: f32 = 1.;
 
 pub struct MovementPlugin;
 
@@ -20,7 +24,9 @@ pub struct WantsToMove {
 
 pub fn movement(
     mut move_events: EventReader<WantsToMove>,
-    mut query: Query<(&mut Transform, &mut MapPosition)>,
+    mut query: Query<(&mut Transform, &mut MapPosition, Without<Camera2d>)>,
+    player_query: Query<Entity, With<Player>>,
+    mut camera_query: Query<&mut Transform, With<Camera2d>>,
     map_builder: Res<MapBuilder>,
 ) {
     for &WantsToMove {
@@ -29,9 +35,14 @@ pub fn movement(
     } in move_events.iter()
     {
         if map_builder.map.can_enter_tile(destination) {
-            let (mut transform, mut position) = query.get_mut(entity).unwrap();
+            let (mut transform, mut position, _) = query.get_mut(entity).unwrap();
             transform.translation = destination.translation(CHARACTER_Z);
             position.position = destination.position;
+
+            // If moving player also move camera
+            if entity == player_query.single() {
+                focus_camera(&mut camera_query, transform);
+            }
         }
     }
 }

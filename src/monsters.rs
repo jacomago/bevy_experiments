@@ -1,7 +1,7 @@
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
 use crate::stages::{end_turn, TurnState};
-use crate::systems::movement::movement;
+use crate::systems::movement::{movement, CHARACTER_Z};
 use crate::systems::movement::WantsToMove;
 use crate::GameState;
 use crate::{loading::TextureAtlasAssets, stages::GameStage};
@@ -11,7 +11,6 @@ use iyes_loopless::prelude::ConditionSet;
 use rand::{thread_rng, Rng};
 
 const MONSTER_SPRITE_INDEX: usize = 69;
-const MONSTERS_Z: f32 = 1.;
 
 pub struct MonstersPlugin;
 
@@ -59,7 +58,7 @@ fn spawn_monsters(
             position,
             sprite: SpriteSheetBundle {
                 transform: Transform {
-                    translation: position.translation(MONSTERS_Z),
+                    translation: position.translation(CHARACTER_Z),
                     ..default()
                 },
                 texture_atlas: textures.texture_atlas.clone(),

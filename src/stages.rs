@@ -3,8 +3,9 @@ use bevy::prelude::*;
 #[derive(Debug, Clone, Eq, PartialEq, Hash, StageLabel)]
 pub enum GameStage {
     MovePlayer,
+    GenerateMonsterMoves,
     MoveMonsters,
-    MonsterCollisions,
+    Collisions,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default)]
@@ -26,12 +27,17 @@ impl Plugin for StagePlugin {
         )
         .add_stage_after(
             GameStage::MovePlayer,
-            GameStage::MoveMonsters,
+            GameStage::Collisions,
             SystemStage::parallel(),
         )
         .add_stage_after(
+            GameStage::Collisions,
+            GameStage::GenerateMonsterMoves,
+            SystemStage::parallel(),
+        )
+        .add_stage_after(
+            GameStage::GenerateMonsterMoves,
             GameStage::MoveMonsters,
-            GameStage::MonsterCollisions,
             SystemStage::parallel(),
         )
         .init_resource::<TurnState>();

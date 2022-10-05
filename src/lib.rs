@@ -21,6 +21,7 @@ use bevy::prelude::*;
 use map::tile_map::MapPlugin;
 use monsters::MonstersPlugin;
 use stages::StagePlugin;
+use systems::SystemsPlugin;
 
 pub const TILE_SIZE: i32 = 32;
 
@@ -47,6 +48,7 @@ impl Plugin for GamePlugin {
             .add_plugin(ActionsPlugin)
             .add_plugin(InternalAudioPlugin)
             .add_plugin(StagePlugin)
+            .add_plugin(SystemsPlugin)
             .add_plugin(MapPlugin)
             .add_plugin(MonstersPlugin)
             .add_plugin(PlayerPlugin);

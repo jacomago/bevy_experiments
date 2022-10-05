@@ -2,8 +2,8 @@ use crate::actions::Actions;
 use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
-use crate::stages::{end_turn, GameStage, TurnState};
-use crate::systems::collisions;
+use crate::stages::{GameStage, TurnState};
+use crate::systems::movement::{movement, WantsToMove};
 use crate::GameState;
 
 use bevy::prelude::*;
@@ -32,15 +32,14 @@ impl Plugin for PlayerPlugin {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_player))
             .add_system_set(
                 SystemSet::on_update(GameState::Playing)
-                    .with_system(move_player.run_if_resource_equals(TurnState::AwaitingInput))
-                    .with_system(focus_camera),
+                    .with_system(player_input.run_if_resource_equals(TurnState::AwaitingInput)),
             )
             .add_system_set_to_stage(
                 GameStage::MovePlayer,
                 ConditionSet::new()
                     .run_if_resource_equals(TurnState::PlayerTurn)
-                    .with_system(collisions::collisions)
-                    .with_system(end_turn)
+                    .with_system(movement)
+                    .with_system(focus_camera)
                     .into(),
             );
     }
@@ -70,26 +69,23 @@ fn spawn_player(
     });
 }
 
-fn move_player(
+fn player_input(
     mut commands: Commands,
     actions: Res<Actions>,
-    map_builder: Res<MapBuilder>,
-    mut player_query: Query<(&mut Transform, &mut MapPosition, With<Player>)>,
+    mut move_events: EventWriter<WantsToMove>,
+    player_query: Query<(Entity, &MapPosition, With<Player>)>,
 ) {
     if actions.player_movement.is_none() {
         return;
     }
     let movement = actions.player_movement.unwrap().as_ivec2();
-    let (mut transform, mut position, _) = player_query.single_mut();
+    let (entity, position, _) = player_query.single();
     let new_position = MapPosition::from_ivec2(position.position + movement);
-    if map_builder.map.can_enter_tile(new_position) {
-        transform.translation = new_position.translation(PLAYER_Z);
-        info!(
-            "Player moved to {} from {}",
-            position.position, new_position.position
-        );
-        position.position = new_position.position;
-    }
+
+    move_events.send(WantsToMove {
+        entity,
+        destination: new_position,
+    });
 
     commands.insert_resource(TurnState::PlayerTurn);
 }

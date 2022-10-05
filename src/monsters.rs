@@ -1,10 +1,12 @@
-use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
-use crate::player::Player;
+use crate::stages::{TurnState, end_turn};
+use crate::systems::collisions;
 use crate::GameState;
+use crate::{loading::TextureAtlasAssets, stages::GameStage};
 
 use bevy::{math::ivec2, prelude::*};
+use iyes_loopless::prelude::ConditionSet;
 use rand::{thread_rng, Rng};
 
 const MONSTER_SPRITE_INDEX: usize = 69;
@@ -17,10 +19,20 @@ pub struct MonstersPlugin;
 impl Plugin for MonstersPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_monsters))
-            .add_system_set(
-                SystemSet::on_update(GameState::Playing)
-                    .with_system(collisions)
-                    .with_system(random_move),
+            .add_system_set_to_stage(
+                GameStage::MoveMonsters,
+                ConditionSet::new()
+                    .run_if_resource_equals(TurnState::MonsterTurn)
+                    .with_system(random_move)
+                    .into(),
+            )
+            .add_system_set_to_stage(
+                GameStage::MonsterCollisions,
+                ConditionSet::new()
+                    .run_if_resource_equals(TurnState::MonsterTurn)
+                    .with_system(collisions::collisions)
+                    .with_system(end_turn)
+                    .into(),
             );
     }
 }
@@ -33,18 +45,6 @@ pub struct MonsterBundle {
     pub position: MapPosition,
     #[bundle]
     sprite: SpriteSheetBundle,
-}
-
-pub fn collisions(
-    mut commands: Commands,
-    monsters: Query<(Entity, &MapPosition, With<Monster>)>,
-    player_position_query: Query<&MapPosition, With<Player>>,
-) {
-    let player_position = player_position_query.single();
-    monsters
-        .iter()
-        .filter(|(_, p, _)| *p == player_position)
-        .for_each(|(e, _, _)| commands.entity(e).despawn_recursive());
 }
 
 fn spawn_monsters(

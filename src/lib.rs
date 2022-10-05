@@ -5,6 +5,8 @@ mod map;
 mod menu;
 mod monsters;
 mod player;
+mod stages;
+mod systems;
 
 use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;
@@ -14,10 +16,11 @@ use crate::player::PlayerPlugin;
 
 use bevy::app::App;
 #[cfg(debug_assertions)]
-use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+use bevy::diagnostic::{LogDiagnosticsPlugin};
 use bevy::prelude::*;
 use map::tile_map::MapPlugin;
 use monsters::MonstersPlugin;
+use stages::StagePlugin;
 
 pub const TILE_SIZE: i32 = 32;
 
@@ -43,14 +46,14 @@ impl Plugin for GamePlugin {
             .add_plugin(MenuPlugin)
             .add_plugin(ActionsPlugin)
             .add_plugin(InternalAudioPlugin)
+            .add_plugin(StagePlugin)
             .add_plugin(MapPlugin)
             .add_plugin(MonstersPlugin)
             .add_plugin(PlayerPlugin);
 
         #[cfg(debug_assertions)]
         {
-            app.add_plugin(FrameTimeDiagnosticsPlugin::default())
-                .add_plugin(LogDiagnosticsPlugin::default());
+            app.add_plugin(LogDiagnosticsPlugin::default());
         }
     }
 }

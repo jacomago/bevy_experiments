@@ -18,49 +18,50 @@ pub struct Actions {
     pub player_movement: Option<Vec2>,
 }
 
-fn set_movement_actions(mut actions: ResMut<Actions>, keyboard_input: Res<Input<KeyCode>>) {
-    if GameControl::Up.just_released(&keyboard_input)
-        || GameControl::Up.pressed(&keyboard_input)
-        || GameControl::Left.just_released(&keyboard_input)
-        || GameControl::Left.pressed(&keyboard_input)
-        || GameControl::Down.just_released(&keyboard_input)
-        || GameControl::Down.pressed(&keyboard_input)
-        || GameControl::Right.just_released(&keyboard_input)
-        || GameControl::Right.pressed(&keyboard_input)
+fn set_movement_actions(mut actions: ResMut<Actions>, mut mut_keyboard_input: ResMut<Input<KeyCode>>) {
+    let keyboard_input = mut_keyboard_input.as_ref();
+    if GameControl::Up.just_released(keyboard_input)
+        || GameControl::Up.just_pressed(keyboard_input)
+        || GameControl::Left.just_released(keyboard_input)
+        || GameControl::Left.just_pressed(keyboard_input)
+        || GameControl::Down.just_released(keyboard_input)
+        || GameControl::Down.just_pressed(keyboard_input)
+        || GameControl::Right.just_released(keyboard_input)
+        || GameControl::Right.just_pressed(keyboard_input)
     {
         let mut player_movement = Vec2::ZERO;
 
-        if GameControl::Up.just_released(&keyboard_input)
-            || GameControl::Down.just_released(&keyboard_input)
+        if GameControl::Up.just_released(keyboard_input)
+            || GameControl::Down.just_released(keyboard_input)
         {
-            if GameControl::Up.pressed(&keyboard_input) {
+            if GameControl::Up.pressed(keyboard_input) {
                 player_movement.y = 1.;
-            } else if GameControl::Down.pressed(&keyboard_input) {
+            } else if GameControl::Down.pressed(keyboard_input) {
                 player_movement.y = -1.;
             } else {
                 player_movement.y = 0.;
             }
-        } else if GameControl::Up.just_pressed(&keyboard_input) {
+        } else if GameControl::Up.just_pressed(keyboard_input) {
             player_movement.y = 1.;
-        } else if GameControl::Down.just_pressed(&keyboard_input) {
+        } else if GameControl::Down.just_pressed(keyboard_input) {
             player_movement.y = -1.;
         } else {
             player_movement.y = actions.player_movement.unwrap_or(Vec2::ZERO).y;
         }
 
-        if GameControl::Right.just_released(&keyboard_input)
-            || GameControl::Left.just_released(&keyboard_input)
+        if GameControl::Right.just_released(keyboard_input)
+            || GameControl::Left.just_released(keyboard_input)
         {
-            if GameControl::Right.pressed(&keyboard_input) {
+            if GameControl::Right.pressed(keyboard_input) {
                 player_movement.x = 1.;
-            } else if GameControl::Left.pressed(&keyboard_input) {
+            } else if GameControl::Left.pressed(keyboard_input) {
                 player_movement.x = -1.;
             } else {
                 player_movement.x = 0.;
             }
-        } else if GameControl::Right.just_pressed(&keyboard_input) {
+        } else if GameControl::Right.just_pressed(keyboard_input) {
             player_movement.x = 1.;
-        } else if GameControl::Left.just_pressed(&keyboard_input) {
+        } else if GameControl::Left.just_pressed(keyboard_input) {
             player_movement.x = -1.;
         } else {
             player_movement.x = actions.player_movement.unwrap_or(Vec2::ZERO).x;
@@ -68,7 +69,9 @@ fn set_movement_actions(mut actions: ResMut<Actions>, keyboard_input: Res<Input<
 
         if player_movement != Vec2::ZERO {
             player_movement = player_movement.normalize();
+            info!("Keyboard input made player movement: {}", player_movement);
             actions.player_movement = Some(player_movement);
+            mut_keyboard_input.clear();
         }
     } else {
         actions.player_movement = None;
@@ -83,7 +86,7 @@ enum GameControl {
 }
 
 impl GameControl {
-    fn just_released(&self, keyboard_input: &Res<Input<KeyCode>>) -> bool {
+    fn just_released(&self, keyboard_input: &Input<KeyCode>) -> bool {
         match self {
             GameControl::Up => {
                 keyboard_input.just_released(KeyCode::W)
@@ -104,7 +107,7 @@ impl GameControl {
         }
     }
 
-    fn pressed(&self, keyboard_input: &Res<Input<KeyCode>>) -> bool {
+    fn pressed(&self, keyboard_input: &Input<KeyCode>) -> bool {
         match self {
             GameControl::Up => {
                 keyboard_input.pressed(KeyCode::W) || keyboard_input.pressed(KeyCode::Up)
@@ -121,7 +124,7 @@ impl GameControl {
         }
     }
 
-    fn just_pressed(&self, keyboard_input: &Res<Input<KeyCode>>) -> bool {
+    fn just_pressed(&self, keyboard_input: &Input<KeyCode>) -> bool {
         match self {
             GameControl::Up => {
                 keyboard_input.just_pressed(KeyCode::W) || keyboard_input.just_pressed(KeyCode::Up)

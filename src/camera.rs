@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{GameState, map::map_builder::MapBuilder, systems::movement::CHARACTER_Z};
+use crate::{map::map_builder::MapBuilder, systems::movement::CHARACTER_Z, GameState};
 
 pub struct CameraPlugin;
 

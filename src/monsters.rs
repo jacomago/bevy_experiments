@@ -1,8 +1,8 @@
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
 use crate::stages::{end_turn, TurnState};
-use crate::systems::movement::{movement, CHARACTER_Z};
 use crate::systems::movement::WantsToMove;
+use crate::systems::movement::{movement, CHARACTER_Z};
 use crate::GameState;
 use crate::{loading::TextureAtlasAssets, stages::GameStage};
 

@@ -5,7 +5,7 @@ use crate::{
     map::map_position::MapPosition,
     monsters::Monster,
     player::Player,
-    stages::{GameStage, TurnState, end_turn},
+    stages::{end_turn, GameStage, TurnState},
 };
 
 pub struct CollisionsPlugin;

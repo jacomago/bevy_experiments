@@ -18,7 +18,10 @@ pub struct Actions {
     pub player_movement: Option<Vec2>,
 }
 
-fn set_movement_actions(mut actions: ResMut<Actions>, mut mut_keyboard_input: ResMut<Input<KeyCode>>) {
+fn set_movement_actions(
+    mut actions: ResMut<Actions>,
+    mut mut_keyboard_input: ResMut<Input<KeyCode>>,
+) {
     let keyboard_input = mut_keyboard_input.as_ref();
     if GameControl::Up.just_released(keyboard_input)
         || GameControl::Up.just_pressed(keyboard_input)

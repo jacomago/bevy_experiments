@@ -5,7 +5,7 @@ use ndarray::{Array, Ix2};
 
 use crate::{loading::TextureAtlasAssets, GameState};
 
-use super::{map_builder::MapBuilder, map_position::MapPosition};
+use super::{map_builder::{MapBuilder, insert_mapbuilder}, map_position::MapPosition};
 
 const MAP_Z: f32 = 0.0;
 const WALL_SPRITE_INDEX: usize = 35;
@@ -15,20 +15,19 @@ pub struct MapPlugin;
 
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
-        let map_builder = MapBuilder::new();
-        app.insert_resource(map_builder)
+        app.add_system_set(SystemSet::on_enter(GameState::Loading).with_system(insert_mapbuilder))
             .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_map));
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Default)]
+#[derive(Copy, Clone, PartialEq, Eq, Default, Debug)]
 pub enum TileType {
     Wall,
     #[default]
     Floor,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct TileMap {
     pub tiles: Array<TileType, Ix2>,
 }

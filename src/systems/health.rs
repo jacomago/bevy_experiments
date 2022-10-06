@@ -15,10 +15,3 @@ pub struct Health {
     pub current: i32,
     pub max: i32,
 }
-
-fn health(
-    mut commands: Commands,
-    monsters: Query<(Entity, &MapPosition, With<Monster>)>,
-    player_position_query: Query<&MapPosition, With<Player>>,
-) {
-}

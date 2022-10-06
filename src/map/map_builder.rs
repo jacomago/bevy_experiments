@@ -1,18 +1,20 @@
 use bevy::prelude::*;
 
+use bevy_turborand::rng::{Rng, TurboRand};
+use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use nannou_core::prelude::Rect;
-use rand::thread_rng;
-use rand::{rngs::ThreadRng, Rng};
 
 use super::map_position::MapPosition;
 use super::tile_map::{in_bounds, TileMap, TileType, MAP_HEIGHT, MAP_WIDTH};
 
 const NUM_ROOMS: usize = 20;
 
+#[derive(Debug, Default)]
 pub struct MapBuilder {
     pub map: TileMap,
     pub rooms: Vec<Rect>,
     pub player_start: MapPosition,
+    pub rng: RngComponent,
 }
 
 enum Direction {
@@ -20,18 +22,22 @@ enum Direction {
     Vertical,
 }
 
+pub fn insert_mapbuilder(mut commands: Commands, mut rng: ResMut<GlobalRng>) {
+    commands.insert_resource(MapBuilder::new(RngComponent::from(&mut rng)));
+}
+
 impl MapBuilder {
-    pub fn new() -> Self {
-        let mut rng = thread_rng();
+    pub fn new(mut rng: RngComponent) -> Self {
         let mut mb = MapBuilder {
             map: TileMap::new(),
             rooms: Vec::new(),
-            player_start: MapPosition::default(),
+            player_start: MapPosition::default(),..default()
         };
         mb.fill(TileType::Wall);
-        mb.build_random_rooms(&mut rng);
+        mb.build_random_rooms(rng.get_mut());
         mb.build_corridors(&mut rng);
         mb.player_start = MapPosition::new(mb.rooms[0].x() as i32, mb.rooms[0].y() as i32);
+        mb.rng = rng;
         mb
     }
 
@@ -39,13 +45,13 @@ impl MapBuilder {
         self.map.tiles.iter_mut().for_each(|t| *t = tile);
     }
 
-    fn build_random_rooms(&mut self, rng: &mut ThreadRng) {
+    fn build_random_rooms(&mut self, rng: &mut Rng) {
         while NUM_ROOMS > self.rooms.len() {
             let room = Rect::from_x_y_w_h(
-                rng.gen_range(1..MAP_WIDTH) as f32,
-                rng.gen_range(1..MAP_HEIGHT) as f32,
-                rng.gen_range(2..10) as f32,
-                rng.gen_range(2..10) as f32,
+                rng.usize(1..MAP_WIDTH) as f32,
+                rng.usize(1..MAP_HEIGHT) as f32,
+                rng.usize(2..10) as f32,
+                rng.usize(2..10) as f32,
             );
             let mut overlap = false;
             for r in &self.rooms {
@@ -85,14 +91,14 @@ impl MapBuilder {
         }
     }
 
-    fn build_corridors(&mut self, rng: &mut ThreadRng) {
+    fn build_corridors(&mut self, rng: &mut RngComponent) {
         let mut rooms = self.rooms.clone();
         rooms.sort_by(|a, b| (a.xy().x as i32).cmp(&(b.xy().x as i32)));
         for (i, room) in rooms.iter().enumerate().skip(1) {
             let prev = rooms[i - 1].xy();
             let new = room.xy();
 
-            if rng.gen_range(0..2) == 1 {
+            if rng.usize(0..2) == 1 {
                 self.apply_tunnel(
                     prev.x as usize,
                     new.x as usize,

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
-use crate::TILE_SIZE;
 
+pub const TILE_SIZE: i32 = 32;
 #[derive(Component, Default, PartialEq, Eq, Clone, Copy, Debug)]
 pub struct MapPosition {
     pub position: IVec2,

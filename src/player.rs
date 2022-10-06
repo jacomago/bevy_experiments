@@ -3,6 +3,7 @@ use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
 use crate::stages::{GameStage, TurnState};
+use crate::systems::health::Health;
 use crate::systems::movement::{movement, WantsToMove, CHARACTER_Z};
 use crate::GameState;
 
@@ -20,6 +21,7 @@ pub struct Player;
 pub struct PlayerBundle {
     _player: Player,
     pub position: MapPosition,
+    pub health: Health,
     #[bundle]
     sprite: SpriteSheetBundle,
 }
@@ -31,7 +33,8 @@ impl Plugin for PlayerPlugin {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_player))
             .add_system_set(
                 SystemSet::on_update(GameState::Playing)
-                    .with_system(player_input.run_if_resource_equals(TurnState::AwaitingInput)),
+                    .with_system(player_input.run_if_resource_equals(TurnState::AwaitingInput))
+                    .with_system(player_health),
             )
             .add_system_set_to_stage(
                 GameStage::MovePlayer,
@@ -51,6 +54,10 @@ fn spawn_player(
     let player_start = map_builder.player_start;
     commands.spawn_bundle(PlayerBundle {
         position: player_start,
+        health: Health {
+            current: 19,
+            max: 20,
+        },
         sprite: SpriteSheetBundle {
             transform: Transform {
                 translation: player_start.translation(CHARACTER_Z),
@@ -85,4 +92,12 @@ fn player_input(
         destination: new_position,
     });
     commands.insert_resource(TurnState::PlayerTurn);
+}
+
+fn player_health(
+    mut health_events: EventWriter<Health>,
+    mut player_query: Query<(&mut Health, With<Player>)>,
+) {
+    let (current_health, _) = player_query.single();
+    health_events.send(*current_health);
 }

@@ -1,8 +1,21 @@
+//! Cake Addict is a rogue like game made in bevy. Inspired by
+//! the health industry.
+
 // #![warn(clippy::pedantic)] // turn on for extra hints
+
+#![deny(
+    missing_docs,
+    trivial_casts,
+    trivial_numeric_casts,
+    unused_extern_crates,
+    unused_import_braces,
+    variant_size_differences
+)]
 
 mod actions;
 mod audio;
 mod camera;
+mod hud;
 mod loading;
 mod map;
 mod menu;
@@ -22,14 +35,13 @@ use bevy::app::App;
 use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::prelude::*;
 use camera::CameraPlugin;
+use hud::HUDPlugin;
 use map::tile_map::MapPlugin;
 use monsters::MonstersPlugin;
 use stages::StagePlugin;
 use systems::SystemsPlugin;
 
-pub const TILE_SIZE: i32 = 32;
-
-// This example game uses States to separate logic
+// This game uses States to separate logic
 // See https://bevy-cheatbook.github.io/programming/states.html
 // Or https://github.com/bevyengine/bevy/blob/main/examples/ecs/state.rs
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
@@ -42,6 +54,7 @@ enum GameState {
     Menu,
 }
 
+/// Main plugin for the games internals
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
@@ -53,6 +66,7 @@ impl Plugin for GamePlugin {
             .add_plugin(InternalAudioPlugin)
             .add_plugin(StagePlugin)
             .add_plugin(SystemsPlugin)
+            .add_plugin(HUDPlugin)
             .add_plugin(CameraPlugin)
             .add_plugin(MapPlugin)
             .add_plugin(MonstersPlugin)

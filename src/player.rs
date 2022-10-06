@@ -96,7 +96,7 @@ fn player_input(
 
 fn player_health(
     mut health_events: EventWriter<Health>,
-    mut player_query: Query<(&mut Health, With<Player>)>,
+    player_query: Query<(&mut Health, With<Player>)>,
 ) {
     let (current_health, _) = player_query.single();
     health_events.send(*current_health);

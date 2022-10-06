@@ -40,6 +40,7 @@ fn setup_hud(mut commands: Commands, font: Res<FontAssets>) {
                     color: UiColor(Color::rgba(0.0, 0.65, 0.0, 0.5)),
                     ..default()
                 })
+                .insert(HealthBar)
                 .with_children(|parent| {
                     parent
                         .spawn_bundle(TextBundle {
@@ -64,12 +65,25 @@ fn setup_hud(mut commands: Commands, font: Res<FontAssets>) {
 #[derive(Component)]
 struct HealthText;
 
+#[derive(Component)]
+struct HealthBar;
+
+fn calc_health_percentage(health: Health) -> f32 {
+    (100 * health.current / health.max) as f32
+}
+
 fn update_hud(
     mut health_change_event: EventReader<Health>,
-    mut query: Query<(&mut Text, With<HealthText>)>,
+    mut text_query: Query<(&mut Text, With<HealthText>)>,
+    mut bar_query: Query<(&mut Style, With<HealthBar>)>,
 ) {
-    let (mut text, _) = query.single_mut();
+    let (mut text, _) = text_query.single_mut();
+    let (mut bar_style, _) = bar_query.single_mut();
     for health_change in health_change_event.iter() {
         text.sections[0].value = format!("Health: {}", health_change.current);
+        bar_style.size = Size::new(
+            Val::Percent(calc_health_percentage(*health_change)),
+            Val::Px(10.),
+        );
     }
 }

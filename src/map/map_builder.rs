@@ -31,7 +31,8 @@ impl MapBuilder {
         let mut mb = MapBuilder {
             map: TileMap::new(),
             rooms: Vec::new(),
-            player_start: MapPosition::default(),..default()
+            player_start: MapPosition::default(),
+            ..default()
         };
         mb.fill(TileType::Wall);
         mb.build_random_rooms(rng.get_mut());

@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 
-
 pub const TILE_SIZE: i32 = 32;
 #[derive(Component, Default, PartialEq, Eq, Clone, Copy, Debug)]
 pub struct MapPosition {

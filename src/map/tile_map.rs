@@ -5,7 +5,10 @@ use ndarray::{Array, Ix2};
 
 use crate::{loading::TextureAtlasAssets, GameState};
 
-use super::{map_builder::{MapBuilder, insert_mapbuilder}, map_position::MapPosition};
+use super::{
+    map_builder::{insert_mapbuilder, MapBuilder},
+    map_position::MapPosition,
+};
 
 const MAP_Z: f32 = 0.0;
 const WALL_SPRITE_INDEX: usize = 35;

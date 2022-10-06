@@ -9,13 +9,13 @@ use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
 use crate::stages::{end_turn, TurnState};
 use crate::systems::health::Health;
-use crate::systems::movement::WantsToMove;
-use crate::systems::movement::{movement, CHARACTER_Z};
+use crate::systems::movement::RandomMover;
+use crate::systems::movement::{movement, random_move, CHARACTER_Z};
 use crate::systems::name::CharacterName;
 use crate::GameState;
 use crate::{loading::TextureAtlasAssets, stages::GameStage};
 
-use bevy::{math::ivec2, prelude::*};
+use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use iyes_loopless::prelude::ConditionSet;
 
@@ -52,7 +52,7 @@ pub struct MonsterBundle {
     pub name: CharacterName,
     pub position: MapPosition,
     pub health: Health,
-    pub rng: RngComponent,
+    pub random_mover: RandomMover,
     #[bundle]
     sprite: SpriteSheetBundle,
 }
@@ -127,7 +127,7 @@ fn spawn_monster(
             current: config.health,
             max: config.health,
         },
-        rng,
+        random_mover: RandomMover { rng },
         sprite: SpriteSheetBundle {
             transform: Transform {
                 translation: position.translation(CHARACTER_Z),
@@ -142,25 +142,5 @@ fn spawn_monster(
             ..default()
         },
         ..default()
-    });
-}
-
-fn random_move(
-    mut monsters: Query<(Entity, &mut RngComponent, &MapPosition, With<Monster>)>,
-    mut move_events: EventWriter<WantsToMove>,
-) {
-    monsters.iter_mut().for_each(|(entity, mut rng, p, _)| {
-        let destination = MapPosition::from_ivec2(
-            match rng.usize(0..4) {
-                0 => ivec2(-1, 0),
-                1 => ivec2(1, 0),
-                2 => ivec2(0, -1),
-                _ => ivec2(0, 1),
-            } + p.position,
-        );
-        move_events.send(WantsToMove {
-            entity,
-            destination,
-        });
     });
 }

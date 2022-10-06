@@ -1,4 +1,5 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, math::ivec2};
+use bevy_turborand::{RngComponent, DelegatedRng};
 
 use crate::{
     camera::focus_camera,
@@ -14,6 +15,31 @@ impl Plugin for MovementPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<WantsToMove>();
     }
+}
+
+#[derive(Component, Default)]
+pub struct RandomMover{
+    pub rng: RngComponent,
+}
+
+pub fn random_move(
+    mut monsters: Query<(Entity, &mut RandomMover, &MapPosition)>,
+    mut move_events: EventWriter<WantsToMove>,
+) {
+    monsters.iter_mut().for_each(|(entity, mut rng, p)| {
+        let destination = MapPosition::from_ivec2(
+            match rng.rng.usize(0..4) {
+                0 => ivec2(-1, 0),
+                1 => ivec2(1, 0),
+                2 => ivec2(0, -1),
+                _ => ivec2(0, 1),
+            } + p.position,
+        );
+        move_events.send(WantsToMove {
+            entity,
+            destination,
+        });
+    });
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

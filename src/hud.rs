@@ -13,36 +13,51 @@ impl Plugin for HUDPlugin {
 
 fn setup_hud(mut commands: Commands, font: Res<FontAssets>) {
     let health = 20.0;
+    let health_percentage = 100.0;
     commands
         .spawn_bundle(NodeBundle {
             style: Style {
+                size: Size::new(Val::Percent(100.0), Val::Px(10.)),
                 position: UiRect {
-                    left: Val::Px(10.),
-                    right: Val::Px(10.),
+                    left: Val::Px(0.),
+                    right: Val::Px(0.),
                     ..default()
                 },
                 ..default()
             },
-            color: UiColor(Color::NONE),
+            color: UiColor(Color::rgba(0.65, 0.65, 0.65, 0.5)),
             ..default()
         })
         .with_children(|parent| {
             parent
-                .spawn_bundle(TextBundle {
-                    text: Text {
-                        sections: vec![TextSection {
-                            value: format!("Health: {}", health),
-                            style: TextStyle {
-                                font_size: 40.0,
-                                color: Color::rgb(0.6, 0.6, 0.6),
-                                font: font.fira_sans.clone(),
-                            },
-                        }],
-                        alignment: default(),
+                .spawn_bundle(NodeBundle {
+                    style: Style {
+                        size: Size::new(Val::Percent(health_percentage), Val::Px(10.)),
+                        align_items: AlignItems::Center,
+                        justify_content: JustifyContent::Center,
+                        ..default()
                     },
+                    color: UiColor(Color::rgba(0.0, 0.65, 0.0, 0.5)),
                     ..default()
                 })
-                .insert(HealthText);
+                .with_children(|parent| {
+                    parent
+                        .spawn_bundle(TextBundle {
+                            text: Text {
+                                sections: vec![TextSection {
+                                    value: format!("Health: {}", health),
+                                    style: TextStyle {
+                                        font_size: 10.0,
+                                        color: Color::rgb(0.9, 0.9, 0.9),
+                                        font: font.fira_sans.clone(),
+                                    },
+                                }],
+                                alignment: TextAlignment::CENTER,
+                            },
+                            ..default()
+                        })
+                        .insert(HealthText);
+                });
         });
 }
 

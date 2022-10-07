@@ -34,12 +34,13 @@ use bevy::app::App;
 #[cfg(debug_assertions)]
 use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::prelude::*;
+use bevy_inspector_egui::WorldInspectorPlugin;
 use camera::CameraPlugin;
+use game_ui::GameUiPlugin;
 use map::tile_map::MapPlugin;
 use monsters::MonstersPlugin;
 use stages::StagePlugin;
 use systems::SystemsPlugin;
-use game_ui::GameUiPlugin;
 
 // This game uses States to separate logic
 // See https://bevy-cheatbook.github.io/programming/states.html
@@ -74,7 +75,8 @@ impl Plugin for GamePlugin {
 
         #[cfg(debug_assertions)]
         {
-            app.add_plugin(LogDiagnosticsPlugin::default());
+            app.add_plugin(LogDiagnosticsPlugin::default())
+                .add_plugin(WorldInspectorPlugin::new());
         }
     }
 }

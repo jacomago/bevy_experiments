@@ -1,11 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{
-    actions::Actions,
-    loading::FontAssets,
-    map::map_position::{MapPosition, TILE_SIZE},
-    GameState,
-};
+use crate::{actions::Actions, loading::FontAssets, map::map_position::TILE_SIZE, GameState};
 
 pub struct TooltipPlugin;
 
@@ -80,12 +75,12 @@ fn spawn_tooltip(mut commands: Commands, font: Res<FontAssets>) {
                 ..default()
             },
             color: UiColor(Color::rgba(0.65, 0.65, 0.65, 0.5)),
-            visibility: Visibility { is_visible: false },
             ..default()
         })
         .with_children(|parent| {
             parent
                 .spawn_bundle(TextBundle {
+                    visibility: Visibility { is_visible: false },
                     text: Text {
                         sections: vec![TextSection {
                             value: "".to_string(),

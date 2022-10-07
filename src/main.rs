@@ -5,7 +5,6 @@ use bevy::prelude::{App, ClearColor, Color, Msaa, NonSend, WindowDescriptor};
 use bevy::window::WindowId;
 use bevy::winit::WinitWindows;
 use bevy::DefaultPlugins;
-use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_turborand::RngPlugin;
 use cake_addict::GamePlugin;
 use std::io::Cursor;
@@ -27,7 +26,6 @@ fn main() {
         })
         .add_plugins(DefaultPlugins)
         .add_plugin(RngPlugin::default())
-        .add_plugin(WorldInspectorPlugin::new())
         .add_plugin(GamePlugin)
         .add_startup_system(set_window_icon)
         .run();

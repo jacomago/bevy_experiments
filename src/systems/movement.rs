@@ -1,5 +1,5 @@
-use bevy::{prelude::*, math::ivec2};
-use bevy_turborand::{RngComponent, DelegatedRng};
+use bevy::{math::ivec2, prelude::*};
+use bevy_turborand::{DelegatedRng, RngComponent};
 
 use crate::{
     camera::focus_camera,
@@ -18,7 +18,7 @@ impl Plugin for MovementPlugin {
 }
 
 #[derive(Component, Default)]
-pub struct RandomMover{
+pub struct RandomMover {
     pub rng: RngComponent,
 }
 

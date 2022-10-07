@@ -123,11 +123,14 @@ fn spawn_monster(
         _ => supplement_pusher(),
     };
     commands.spawn_bundle(MonsterBundle {
-        name: CharacterName(config.name),
+        name: CharacterName(config.name.clone()),
         position,
         health: Health {
             current: config.health,
             max: config.health,
+        },
+        interactive: Interactive {
+            text: format!("{} hp:{}", &config.name, config.health)
         },
         random_mover: RandomMover { rng },
         sprite: SpriteSheetBundle {

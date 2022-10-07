@@ -1,6 +1,11 @@
 use bevy::prelude::*;
 
-use crate::{actions::Actions, loading::FontAssets, map::map_position::MapPosition, GameState};
+use crate::{
+    actions::Actions,
+    loading::FontAssets,
+    map::map_position::{MapPosition, TILE_SIZE},
+    GameState,
+};
 
 pub struct TooltipPlugin;
 
@@ -16,14 +21,15 @@ impl Plugin for TooltipPlugin {
     }
 }
 
-#[derive(Component, Default)]
+#[derive(Component, Default, Debug)]
 pub struct Interactive {
-    text: String,
+    pub text: String,
 }
 
 #[derive(Component)]
 struct ToolTip;
 
+#[derive(Debug)]
 struct ToolTipInfo {
     text: Option<String>,
     position: Option<Vec2>,
@@ -31,7 +37,7 @@ struct ToolTipInfo {
 
 fn mouse_rollover(
     actions: Res<Actions>,
-    interactives: Query<(&MapPosition, &Interactive)>,
+    interactives: Query<(&Transform, &Interactive)>,
     mut tooltip_event: EventWriter<ToolTipInfo>,
 ) {
     if actions.mouse_rollover.is_none() {
@@ -39,8 +45,12 @@ fn mouse_rollover(
     }
     let mut overlap = false;
     let mouse_position = actions.mouse_rollover.as_ref().unwrap();
-    for (map_position, interactive) in interactives.iter() {
-        if map_position.overlaps(mouse_position.game_position) {
+    for (transform, interactive) in interactives.iter() {
+        if transform
+            .translation
+            .truncate()
+            .abs_diff_eq(mouse_position.game_position, TILE_SIZE as f32 / 2.0)
+        {
             tooltip_event.send(ToolTipInfo {
                 text: Some(interactive.text.clone()),
                 position: Some(mouse_position.screen_position),

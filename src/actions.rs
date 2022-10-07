@@ -62,7 +62,6 @@ fn cursor_system(
         // reduce it to a 2D value
         let world_pos: Vec2 = world_pos.truncate();
 
-        dbg!(world_pos);
         actions.mouse_rollover = Some(MousePosition {
             game_position: world_pos,
             screen_position: screen_pos,

@@ -24,4 +24,15 @@ impl MapPosition {
     pub fn from_ivec2(position: IVec2) -> Self {
         Self { position }
     }
+
+    fn from_vec2(position: Vec2) -> Self {
+        Self::new(position.x as i32, position.y as i32)
+    }
+
+    pub fn overlaps(&self, other: Vec2) -> bool {
+        if *self == Self::from_vec2(other) {
+            return true;
+        }
+        false
+    }
 }

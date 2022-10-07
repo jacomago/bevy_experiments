@@ -5,6 +5,7 @@
 //! - Gym Bro
 //! - Supplement Pusher
 
+use crate::game_ui::tooltip::Interactive;
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
 use crate::stages::{end_turn, TurnState};
@@ -51,6 +52,7 @@ pub struct MonsterBundle {
     _m: Monster,
     pub name: CharacterName,
     pub position: MapPosition,
+    pub interactive: Interactive,
     pub health: Health,
     pub random_mover: RandomMover,
     #[bundle]

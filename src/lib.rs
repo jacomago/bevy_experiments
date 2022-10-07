@@ -15,7 +15,7 @@
 mod actions;
 mod audio;
 mod camera;
-mod hud;
+mod game_ui;
 mod loading;
 mod map;
 mod menu;
@@ -35,11 +35,11 @@ use bevy::app::App;
 use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::prelude::*;
 use camera::CameraPlugin;
-use hud::HUDPlugin;
 use map::tile_map::MapPlugin;
 use monsters::MonstersPlugin;
 use stages::StagePlugin;
 use systems::SystemsPlugin;
+use game_ui::GameUiPlugin;
 
 // This game uses States to separate logic
 // See https://bevy-cheatbook.github.io/programming/states.html
@@ -66,7 +66,7 @@ impl Plugin for GamePlugin {
             .add_plugin(InternalAudioPlugin)
             .add_plugin(StagePlugin)
             .add_plugin(SystemsPlugin)
-            .add_plugin(HUDPlugin)
+            .add_plugin(GameUiPlugin)
             .add_plugin(CameraPlugin)
             .add_plugin(MapPlugin)
             .add_plugin(MonstersPlugin)

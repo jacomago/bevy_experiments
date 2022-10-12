@@ -1,35 +1,15 @@
-use bevy::prelude::*;
-use iyes_loopless::prelude::ConditionSet;
-
-use crate::stages::{end_turn, GameStage, TurnState};
-
 use super::health::Health;
+use bevy::prelude::*;
 
 pub struct CombatPlugin;
 
 impl Plugin for CombatPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<WantsToAttack>()
-            .add_system_set_to_stage(
-                GameStage::PlayerCombat,
-                ConditionSet::new()
-                    .run_if_resource_equals(TurnState::PlayerTurn)
-                    .with_system(combat)
-                    .with_system(end_turn)
-                    .into(),
-            )
-            .add_system_set_to_stage(
-                GameStage::MonsterCombat,
-                ConditionSet::new()
-                    .run_if_resource_equals(TurnState::MonsterTurn)
-                    .with_system(combat)
-                    .with_system(end_turn)
-                    .into(),
-            );
+        app.add_event::<WantsToAttack>();
     }
 }
 
-fn combat(
+pub fn combat(
     mut commands: Commands,
     mut combat_events: EventReader<WantsToAttack>,
     mut healths: Query<&mut Health>,

@@ -23,27 +23,27 @@ impl Plugin for StagePlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.add_stage_after(
             CoreStage::Update,
-            GameStage::MovePlayer,
-            SystemStage::parallel(),
-        )
-        .add_stage_after(
-            GameStage::MovePlayer,
             GameStage::PlayerCombat,
             SystemStage::parallel(),
         )
         .add_stage_after(
             GameStage::PlayerCombat,
+            GameStage::MovePlayer,
+            SystemStage::parallel(),
+        )
+        .add_stage_after(
+            GameStage::MovePlayer,
             GameStage::GenerateMonsterMoves,
             SystemStage::parallel(),
         )
         .add_stage_after(
             GameStage::GenerateMonsterMoves,
-            GameStage::MoveMonsters,
-            SystemStage::parallel(),
-        )
-        .add_stage_after(
-            GameStage::MoveMonsters,
             GameStage::MonsterCombat,
+            SystemStage::parallel(),
+        )
+        .add_stage_after(
+            GameStage::MonsterCombat,
+            GameStage::MoveMonsters,
             SystemStage::parallel(),
         )
         .init_resource::<TurnState>();

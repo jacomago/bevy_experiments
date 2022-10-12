@@ -6,6 +6,7 @@ pub mod combat;
 pub mod health;
 pub mod movement;
 pub mod name;
+pub mod random_actor;
 
 pub struct SystemsPlugin;
 

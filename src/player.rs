@@ -3,8 +3,8 @@ use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
 use crate::monsters::Monster;
-use crate::stages::{GameStage, TurnState};
-use crate::systems::combat::WantsToAttack;
+use crate::stages::{end_turn, GameStage, TurnState};
+use crate::systems::combat::{combat, WantsToAttack};
 use crate::systems::health::Health;
 use crate::systems::movement::{movement, WantsToMove, CHARACTER_Z};
 use crate::GameState;
@@ -39,10 +39,18 @@ impl Plugin for PlayerPlugin {
                     .with_system(player_health),
             )
             .add_system_set_to_stage(
+                GameStage::PlayerCombat,
+                ConditionSet::new()
+                    .run_if_resource_equals(TurnState::PlayerTurn)
+                    .with_system(combat)
+                    .into(),
+            )
+            .add_system_set_to_stage(
                 GameStage::MovePlayer,
                 ConditionSet::new()
                     .run_if_resource_equals(TurnState::PlayerTurn)
                     .with_system(movement)
+                    .with_system(end_turn)
                     .into(),
             );
     }

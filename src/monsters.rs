@@ -8,11 +8,12 @@
 use crate::game_ui::tooltip::Interactive;
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
-use crate::stages::TurnState;
+use crate::stages::{end_turn, TurnState};
+use crate::systems::combat::combat;
 use crate::systems::health::Health;
-use crate::systems::movement::RandomMover;
-use crate::systems::movement::{movement, random_move, CHARACTER_Z};
+use crate::systems::movement::{movement, CHARACTER_Z};
 use crate::systems::name::CharacterName;
+use crate::systems::random_actor::{random_move, RandomMover};
 use crate::GameState;
 use crate::{loading::TextureAtlasAssets, stages::GameStage};
 
@@ -35,10 +36,18 @@ impl Plugin for MonstersPlugin {
                     .into(),
             )
             .add_system_set_to_stage(
+                GameStage::MonsterCombat,
+                ConditionSet::new()
+                    .run_if_resource_equals(TurnState::MonsterTurn)
+                    .with_system(combat)
+                    .into(),
+            )
+            .add_system_set_to_stage(
                 GameStage::MoveMonsters,
                 ConditionSet::new()
                     .run_if_resource_equals(TurnState::MonsterTurn)
                     .with_system(movement)
+                    .with_system(end_turn)
                     .into(),
             );
     }

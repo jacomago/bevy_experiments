@@ -1,5 +1,4 @@
-use bevy::{math::ivec2, prelude::*};
-use bevy_turborand::{DelegatedRng, RngComponent};
+use bevy::prelude::*;
 
 use crate::{
     camera::focus_camera,
@@ -17,31 +16,6 @@ impl Plugin for MovementPlugin {
     }
 }
 
-#[derive(Component, Default)]
-pub struct RandomMover {
-    pub rng: RngComponent,
-}
-
-pub fn random_move(
-    mut monsters: Query<(Entity, &mut RandomMover, &MapPosition)>,
-    mut move_events: EventWriter<WantsToMove>,
-) {
-    monsters.iter_mut().for_each(|(entity, mut rng, p)| {
-        let destination = MapPosition::from_ivec2(
-            match rng.rng.usize(0..4) {
-                0 => ivec2(-1, 0),
-                1 => ivec2(1, 0),
-                2 => ivec2(0, -1),
-                _ => ivec2(0, 1),
-            } + p.position,
-        );
-        move_events.send(WantsToMove {
-            entity,
-            destination,
-        });
-    });
-}
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct WantsToMove {
     pub entity: Entity,
@@ -55,19 +29,21 @@ pub fn movement(
     mut camera_query: Query<&mut Transform, With<Camera2d>>,
     map_builder: Res<MapBuilder>,
 ) {
+    let player = player_query.single();
     move_events.iter().for_each(
         |&WantsToMove {
              entity,
              destination,
          }| {
             if map_builder.map.can_enter_tile(destination) {
-                let (mut transform, mut position, _) = query.get_mut(entity).unwrap();
-                transform.translation = destination.translation(CHARACTER_Z);
-                position.position = destination.position;
+                if let Ok((mut transform, mut position, _)) = query.get_mut(entity) {
+                    transform.translation = destination.translation(CHARACTER_Z);
+                    position.position = destination.position;
 
-                // If moving player also move camera
-                if entity == player_query.single() {
-                    focus_camera(&mut camera_query, transform);
+                    // If moving player also move camera
+                    if entity == player {
+                        focus_camera(&mut camera_query, transform);
+                    }
                 }
             }
         },

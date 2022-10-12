@@ -9,14 +9,23 @@ pub struct CombatPlugin;
 
 impl Plugin for CombatPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<WantsToAttack>().add_system_set_to_stage(
-            GameStage::Collisions,
-            ConditionSet::new()
-                .run_if_resource_equals(TurnState::PlayerTurn)
-                .with_system(combat)
-                .with_system(end_turn)
-                .into(),
-        );
+        app.add_event::<WantsToAttack>()
+            .add_system_set_to_stage(
+                GameStage::PlayerCombat,
+                ConditionSet::new()
+                    .run_if_resource_equals(TurnState::PlayerTurn)
+                    .with_system(combat)
+                    .with_system(end_turn)
+                    .into(),
+            )
+            .add_system_set_to_stage(
+                GameStage::MonsterCombat,
+                ConditionSet::new()
+                    .run_if_resource_equals(TurnState::MonsterTurn)
+                    .with_system(combat)
+                    .with_system(end_turn)
+                    .into(),
+            );
     }
 }
 

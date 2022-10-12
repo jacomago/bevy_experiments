@@ -8,7 +8,7 @@
 use crate::game_ui::tooltip::Interactive;
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
-use crate::stages::{end_turn, TurnState};
+use crate::stages::TurnState;
 use crate::systems::health::Health;
 use crate::systems::movement::RandomMover;
 use crate::systems::movement::{movement, random_move, CHARACTER_Z};
@@ -39,7 +39,6 @@ impl Plugin for MonstersPlugin {
                 ConditionSet::new()
                     .run_if_resource_equals(TurnState::MonsterTurn)
                     .with_system(movement)
-                    .with_system(end_turn)
                     .into(),
             );
     }

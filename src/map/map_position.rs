@@ -24,5 +24,4 @@ impl MapPosition {
     pub fn from_ivec2(position: IVec2) -> Self {
         Self { position }
     }
-
 }

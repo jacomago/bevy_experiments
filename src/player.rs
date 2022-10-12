@@ -2,7 +2,9 @@ use crate::actions::Actions;
 use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
+use crate::monsters::Monster;
 use crate::stages::{GameStage, TurnState};
+use crate::systems::combat::WantsToAttack;
 use crate::systems::health::Health;
 use crate::systems::movement::{movement, WantsToMove, CHARACTER_Z};
 use crate::GameState;
@@ -55,7 +57,7 @@ fn spawn_player(
     commands.spawn_bundle(PlayerBundle {
         position: player_start,
         health: Health {
-            current: 19,
+            current: 20,
             max: 20,
         },
         sprite: SpriteSheetBundle {
@@ -78,7 +80,9 @@ fn player_input(
     mut commands: Commands,
     actions: Res<Actions>,
     mut move_events: EventWriter<WantsToMove>,
+    mut combat_events: EventWriter<WantsToAttack>,
     player_query: Query<(Entity, &MapPosition, With<Player>)>,
+    monsters: Query<(Entity, &MapPosition, With<Monster>)>,
 ) {
     if actions.player_movement.is_none() {
         return;
@@ -87,10 +91,21 @@ fn player_input(
     let (entity, position, _) = player_query.single();
     let new_position = MapPosition::from_ivec2(position.position + movement);
 
-    move_events.send(WantsToMove {
-        entity,
-        destination: new_position,
-    });
+    let monster = monsters
+        .iter()
+        .filter(|(_, m, _)| **m == new_position)
+        .last();
+    if let Some((m, _, _)) = monster {
+        combat_events.send(WantsToAttack {
+            attacker: entity,
+            victim: m,
+        });
+    } else {
+        move_events.send(WantsToMove {
+            entity,
+            destination: new_position,
+        });
+    }
     commands.insert_resource(TurnState::PlayerTurn);
 }
 

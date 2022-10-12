@@ -130,7 +130,7 @@ fn spawn_monster(
             max: config.health,
         },
         interactive: Interactive {
-            text: format!("{} hp:{}", &config.name, config.health)
+            text: format!("{} hp:{}", &config.name, config.health),
         },
         random_mover: RandomMover { rng },
         sprite: SpriteSheetBundle {

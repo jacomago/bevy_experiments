@@ -55,20 +55,21 @@ pub fn movement(
     mut camera_query: Query<&mut Transform, With<Camera2d>>,
     map_builder: Res<MapBuilder>,
 ) {
-    for &WantsToMove {
-        entity,
-        destination,
-    } in move_events.iter()
-    {
-        if map_builder.map.can_enter_tile(destination) {
-            let (mut transform, mut position, _) = query.get_mut(entity).unwrap();
-            transform.translation = destination.translation(CHARACTER_Z);
-            position.position = destination.position;
+    move_events.iter().for_each(
+        |&WantsToMove {
+             entity,
+             destination,
+         }| {
+            if map_builder.map.can_enter_tile(destination) {
+                let (mut transform, mut position, _) = query.get_mut(entity).unwrap();
+                transform.translation = destination.translation(CHARACTER_Z);
+                position.position = destination.position;
 
-            // If moving player also move camera
-            if entity == player_query.single() {
-                focus_camera(&mut camera_query, transform);
+                // If moving player also move camera
+                if entity == player_query.single() {
+                    focus_camera(&mut camera_query, transform);
+                }
             }
-        }
-    }
+        },
+    );
 }

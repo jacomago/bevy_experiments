@@ -73,8 +73,9 @@ fn click_play_button(
         (Changed<Interaction>, With<Button>),
     >,
 ) {
-    for (interaction, mut color) in &mut interaction_query {
-        match *interaction {
+    interaction_query
+        .iter_mut()
+        .for_each(|(interaction, mut color)| match *interaction {
             Interaction::Clicked => {
                 state.set(GameState::Playing).unwrap();
             }
@@ -84,8 +85,7 @@ fn click_play_button(
             Interaction::None => {
                 *color = button_colors.normal;
             }
-        }
-    }
+        });
 }
 
 fn cleanup_menu(mut commands: Commands, button: Query<Entity, With<Button>>) {

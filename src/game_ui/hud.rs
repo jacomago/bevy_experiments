@@ -79,11 +79,11 @@ fn update_hud(
 ) {
     let (mut text, _) = text_query.single_mut();
     let (mut bar_style, _) = bar_query.single_mut();
-    for health_change in health_change_event.iter() {
+    health_change_event.iter().for_each(|health_change| {
         text.sections[0].value = format!("Health: {}", health_change.current);
         bar_style.size = Size::new(
             Val::Percent(calc_health_percentage(*health_change)),
             Val::Px(10.),
         );
-    }
+    });
 }

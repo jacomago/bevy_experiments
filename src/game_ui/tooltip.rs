@@ -40,7 +40,7 @@ fn mouse_rollover(
     }
     let mut overlap = false;
     let mouse_position = actions.mouse_rollover.as_ref().unwrap();
-    for (transform, interactive) in interactives.iter() {
+    interactives.iter().for_each(|(transform, interactive)| {
         if transform
             .translation
             .truncate()
@@ -52,7 +52,7 @@ fn mouse_rollover(
             });
             overlap = true;
         }
-    }
+    });
     if !overlap {
         tooltip_event.send(ToolTipInfo {
             text: None,
@@ -103,7 +103,7 @@ fn update_tooltip(
     mut tooltip_info: EventReader<ToolTipInfo>,
 ) {
     let (mut visibility, mut style, mut text, _) = current_tooltip.single_mut();
-    for poss_info in tooltip_info.iter() {
+    tooltip_info.iter().for_each(|poss_info| {
         match &poss_info.text {
             Some(info_text) => {
                 text.sections[0].value = info_text.clone();
@@ -123,5 +123,5 @@ fn update_tooltip(
             }
             None => {}
         }
-    }
+    });
 }

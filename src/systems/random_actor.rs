@@ -1,7 +1,7 @@
 use bevy::{math::ivec2, prelude::*};
 use bevy_turborand::{DelegatedRng, RngComponent};
 
-use crate::{map::map_position::MapPosition, player::Player};
+use crate::{actors::Player, map::map_position::MapPosition};
 
 use super::{combat::WantsToAttack, movement::WantsToMove};
 

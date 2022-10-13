@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 
 use crate::{
+    actors::Player,
     camera::focus_camera,
     map::{map_builder::MapBuilder, map_position::MapPosition},
-    player::Player,
 };
 
 pub const CHARACTER_Z: f32 = 1.;

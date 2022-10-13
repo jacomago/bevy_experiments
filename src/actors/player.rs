@@ -2,15 +2,16 @@ use crate::actions::Actions;
 use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
-use crate::monsters::Monster;
 use crate::stages::{end_turn, GameStage, TurnState};
 use crate::systems::combat::{combat, WantsToAttack};
-use crate::systems::health::Health;
 use crate::systems::movement::{movement, WantsToMove, CHARACTER_Z};
 use crate::GameState;
 
 use bevy::prelude::*;
 use iyes_loopless::prelude::*;
+
+use super::components::health::Health;
+use super::monsters::Monster;
 
 const PLAYER_SPRITE_INDEX: usize = 64;
 

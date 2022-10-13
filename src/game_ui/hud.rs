@@ -1,6 +1,10 @@
 use bevy::prelude::*;
 
-use crate::{loading::FontAssets, player::Player, systems::health::Health, GameState};
+use crate::{
+    actors::{components::health::Health, Player},
+    loading::FontAssets,
+    GameState,
+};
 
 pub struct HUDPlugin;
 

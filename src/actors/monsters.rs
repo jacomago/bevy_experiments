@@ -10,9 +10,7 @@ use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
 use crate::stages::{end_turn, TurnState};
 use crate::systems::combat::combat;
-use crate::systems::health::Health;
 use crate::systems::movement::{movement, CHARACTER_Z};
-use crate::systems::name::CharacterName;
 use crate::systems::random_actor::{random_move, RandomMover};
 use crate::GameState;
 use crate::{loading::TextureAtlasAssets, stages::GameStage};
@@ -20,6 +18,9 @@ use crate::{loading::TextureAtlasAssets, stages::GameStage};
 use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use iyes_loopless::prelude::ConditionSet;
+
+use super::components::health::Health;
+use super::components::name::CharacterName;
 
 pub struct MonstersPlugin;
 

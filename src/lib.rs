@@ -13,14 +13,13 @@
 )]
 
 mod actions;
+mod actors;
 mod audio;
 mod camera;
 mod game_ui;
 mod loading;
 mod map;
 mod menu;
-mod monsters;
-mod player;
 mod stages;
 mod systems;
 
@@ -28,8 +27,8 @@ use crate::actions::ActionsPlugin;
 use crate::audio::InternalAudioPlugin;
 use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
-use crate::player::PlayerPlugin;
 
+use actors::ActorsPlugin;
 use bevy::app::App;
 #[cfg(debug_assertions)]
 use bevy::diagnostic::LogDiagnosticsPlugin;
@@ -38,7 +37,6 @@ use bevy_inspector_egui::WorldInspectorPlugin;
 use camera::CameraPlugin;
 use game_ui::GameUiPlugin;
 use map::tile_map::MapPlugin;
-use monsters::MonstersPlugin;
 use stages::StagePlugin;
 use systems::SystemsPlugin;
 
@@ -70,8 +68,7 @@ impl Plugin for GamePlugin {
             .add_plugin(GameUiPlugin)
             .add_plugin(CameraPlugin)
             .add_plugin(MapPlugin)
-            .add_plugin(MonstersPlugin)
-            .add_plugin(PlayerPlugin);
+            .add_plugin(ActorsPlugin);
 
         #[cfg(debug_assertions)]
         {

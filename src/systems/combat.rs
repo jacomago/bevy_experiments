@@ -1,5 +1,6 @@
-use super::health::Health;
 use bevy::prelude::*;
+
+use crate::actors::components::health::Health;
 
 pub struct CombatPlugin;
 

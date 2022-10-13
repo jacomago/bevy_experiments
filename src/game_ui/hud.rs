@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{loading::FontAssets, systems::health::Health, GameState};
+use crate::{loading::FontAssets, player::Player, systems::health::Health, GameState};
 
 pub struct HUDPlugin;
 
@@ -73,17 +73,16 @@ fn calc_health_percentage(health: Health) -> f32 {
 }
 
 fn update_hud(
-    mut health_change_event: EventReader<Health>,
+    player_health: Query<(&Health, With<Player>)>,
     mut text_query: Query<(&mut Text, With<HealthText>)>,
     mut bar_query: Query<(&mut Style, With<HealthBar>)>,
 ) {
+    let (health, _) = player_health.single();
     let (mut text, _) = text_query.single_mut();
-    let (mut bar_style, _) = bar_query.single_mut();
-    health_change_event.iter().for_each(|health_change| {
-        text.sections[0].value = format!("Health: {}", health_change.current);
-        bar_style.size = Size::new(
-            Val::Percent(calc_health_percentage(*health_change)),
-            Val::Px(10.),
-        );
-    });
+    let new_text_string = format!("Health: {}", health.current);
+    if new_text_string != text.sections[0].value {
+        let (mut bar_style, _) = bar_query.single_mut();
+        text.sections[0].value = new_text_string;
+        bar_style.size = Size::new(Val::Percent(calc_health_percentage(*health)), Val::Px(10.));
+    }
 }

@@ -35,8 +35,7 @@ impl Plugin for PlayerPlugin {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_player))
             .add_system_set(
                 SystemSet::on_update(GameState::Playing)
-                    .with_system(player_input.run_if_resource_equals(TurnState::AwaitingInput))
-                    .with_system(player_health),
+                    .with_system(player_input.run_if_resource_equals(TurnState::AwaitingInput)),
             )
             .add_system_set_to_stage(
                 GameStage::PlayerCombat,
@@ -115,12 +114,4 @@ fn player_input(
         });
     }
     commands.insert_resource(TurnState::PlayerTurn);
-}
-
-fn player_health(
-    mut health_events: EventWriter<Health>,
-    player_query: Query<(&mut Health, With<Player>)>,
-) {
-    let (current_health, _) = player_query.single();
-    health_events.send(*current_health);
 }

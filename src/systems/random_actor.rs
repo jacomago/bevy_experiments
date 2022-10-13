@@ -11,52 +11,38 @@ pub struct RandomMover {
 }
 
 pub fn random_move(
-    player_query: Query<(Entity, With<Player>)>,
-    mut actors: Query<(Entity, &mut RandomMover, &MapPosition)>,
+    player_query: Query<(Entity, &MapPosition, With<Player>)>,
+    all_positions: Query<&MapPosition, Without<Player>>,
+    mut random_movers: Query<(Entity, &mut RandomMover, &MapPosition)>,
     mut move_events: EventWriter<WantsToMove>,
     mut combat_events: EventWriter<WantsToAttack>,
 ) {
+    let (player, player_position, _) = player_query.single();
+
     // Find all the new positions
-    let new_positions: Vec<(Entity, MapPosition)> = actors
-        .iter_mut()
-        .map(|(entity, mut rng, p)| {
-            let destination = MapPosition::from_ivec2(
-                match rng.rng.usize(0..4) {
-                    0 => ivec2(-1, 0),
-                    1 => ivec2(1, 0),
-                    2 => ivec2(0, -1),
-                    _ => ivec2(0, 1),
-                } + p.position,
-            );
-            (entity, destination)
-        })
-        .collect();
+    random_movers.iter_mut().for_each(|(entity, mut rng, p)| {
+        let destination = MapPosition::from_ivec2(
+            match rng.rng.usize(0..4) {
+                0 => ivec2(-1, 0),
+                1 => ivec2(1, 0),
+                2 => ivec2(0, -1),
+                _ => ivec2(0, 1),
+            } + p.position,
+        );
 
-    let (player, _) = player_query.single();
-
-    // For each new position, check if entity already in it
-    new_positions.iter().for_each(|(entity, position)| {
-        let mut attack = false;
-
-        actors
-            .iter()
-            .filter(|(_, _, entity_position)| position == *entity_position)
-            .for_each(|(oe, _, _)| {
-                // If entity in space is player attack him, else do nothing
-                if oe == player {
-                    combat_events.send(WantsToAttack {
-                        attacker: *entity,
-                        victim: oe,
-                    });
-                }
-                attack = true;
+        if destination == *player_position {
+            info!("Attacking Player");
+            combat_events.send(WantsToAttack {
+                attacker: entity,
+                victim: player,
             });
-
-        // Move if not attacking anything
-        if !attack {
+        } else if !all_positions
+            .iter()
+            .any(|entity_position| destination == *entity_position)
+        {
             move_events.send(WantsToMove {
-                entity: *entity,
-                destination: *position,
+                entity,
+                destination,
             });
         }
     });

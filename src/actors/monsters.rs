@@ -9,6 +9,7 @@ use crate::game_ui::tooltip::Interactive;
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
 use crate::stages::{end_turn, TurnState};
+use crate::systems::chasing_player::ChasingPlayer;
 use crate::systems::combat::combat;
 use crate::systems::movement::{movement, CHARACTER_Z};
 use crate::systems::random_actor::{random_move, RandomMover};
@@ -63,15 +64,20 @@ pub struct MonsterBundle {
     pub position: MapPosition,
     pub interactive: Interactive,
     pub health: Health,
-    pub random_mover: RandomMover,
     #[bundle]
     sprite: SpriteSheetBundle,
+}
+
+enum Behaviour {
+    Random,
+    Chasing,
 }
 
 struct MonsterConfig {
     name: String,
     health: i32,
     sprite_index: usize,
+    behaviour: Behaviour,
 }
 
 fn nutritionist() -> MonsterConfig {
@@ -79,6 +85,7 @@ fn nutritionist() -> MonsterConfig {
         sprite_index: 111,
         name: "Nutritionist".to_string(),
         health: 2,
+        behaviour: Behaviour::Random,
     }
 }
 
@@ -87,6 +94,7 @@ fn yoga_bunny() -> MonsterConfig {
         sprite_index: 69,
         name: "Yoga Bunny".to_string(),
         health: 1,
+        behaviour: Behaviour::Chasing,
     }
 }
 
@@ -95,6 +103,7 @@ fn gym_bro() -> MonsterConfig {
         sprite_index: 79,
         name: "Gym Bro".to_string(),
         health: 4,
+        behaviour: Behaviour::Chasing,
     }
 }
 
@@ -103,6 +112,7 @@ fn supplement_pusher() -> MonsterConfig {
         sprite_index: 103,
         name: "Supplement Pusher".to_string(),
         health: 3,
+        behaviour: Behaviour::Chasing,
     }
 }
 
@@ -131,7 +141,7 @@ fn spawn_monster(
         81..=95 => nutritionist(),
         _ => supplement_pusher(),
     };
-    commands.spawn_bundle(MonsterBundle {
+    let mut monster = commands.spawn_bundle(MonsterBundle {
         name: CharacterName(config.name.clone()),
         position,
         health: Health {
@@ -141,7 +151,6 @@ fn spawn_monster(
         interactive: Interactive {
             text: format!("{} hp:{}", &config.name, config.health),
         },
-        random_mover: RandomMover { rng },
         sprite: SpriteSheetBundle {
             transform: Transform {
                 translation: position.translation(CHARACTER_Z),
@@ -157,4 +166,8 @@ fn spawn_monster(
         },
         ..default()
     });
+    match &config.behaviour {
+        Behaviour::Random => monster.insert(RandomMover { rng }),
+        Behaviour::Chasing => monster.insert(ChasingPlayer {}),
+    };
 }

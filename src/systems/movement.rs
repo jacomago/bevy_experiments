@@ -35,7 +35,7 @@ pub fn movement(
              entity,
              destination,
          }| {
-            if map_builder.map.can_enter_tile(destination) {
+            if map_builder.map.can_enter_tile(&destination) {
                 if let Ok((mut transform, mut position, _)) = query.get_mut(entity) {
                     transform.translation = destination.translation(CHARACTER_Z);
                     position.position = destination.position;

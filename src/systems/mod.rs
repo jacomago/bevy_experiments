@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 use self::{combat::CombatPlugin, movement::MovementPlugin};
 
+pub mod chasing_player;
 pub mod combat;
 pub mod movement;
 pub mod random_actor;

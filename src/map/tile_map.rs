@@ -81,7 +81,7 @@ impl TileMap {
         }
     }
 
-    pub fn can_enter_tile(&self, point: MapPosition) -> bool {
+    pub fn can_enter_tile(&self, point: &MapPosition) -> bool {
         in_bounds(point.position)
             && self
                 .tiles

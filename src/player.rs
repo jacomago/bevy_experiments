@@ -89,6 +89,7 @@ fn player_input(
     mut move_events: EventWriter<WantsToMove>,
     mut combat_events: EventWriter<WantsToAttack>,
     player_query: Query<(Entity, &MapPosition, With<Player>)>,
+    mut player_health: Query<&mut Health, With<Player>>,
     monsters: Query<(Entity, &MapPosition, With<Monster>)>,
 ) {
     if actions.player_movement.is_none() {
@@ -96,28 +97,30 @@ fn player_input(
     }
 
     let movement = actions.player_movement.unwrap().as_ivec2();
-    if movement == IVec2::ZERO {
-        commands.insert_resource(TurnState::PlayerTurn);
-        return;
-    }
 
-    let (entity, position, _) = player_query.single();
-    let new_position = MapPosition::from_ivec2(position.position + movement);
+    if movement != IVec2::ZERO {
+        let (entity, position, _) = player_query.single();
+        let new_position = MapPosition::from_ivec2(position.position + movement);
 
-    let monster = monsters
-        .iter()
-        .filter(|(_, m, _)| **m == new_position)
-        .last();
-    if let Some((m, _, _)) = monster {
-        combat_events.send(WantsToAttack {
-            attacker: entity,
-            victim: m,
-        });
+        let monster = monsters
+            .iter()
+            .filter(|(_, m, _)| **m == new_position)
+            .last();
+        if let Some((m, _, _)) = monster {
+            combat_events.send(WantsToAttack {
+                attacker: entity,
+                victim: m,
+            });
+        } else {
+            move_events.send(WantsToMove {
+                entity,
+                destination: new_position,
+            });
+        }
     } else {
-        move_events.send(WantsToMove {
-            entity,
-            destination: new_position,
-        });
+        let mut health = player_health.single_mut();
+        health.current = (health.current + 1).min(health.max);
     }
+
     commands.insert_resource(TurnState::PlayerTurn);
 }

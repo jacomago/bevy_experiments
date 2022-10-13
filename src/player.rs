@@ -94,7 +94,13 @@ fn player_input(
     if actions.player_movement.is_none() {
         return;
     }
+
     let movement = actions.player_movement.unwrap().as_ivec2();
+    if movement == IVec2::ZERO {
+        commands.insert_resource(TurnState::PlayerTurn);
+        return;
+    }
+
     let (entity, position, _) = player_query.single();
     let new_position = MapPosition::from_ivec2(position.position + movement);
 

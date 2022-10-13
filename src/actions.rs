@@ -129,6 +129,8 @@ fn set_movement_actions(
             actions.player_movement = Some(player_movement);
             mut_keyboard_input.clear();
         }
+    } else if GameControl::Wait.just_released(keyboard_input) {
+        actions.player_movement = Some(Vec2::ZERO);
     } else {
         actions.player_movement = None;
     }
@@ -139,6 +141,7 @@ enum GameControl {
     Down,
     Left,
     Right,
+    Wait,
 }
 
 impl GameControl {
@@ -160,6 +163,7 @@ impl GameControl {
                 keyboard_input.just_released(KeyCode::D)
                     || keyboard_input.just_released(KeyCode::Right)
             }
+            GameControl::Wait => keyboard_input.just_released(KeyCode::Space),
         }
     }
 
@@ -177,6 +181,7 @@ impl GameControl {
             GameControl::Right => {
                 keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right)
             }
+            GameControl::Wait => keyboard_input.pressed(KeyCode::Space),
         }
     }
 
@@ -197,6 +202,7 @@ impl GameControl {
                 keyboard_input.just_pressed(KeyCode::D)
                     || keyboard_input.just_pressed(KeyCode::Right)
             }
+            GameControl::Wait => keyboard_input.just_pressed(KeyCode::Space),
         }
     }
 }

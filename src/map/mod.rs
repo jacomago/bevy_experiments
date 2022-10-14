@@ -5,13 +5,10 @@ pub mod tile_map;
 
 use bevy::prelude::*;
 
-use crate::{
-    cleanup::{cleanup_components, cleanup_resource},
-    GameState,
-};
+use crate::{cleanup::cleanup_components, GameState};
 
 use self::{
-    map_builder::{insert_mapbuilder, MapBuilder},
+    map_builder::insert_mapbuilder,
     tile_map::{spawn_map, Tile},
 };
 
@@ -31,9 +28,7 @@ impl Plugin for MapPlugin {
         app.add_system_set(SystemSet::on_enter(GameState::Loading).with_system(insert_mapbuilder))
             .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_map))
             .add_system_set(
-                SystemSet::on_exit(GameState::Playing)
-                    .with_system(cleanup_components::<Tile>)
-                    .with_system(cleanup_resource::<MapBuilder>),
+                SystemSet::on_exit(GameState::Playing).with_system(cleanup_components::<Tile>),
             );
     }
 }

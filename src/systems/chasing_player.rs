@@ -20,7 +20,6 @@ pub fn chase_player(
 ) {
     let (player, player_position, _) = player_query.single();
     let dmap = map.map.djikstra_map(player_position);
-    dbg!(&dmap);
     // Find all the new positions
     chasers.iter_mut().for_each(|(entity, _, p)| {
         let destination = dmap.next(p);

@@ -9,7 +9,7 @@ use crate::game_ui::tooltip::Interactive;
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
 use crate::stages::{end_turn, TurnState};
-use crate::systems::chasing_player::ChasingPlayer;
+use crate::systems::chasing_player::{chase_player, ChasingPlayer};
 use crate::systems::combat::combat;
 use crate::systems::movement::{movement, CHARACTER_Z};
 use crate::systems::random_actor::{random_move, RandomMover};
@@ -35,6 +35,7 @@ impl Plugin for MonstersPlugin {
                 ConditionSet::new()
                     .run_if_resource_equals(TurnState::MonsterTurn)
                     .with_system(random_move)
+                    .with_system(chase_player)
                     .into(),
             )
             .add_system_set_to_stage(

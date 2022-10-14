@@ -3,25 +3,12 @@ use std::usize;
 use bevy::prelude::*;
 use ndarray::{Array, Ix2};
 
-use crate::{loading::TextureAtlasAssets, GameState};
+use crate::loading::TextureAtlasAssets;
 
 use super::{
-    map_builder::{insert_mapbuilder, MapBuilder},
-    map_position::MapPosition,
+    map_builder::MapBuilder, map_position::MapPosition, FLOOR_SPRITE_INDEX, MAP_Z,
+    WALL_SPRITE_INDEX,
 };
-
-const MAP_Z: f32 = 0.0;
-const WALL_SPRITE_INDEX: usize = 35;
-const FLOOR_SPRITE_INDEX: usize = 46;
-
-pub struct MapPlugin;
-
-impl Plugin for MapPlugin {
-    fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(GameState::Loading).with_system(insert_mapbuilder))
-            .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_map));
-    }
-}
 
 #[derive(Copy, Clone, PartialEq, Eq, Default, Debug)]
 pub enum TileType {
@@ -32,17 +19,16 @@ pub enum TileType {
 
 #[derive(Default, Debug)]
 pub struct TileMap {
+    pub height: usize,
+    pub width: usize,
     pub tiles: Array<TileType, Ix2>,
 }
 
-pub const MAP_WIDTH: usize = 80;
-pub const MAP_HEIGHT: usize = 50;
-
-pub fn in_bounds(point: IVec2) -> bool {
+pub fn in_bounds(point: IVec2, width: usize, height: usize) -> bool {
     point.x >= 0
-        && MAP_WIDTH > point.x.try_into().unwrap()
+        && width > point.x.try_into().unwrap()
         && point.y >= 0
-        && MAP_HEIGHT > point.y.try_into().unwrap()
+        && height > point.y.try_into().unwrap()
 }
 
 pub fn spawn_map(
@@ -75,17 +61,23 @@ pub fn spawn_map(
 }
 
 impl TileMap {
-    pub fn new() -> Self {
+    pub fn new(height: usize, width: usize) -> Self {
         Self {
-            tiles: Array::<TileType, Ix2>::from_elem((MAP_HEIGHT, MAP_WIDTH), TileType::Floor),
+            height,
+            width,
+            tiles: Array::<TileType, Ix2>::from_elem((height, width), TileType::Floor),
         }
     }
 
+    pub fn in_bounds(&self, point: IVec2) -> bool {
+        in_bounds(point, self.width, self.height)
+    }
+
     pub fn can_enter_tile(&self, point: &MapPosition) -> bool {
-        in_bounds(point.position)
+        self.in_bounds(point.position)
             && self
                 .tiles
-                .get((point.position.y as usize, point.position.x as usize))
+                .get(point.as_utuple())
                 .map_or(false, |&s| s == TileType::Floor)
     }
 }

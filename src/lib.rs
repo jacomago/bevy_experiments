@@ -36,7 +36,7 @@ use bevy::prelude::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
 use camera::CameraPlugin;
 use game_ui::GameUiPlugin;
-use map::tile_map::MapPlugin;
+use map::MapPlugin;
 use stages::StagePlugin;
 use systems::SystemsPlugin;
 

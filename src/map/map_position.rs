@@ -24,4 +24,8 @@ impl MapPosition {
     pub fn from_ivec2(position: IVec2) -> Self {
         Self { position }
     }
+
+    pub fn as_utuple(self) -> (usize, usize) {
+        (self.position.y as usize, self.position.x as usize)
+    }
 }

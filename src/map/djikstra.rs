@@ -1,13 +1,43 @@
 use bevy::math::ivec2;
 use ndarray::{Array, Ix2};
 
-use super::{
-    map_position::MapPosition,
-    tile_map::{TileMap, MAP_HEIGHT, MAP_WIDTH},
-};
+use super::{map_position::MapPosition, tile_map::TileMap};
 
-struct DjikstraMap {
+#[derive(Debug)]
+pub struct DjikstraMap {
     result: Array<Option<i32>, Ix2>,
+}
+
+impl DjikstraMap {
+    fn new(height: usize, width: usize, start: (usize, usize)) -> Self {
+        let mut result = Array::<Option<i32>, Ix2>::from_elem((height, width), None);
+        result[start] = Some(0);
+        Self { result }
+    }
+
+    fn neighbours(&self, p: &MapPosition) -> Vec<MapPosition> {
+        vec![ivec2(-1, 0), ivec2(1, 0), ivec2(0, -1), ivec2(0, 1)]
+            .iter()
+            .map(|iv| MapPosition::from_ivec2(*iv + p.position))
+            .filter(|mp| self.can_enter_tile(mp))
+            .collect()
+    }
+
+    fn can_enter_tile(&self, p: &MapPosition) -> bool {
+        self.result.get(p.as_utuple()).unwrap().is_some()
+    }
+
+    fn value(&self, p: &MapPosition) -> i32 {
+        self.result.get(p.as_utuple()).unwrap().unwrap()
+    }
+
+    pub fn next(&self, p: &MapPosition) -> MapPosition {
+        *self
+            .neighbours(p)
+            .iter()
+            .min_by(|n1, n2| self.value(n1).cmp(&self.value(n2)))
+            .unwrap_or(p)
+    }
 }
 
 impl TileMap {
@@ -19,31 +49,33 @@ impl TileMap {
             .collect()
     }
 
-    pub fn djikstra(&self, start_node: MapPosition) -> DjikstraMap {
-        let mut dmap = DjikstraMap {
-            result: Array::<Option<i32>, Ix2>::from_elem((MAP_HEIGHT, MAP_WIDTH), None),
-        };
+    pub fn djikstra_map(&self, start_node: &MapPosition) -> DjikstraMap {
+        let mut dmap = DjikstraMap::new(self.height, self.width, start_node.as_utuple());
 
-        let mut frontier = vec![start_node];
+        let mut frontier: Vec<MapPosition> = vec![*start_node];
 
-        while frontier.is_empty() {
+        while !frontier.is_empty() {
             let mut new_frontier: Vec<MapPosition> = vec![];
 
             frontier.iter().for_each(|f| {
                 self.neighbours(f).iter().for_each(|n| {
-                    if dmap
-                        .result
-                        .get((n.position.x as usize, n.position.y as usize))
-                        .is_none()
-                    {
-                        dmap.result[[n.position.x as usize, n.position.y as usize]] =
-                            dmap.result[[f.position.x as usize, f.position.y as usize]];
+                    if dmap.result.get(n.as_utuple()).unwrap().is_none() {
+                        dmap.result[n.as_utuple()] = Some(dmap.result[f.as_utuple()].unwrap() + 1);
                         new_frontier.push(*n);
                     }
                 });
             });
             frontier = new_frontier;
         }
-        return dmap;
+        dmap
     }
+}
+
+#[test]
+fn test_djikstra() {
+    let map = TileMap::new(10, 20);
+
+    let start = MapPosition::new(0, 0);
+    let dmap = map.djikstra_map(&start);
+    assert_eq!(dmap.result[[1, 1]], Some(2));
 }

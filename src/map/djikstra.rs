@@ -24,7 +24,7 @@ impl DjikstraMap {
     }
 
     fn can_enter_tile(&self, p: &MapPosition) -> bool {
-        self.result.get(p.as_utuple()).unwrap().is_some()
+        self.result.get(p.as_utuple()).unwrap_or(&None).is_some()
     }
 
     fn value(&self, p: &MapPosition) -> i32 {

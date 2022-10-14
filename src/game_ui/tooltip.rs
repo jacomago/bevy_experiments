@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 
-use crate::{actions::Actions, loading::FontAssets, map::map_position::TILE_SIZE, GameState};
+use crate::{
+    actions::Actions, cleanup::cleanup_components, loading::FontAssets,
+    map::map_position::TILE_SIZE, GameState,
+};
 
 pub struct TooltipPlugin;
 
@@ -12,6 +15,9 @@ impl Plugin for TooltipPlugin {
                 SystemSet::on_update(GameState::Playing)
                     .with_system(mouse_rollover)
                     .with_system(update_tooltip),
+            )
+            .add_system_set(
+                SystemSet::on_exit(GameState::Playing).with_system(cleanup_components::<ToolTip>),
             );
     }
 }

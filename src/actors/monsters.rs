@@ -5,6 +5,7 @@
 //! - Gym Bro
 //! - Supplement Pusher
 
+use crate::cleanup::cleanup_components;
 use crate::game_ui::tooltip::Interactive;
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
@@ -52,6 +53,9 @@ impl Plugin for MonstersPlugin {
                     .with_system(movement)
                     .with_system(end_turn)
                     .into(),
+            )
+            .add_system_set(
+                SystemSet::on_exit(GameState::Playing).with_system(cleanup_components::<Monster>),
             );
     }
 }

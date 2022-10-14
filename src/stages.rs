@@ -1,4 +1,11 @@
 use bevy::prelude::*;
+use iyes_loopless::prelude::IntoConditionalSystem;
+
+use crate::{
+    actors::{components::health::Health, Player},
+    menu::{PlayerMessage, LOST_MESSAGE},
+    GameState,
+};
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash, StageLabel)]
 pub enum GameStage {
@@ -15,6 +22,7 @@ pub enum TurnState {
     AwaitingInput,
     PlayerTurn,
     MonsterTurn,
+    GameOver,
 }
 
 pub struct StagePlugin;
@@ -46,19 +54,39 @@ impl Plugin for StagePlugin {
             GameStage::MoveMonsters,
             SystemStage::parallel(),
         )
-        .init_resource::<TurnState>();
+        .init_resource::<TurnState>()
+        .add_system_set(
+            SystemSet::on_update(GameState::Playing)
+                .with_system(game_over.run_if_resource_equals(TurnState::GameOver)),
+        );
     }
 }
 
-pub fn end_turn(mut commands: Commands, turn_state: Res<TurnState>) {
+pub fn end_turn(
+    mut commands: Commands,
+    turn_state: Res<TurnState>,
+    player: Query<(&Health, With<Player>)>,
+) {
     info!("end turn: {:?}", turn_state);
-    let new_state = match *turn_state {
-        // In the source project, AwaitingInput returns AwaitingInput, however, it's actually an unreachable
-        // case, because the change to the next state (PlayerTurn) is performed in the `player_input` system.
-        TurnState::AwaitingInput => unreachable!(),
-        TurnState::PlayerTurn => TurnState::MonsterTurn,
-        TurnState::MonsterTurn => TurnState::AwaitingInput,
+    let new_state = if player.single().0.current < 1 {
+        TurnState::GameOver
+    } else {
+        match *turn_state {
+            // In the source project, AwaitingInput returns AwaitingInput, however, it's actually an unreachable
+            // case, because the change to the next state (PlayerTurn) is performed in the `player_input` system.
+            TurnState::AwaitingInput => unreachable!(),
+            TurnState::PlayerTurn => TurnState::MonsterTurn,
+            TurnState::MonsterTurn => TurnState::AwaitingInput,
+            TurnState::GameOver => TurnState::GameOver,
+        }
     };
 
     commands.insert_resource(new_state);
+}
+
+fn game_over(mut commands: Commands, mut state: ResMut<State<GameState>>) {
+    commands.insert_resource(PlayerMessage {
+        message: LOST_MESSAGE.to_owned(),
+    });
+    state.set(GameState::Menu).unwrap();
 }

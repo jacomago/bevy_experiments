@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     actors::{components::health::Health, Player},
+    cleanup::cleanup_components,
     loading::FontAssets,
     GameState,
 };
@@ -11,9 +12,15 @@ pub struct HUDPlugin;
 impl Plugin for HUDPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(setup_hud))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(update_hud));
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(update_hud))
+            .add_system_set(
+                SystemSet::on_exit(GameState::Playing).with_system(cleanup_components::<Hud>),
+            );
     }
 }
+
+#[derive(Component)]
+struct Hud;
 
 fn setup_hud(mut commands: Commands, font: Res<FontAssets>) {
     let health = 20.0;
@@ -32,6 +39,7 @@ fn setup_hud(mut commands: Commands, font: Res<FontAssets>) {
             color: UiColor(Color::rgba(0.65, 0.65, 0.65, 0.5)),
             ..default()
         })
+        .insert(Hud)
         .with_children(|parent| {
             parent
                 .spawn_bundle(NodeBundle {

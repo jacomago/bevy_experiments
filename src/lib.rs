@@ -16,6 +16,7 @@ mod actions;
 mod actors;
 mod audio;
 mod camera;
+mod cleanup;
 mod game_ui;
 mod loading;
 mod map;
@@ -73,7 +74,8 @@ impl Plugin for GamePlugin {
         #[cfg(debug_assertions)]
         {
             app.add_plugin(LogDiagnosticsPlugin::default())
-                .add_plugin(WorldInspectorPlugin::new());
+                .add_plugin(WorldInspectorPlugin::new())
+                .add_system(bevy::window::close_on_esc);
         }
     }
 }

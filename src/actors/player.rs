@@ -1,4 +1,5 @@
 use crate::actions::Actions;
+use crate::cleanup::cleanup_components;
 use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
@@ -52,6 +53,9 @@ impl Plugin for PlayerPlugin {
                     .with_system(movement)
                     .with_system(end_turn)
                     .into(),
+            )
+            .add_system_set(
+                SystemSet::on_exit(GameState::Playing).with_system(cleanup_components::<Player>),
             );
     }
 }

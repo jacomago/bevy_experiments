@@ -5,9 +5,15 @@ pub mod tile_map;
 
 use bevy::prelude::*;
 
-use crate::GameState;
+use crate::{
+    cleanup::{cleanup_components, cleanup_resource},
+    GameState,
+};
 
-use self::{map_builder::insert_mapbuilder, tile_map::spawn_map};
+use self::{
+    map_builder::{insert_mapbuilder, MapBuilder},
+    tile_map::{spawn_map, Tile},
+};
 
 const MAP_Z: f32 = 0.0;
 const WALL_SPRITE_INDEX: usize = 35;
@@ -23,6 +29,11 @@ pub struct MapPlugin;
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::Loading).with_system(insert_mapbuilder))
-            .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_map));
+            .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_map))
+            .add_system_set(
+                SystemSet::on_exit(GameState::Playing)
+                    .with_system(cleanup_components::<Tile>)
+                    .with_system(cleanup_resource::<MapBuilder>),
+            );
     }
 }

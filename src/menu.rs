@@ -2,6 +2,9 @@ use crate::loading::FontAssets;
 use crate::GameState;
 use bevy::prelude::*;
 
+static WELCOME_MESSAGE: &str = "Welcome to the dungeon!";
+pub static LOST_MESSAGE: &str = "You lost :( Try again?";
+
 pub struct MenuPlugin;
 
 /// This plugin is responsible for the game menu (containing only one button...)
@@ -9,9 +12,22 @@ pub struct MenuPlugin;
 impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<ButtonColors>()
+            .init_resource::<PlayerMessage>()
             .add_system_set(SystemSet::on_enter(GameState::Menu).with_system(setup_menu))
             .add_system_set(SystemSet::on_update(GameState::Menu).with_system(click_play_button))
             .add_system_set(SystemSet::on_exit(GameState::Menu).with_system(cleanup_menu));
+    }
+}
+
+pub struct PlayerMessage {
+    pub message: String,
+}
+
+impl Default for PlayerMessage {
+    fn default() -> Self {
+        Self {
+            message: WELCOME_MESSAGE.to_owned(),
+        }
     }
 }
 
@@ -29,39 +45,78 @@ impl Default for ButtonColors {
     }
 }
 
+#[derive(Component)]
+struct Menu;
+
 fn setup_menu(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
     button_colors: Res<ButtonColors>,
+    message: Res<PlayerMessage>,
 ) {
     commands.spawn_bundle(Camera2dBundle::default());
+
     commands
-        .spawn_bundle(ButtonBundle {
+        .spawn_bundle(NodeBundle {
             style: Style {
-                size: Size::new(Val::Px(120.0), Val::Px(50.0)),
+                size: Size::new(Val::Px(120.0), Val::Px(100.0)),
                 margin: UiRect::all(Val::Auto),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
+                flex_direction: FlexDirection::ColumnReverse,
+                align_self: AlignSelf::Center,
                 ..Default::default()
             },
-            color: button_colors.normal,
-            ..Default::default()
+            color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
+            ..default()
         })
+        .insert(Menu)
         .with_children(|parent| {
             parent.spawn_bundle(TextBundle {
                 text: Text {
                     sections: vec![TextSection {
-                        value: "Play".to_string(),
+                        value: message.message.clone(),
                         style: TextStyle {
-                            font: font_assets.fira_sans.clone(),
-                            font_size: 40.0,
+                            font_size: 20.0,
                             color: Color::rgb(0.9, 0.9, 0.9),
+                            font: font_assets.fira_sans.clone(),
                         },
                     }],
-                    alignment: Default::default(),
+                    alignment: TextAlignment::CENTER,
                 },
-                ..Default::default()
+                style: Style {
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..default()
+                },
+                ..default()
             });
+            parent
+                .spawn_bundle(ButtonBundle {
+                    style: Style {
+                        size: Size::new(Val::Undefined, Val::Px(50.0)),
+                        margin: UiRect::all(Val::Auto),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..Default::default()
+                    },
+                    color: button_colors.normal,
+                    ..Default::default()
+                })
+                .with_children(|parent| {
+                    parent.spawn_bundle(TextBundle {
+                        text: Text {
+                            sections: vec![TextSection {
+                                value: "Play".to_string(),
+                                style: TextStyle {
+                                    font: font_assets.fira_sans.clone(),
+                                    font_size: 40.0,
+                                    color: Color::rgb(0.9, 0.9, 0.9),
+                                },
+                            }],
+                            alignment: Default::default(),
+                        },
+                        ..Default::default()
+                    });
+                });
         });
 }
 
@@ -88,6 +143,11 @@ fn click_play_button(
         });
 }
 
-fn cleanup_menu(mut commands: Commands, button: Query<Entity, With<Button>>) {
-    commands.entity(button.single()).despawn_recursive();
+fn cleanup_menu(
+    mut commands: Commands,
+    menu: Query<Entity, With<Menu>>,
+    camera: Query<Entity, With<Camera2d>>,
+) {
+    commands.entity(menu.single()).despawn_recursive();
+    commands.entity(camera.single()).despawn_recursive();
 }

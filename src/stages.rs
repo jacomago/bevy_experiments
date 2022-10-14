@@ -88,5 +88,7 @@ fn game_over(mut commands: Commands, mut state: ResMut<State<GameState>>) {
     commands.insert_resource(PlayerMessage {
         message: LOST_MESSAGE.to_owned(),
     });
+    commands.insert_resource(TurnState::AwaitingInput);
+
     state.set(GameState::Menu).unwrap();
 }

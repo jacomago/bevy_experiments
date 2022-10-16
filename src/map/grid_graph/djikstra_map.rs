@@ -1,18 +1,8 @@
-use bevy::math::ivec2;
 use ndarray::{Array, Ix2};
 
-use super::{map_position::MapPosition, tile_map::TileMap};
+use crate::map::map_position::MapPosition;
 
-pub trait Neighbours {
-    fn can_enter_tile(&self, p: &MapPosition) -> bool;
-    fn neighbours(&self, p: &MapPosition) -> Vec<MapPosition> {
-        vec![ivec2(-1, 0), ivec2(1, 0), ivec2(0, -1), ivec2(0, 1)]
-            .iter()
-            .map(|iv| MapPosition::from_ivec2(*iv + p.position))
-            .filter(|mp| self.can_enter_tile(mp))
-            .collect()
-    }
-}
+use super::neighbours::Neighbours;
 
 #[derive(Debug)]
 pub struct DjikstraMap {
@@ -34,7 +24,7 @@ impl DjikstraMap {
         }
     }
 
-    fn value(&self, p: &MapPosition) -> i32 {
+    pub fn value(&self, p: &MapPosition) -> i32 {
         self.result.get(p.as_utuple()).unwrap().unwrap()
     }
 
@@ -113,23 +103,4 @@ pub trait DjikstraMapCalc: Neighbours {
         }
         dmap
     }
-}
-
-impl DjikstraMapCalc for TileMap {
-    fn height(&self) -> usize {
-        self.height
-    }
-
-    fn width(&self) -> usize {
-        self.width
-    }
-}
-
-#[test]
-fn test_djikstra() {
-    let map = TileMap::new(10, 20);
-
-    let start = MapPosition::new(0, 0);
-    let dmap = map.djikstra_map(&start);
-    assert_eq!(dmap.result[[1, 1]], Some(2));
 }

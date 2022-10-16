@@ -6,8 +6,10 @@ use ndarray::{Array, Ix2};
 use crate::loading::TextureAtlasAssets;
 
 use super::{
-    djikstra::Neighbours, map_builder::MapBuilder, map_position::MapPosition, FLOOR_SPRITE_INDEX,
-    MAP_Z, WALL_SPRITE_INDEX,
+    grid_graph::{djikstra_map::DjikstraMapCalc, neighbours::Neighbours},
+    map_builder::MapBuilder,
+    map_position::MapPosition,
+    FLOOR_SPRITE_INDEX, MAP_Z, WALL_SPRITE_INDEX,
 };
 
 #[derive(Copy, Clone, PartialEq, Eq, Default, Debug)]
@@ -75,6 +77,16 @@ impl Neighbours for TileMap {
     }
 }
 
+impl DjikstraMapCalc for TileMap {
+    fn height(&self) -> usize {
+        self.height
+    }
+
+    fn width(&self) -> usize {
+        self.width
+    }
+}
+
 impl TileMap {
     pub fn new(height: usize, width: usize) -> Self {
         Self {
@@ -87,4 +99,13 @@ impl TileMap {
     pub fn in_bounds(&self, point: IVec2) -> bool {
         in_bounds(point, self.width, self.height)
     }
+}
+
+#[test]
+fn test_djikstra() {
+    let map = TileMap::new(10, 20);
+
+    let start = MapPosition::new(0, 0);
+    let dmap = map.djikstra_map(&start);
+    assert_eq!(dmap.value(&MapPosition::new(1, 1)), 2);
 }

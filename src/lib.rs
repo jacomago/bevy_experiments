@@ -11,7 +11,7 @@
     unused_import_braces,
     variant_size_differences
 )]
-#![forbid(clippy::missing_docs_in_private_items)]
+//#![forbid(clippy::missing_docs_in_private_items)]
 
 mod actions;
 mod actors;

@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::{
     actors::Player,
     camera::focus_camera,
-    map::{djikstra::Neighbours, map_builder::MapBuilder, map_position::MapPosition},
+    map::{grid_graph::neighbours::Neighbours, map_builder::MapBuilder, map_position::MapPosition},
 };
 
 pub const CHARACTER_Z: f32 = 1.;

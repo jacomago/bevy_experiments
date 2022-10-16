@@ -1,4 +1,4 @@
-pub mod djikstra;
+pub mod grid_graph;
 pub mod map_builder;
 pub mod map_position;
 pub mod tile_map;

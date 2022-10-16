@@ -47,7 +47,7 @@ impl DjikstraMap {
             .max_by(|x, y| x.1.cmp(y.1))
             .unwrap()
             .0;
-        MapPosition::new(max.0 as i32, max.1 as i32)
+        MapPosition::new(max.1 as i32, max.0 as i32)
     }
 
     fn path_to(&self, p: &MapPosition) -> Vec<MapPosition> {
@@ -133,7 +133,7 @@ mod tests {
         let map = BaseMap::new(10, 1);
         let dmap = map.djikstra_map(&MapPosition::new(0, 0));
         let furthest = dmap.furthest_point();
-        assert_eq!(furthest, MapPosition::new(9, 0));
+        assert_eq!(furthest, MapPosition::new(0, 9));
     }
 
     #[test]
@@ -148,6 +148,18 @@ mod tests {
                 MapPosition::new(0, 1),
                 MapPosition::new(0, 0)
             ]
+        );
+    }
+    #[test]
+    fn test_calculate_longest_path() {
+        let map = BaseMap::new(10, 1);
+        let dmap = map.djikstra_map(&MapPosition::new(0, 0));
+        let path = dmap.calculate_longest_path();
+        assert_eq!(
+            path,
+            (0..10)
+                .map(|v| MapPosition::new(0, v))
+                .collect::<Vec<MapPosition>>()
         );
     }
 }

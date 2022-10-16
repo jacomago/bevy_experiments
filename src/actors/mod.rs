@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use self::{monsters::MonstersPlugin, player::PlayerPlugin};
+use self::{items::ItemsPlugin, monsters::MonstersPlugin, player::PlayerPlugin};
 
 pub mod components;
 mod items;
@@ -12,6 +12,8 @@ pub struct ActorsPlugin;
 
 impl Plugin for ActorsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugin(PlayerPlugin).add_plugin(MonstersPlugin);
+        app.add_plugin(PlayerPlugin)
+            .add_plugin(MonstersPlugin)
+            .add_plugin(ItemsPlugin);
     }
 }

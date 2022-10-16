@@ -44,6 +44,7 @@ impl MapBuilder {
         mb.fill(TileType::Wall);
         mb.build_random_rooms(rng.get_mut(), width, height, max_room_size);
         mb.build_corridors(&mut rng);
+        let longest_path = mb.map.calculate_longest_path();
         mb.player_start = MapPosition::new(mb.rooms[0].x() as i32, mb.rooms[0].y() as i32);
         mb.rng = rng;
         mb

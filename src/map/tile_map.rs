@@ -6,8 +6,8 @@ use ndarray::{Array, Ix2};
 use crate::loading::TextureAtlasAssets;
 
 use super::{
-    map_builder::MapBuilder, map_position::MapPosition, FLOOR_SPRITE_INDEX, MAP_Z,
-    WALL_SPRITE_INDEX,
+    djikstra::Neighbours, map_builder::MapBuilder, map_position::MapPosition, FLOOR_SPRITE_INDEX,
+    MAP_Z, WALL_SPRITE_INDEX,
 };
 
 #[derive(Copy, Clone, PartialEq, Eq, Default, Debug)]
@@ -65,6 +65,16 @@ pub fn spawn_map(
         });
 }
 
+impl Neighbours for TileMap {
+    fn can_enter_tile(&self, point: &MapPosition) -> bool {
+        self.in_bounds(point.position)
+            && self
+                .tiles
+                .get(point.as_utuple())
+                .map_or(false, |&s| s == TileType::Floor)
+    }
+}
+
 impl TileMap {
     pub fn new(height: usize, width: usize) -> Self {
         Self {
@@ -76,13 +86,5 @@ impl TileMap {
 
     pub fn in_bounds(&self, point: IVec2) -> bool {
         in_bounds(point, self.width, self.height)
-    }
-
-    pub fn can_enter_tile(&self, point: &MapPosition) -> bool {
-        self.in_bounds(point.position)
-            && self
-                .tiles
-                .get(point.as_utuple())
-                .map_or(false, |&s| s == TileType::Floor)
     }
 }

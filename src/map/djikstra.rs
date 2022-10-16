@@ -3,6 +3,17 @@ use ndarray::{Array, Ix2};
 
 use super::{map_position::MapPosition, tile_map::TileMap};
 
+pub trait Neighbours {
+    fn can_enter_tile(&self, p: &MapPosition) -> bool;
+    fn neighbours(&self, p: &MapPosition) -> Vec<MapPosition> {
+        vec![ivec2(-1, 0), ivec2(1, 0), ivec2(0, -1), ivec2(0, 1)]
+            .iter()
+            .map(|iv| MapPosition::from_ivec2(*iv + p.position))
+            .filter(|mp| self.can_enter_tile(mp))
+            .collect()
+    }
+}
+
 #[derive(Debug)]
 pub struct DjikstraMap {
     result: Array<Option<i32>, Ix2>,
@@ -15,23 +26,11 @@ impl DjikstraMap {
         Self { result }
     }
 
-    fn neighbours(&self, p: &MapPosition) -> Vec<MapPosition> {
-        vec![ivec2(-1, 0), ivec2(1, 0), ivec2(0, -1), ivec2(0, 1)]
-            .iter()
-            .map(|iv| MapPosition::from_ivec2(*iv + p.position))
-            .filter(|mp| self.can_enter_tile(mp))
-            .collect()
-    }
-
-    fn can_enter_tile(&self, p: &MapPosition) -> bool {
-        self.result.get(p.as_utuple()).unwrap_or(&None).is_some()
-    }
-
     fn value(&self, p: &MapPosition) -> i32 {
         self.result.get(p.as_utuple()).unwrap().unwrap()
     }
 
-    pub fn next(&self, p: &MapPosition) -> MapPosition {
+    pub fn next_along_path(&self, p: &MapPosition) -> MapPosition {
         *self
             .neighbours(p)
             .iter()
@@ -40,15 +39,13 @@ impl DjikstraMap {
     }
 }
 
-impl TileMap {
-    fn neighbours(&self, p: &MapPosition) -> Vec<MapPosition> {
-        vec![ivec2(-1, 0), ivec2(1, 0), ivec2(0, -1), ivec2(0, 1)]
-            .iter()
-            .map(|iv| MapPosition::from_ivec2(*iv + p.position))
-            .filter(|mp| self.can_enter_tile(mp))
-            .collect()
+impl Neighbours for DjikstraMap {
+    fn can_enter_tile(&self, p: &MapPosition) -> bool {
+        self.result.get(p.as_utuple()).unwrap_or(&None).is_some()
     }
+}
 
+impl TileMap {
     pub fn djikstra_map(&self, start_node: &MapPosition) -> DjikstraMap {
         let mut dmap = DjikstraMap::new(self.height, self.width, start_node.as_utuple());
 

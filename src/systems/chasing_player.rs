@@ -22,7 +22,7 @@ pub fn chase_player(
     let dmap = map.map.djikstra_map(player_position);
     // Find all the new positions
     chasers.iter_mut().for_each(|(entity, _, p)| {
-        let destination = dmap.next(p);
+        let destination = dmap.next_along_path(p);
 
         if destination == *player_position {
             info!("Attacking Player");

@@ -4,7 +4,7 @@ use bevy_turborand::rng::{Rng, TurboRand};
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use nannou_core::prelude::Rect;
 
-use super::grid_graph::djikstra_map::DjikstraMapCalc;
+use super::grid_graph::DjikstraMapCalc;
 use super::map_position::MapPosition;
 use super::tile_map::{in_bounds, TileMap, TileType};
 use super::{MAP_HEIGHT, MAP_WIDTH, MAX_ROOM_SIZE};

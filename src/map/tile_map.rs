@@ -6,7 +6,7 @@ use ndarray::{Array, Ix2};
 use crate::loading::TextureAtlasAssets;
 
 use super::{
-    grid_graph::{djikstra_map::DjikstraMapCalc, neighbours::Neighbours},
+    grid_graph::{neighbours::Neighbours, DjikstraMapCalc},
     map_builder::MapBuilder,
     map_position::MapPosition,
     FLOOR_SPRITE_INDEX, MAP_Z, WALL_SPRITE_INDEX,
@@ -107,5 +107,5 @@ fn test_djikstra() {
 
     let start = MapPosition::new(0, 0);
     let dmap = map.djikstra_map(&start);
-    assert_eq!(dmap.value(&MapPosition::new(1, 1)), 2);
+    assert_eq!(dmap.value(&MapPosition::new(1, 1)), Some(2));
 }

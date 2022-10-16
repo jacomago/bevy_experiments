@@ -2,10 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     actors::Player,
-    map::{
-        grid_graph::djikstra_map::DjikstraMapCalc, map_builder::MapBuilder,
-        map_position::MapPosition,
-    },
+    map::{grid_graph::DjikstraMapCalc, map_builder::MapBuilder, map_position::MapPosition},
 };
 
 use super::{combat::WantsToAttack, movement::WantsToMove};

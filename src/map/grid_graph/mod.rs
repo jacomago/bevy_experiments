@@ -1,4 +1,3 @@
-mod base_map;
 mod djikstra;
 mod djikstra_map;
 pub mod neighbours;

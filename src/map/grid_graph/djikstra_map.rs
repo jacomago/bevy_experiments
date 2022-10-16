@@ -2,7 +2,7 @@ use ndarray::{Array, Ix2};
 
 use crate::map::map_position::MapPosition;
 
-use super::{base_map::BaseMap, djikstra::DjikstraMapCalc, neighbours::Neighbours};
+use super::{djikstra::DjikstraMapCalc, neighbours::Neighbours};
 
 #[derive(Debug)]
 pub struct DjikstraMap {
@@ -84,10 +84,55 @@ impl DjikstraMapCalc for DjikstraMap {
     }
 }
 
-#[test]
-fn test_next_along_path() {
-    let map = BaseMap::new(10, 1);
-    let dmap = map.djikstra_map(&MapPosition::new(0, 0));
-    let next = dmap.next_along_path(&MapPosition::new(0, 1));
-    assert_eq!(next, MapPosition::new(0, 0));
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    pub struct BaseMap {
+        height: usize,
+        width: usize,
+        result: Array<i32, Ix2>,
+    }
+
+    impl BaseMap {
+        pub fn new(height: usize, width: usize) -> Self {
+            Self {
+                height,
+                width,
+                result: Array::<i32, Ix2>::from_elem((height, width), 0),
+            }
+        }
+    }
+
+    impl Neighbours for BaseMap {
+        fn can_enter_tile(&self, p: &crate::map::map_position::MapPosition) -> bool {
+            self.result.get(p.as_utuple()).is_some()
+        }
+    }
+
+    impl DjikstraMapCalc for BaseMap {
+        fn height(&self) -> usize {
+            self.height
+        }
+
+        fn width(&self) -> usize {
+            self.width
+        }
+    }
+
+    #[test]
+    fn test_next_along_path() {
+        let map = BaseMap::new(10, 1);
+        let dmap = map.djikstra_map(&MapPosition::new(0, 0));
+        let next = dmap.next_along_path(&MapPosition::new(0, 1));
+        assert_eq!(next, MapPosition::new(0, 0));
+    }
+
+    #[test]
+    fn test_furthest_point() {
+        let map = BaseMap::new(10, 1);
+        let dmap = map.djikstra_map(&MapPosition::new(0, 0));
+        let next = dmap.furthest_point();
+        assert_eq!(next, MapPosition::new(9, 0));
+    }
 }

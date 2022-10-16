@@ -2,7 +2,7 @@ use ndarray::{Array, Ix2};
 
 use crate::map::map_position::MapPosition;
 
-use super::{djikstra::DjikstraMapCalc, neighbours::Neighbours};
+use super::{base_map::BaseMap, djikstra::DjikstraMapCalc, neighbours::Neighbours};
 
 #[derive(Debug)]
 pub struct DjikstraMap {
@@ -82,4 +82,12 @@ impl DjikstraMapCalc for DjikstraMap {
     fn width(&self) -> usize {
         self.width
     }
+}
+
+#[test]
+fn test_next_along_path() {
+    let map = BaseMap::new(10, 1);
+    let dmap = map.djikstra_map(&MapPosition::new(0, 0));
+    let next = dmap.next_along_path(&MapPosition::new(0, 1));
+    assert_eq!(next, MapPosition::new(0, 0));
 }

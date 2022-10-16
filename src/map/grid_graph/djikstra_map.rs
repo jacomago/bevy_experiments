@@ -132,7 +132,22 @@ mod tests {
     fn test_furthest_point() {
         let map = BaseMap::new(10, 1);
         let dmap = map.djikstra_map(&MapPosition::new(0, 0));
-        let next = dmap.furthest_point();
-        assert_eq!(next, MapPosition::new(9, 0));
+        let furthest = dmap.furthest_point();
+        assert_eq!(furthest, MapPosition::new(9, 0));
+    }
+
+    #[test]
+    fn test_path_to() {
+        let map = BaseMap::new(10, 1);
+        let dmap = map.djikstra_map(&MapPosition::new(0, 0));
+        let path = dmap.path_to(&MapPosition::new(0, 2));
+        assert_eq!(
+            path,
+            vec![
+                MapPosition::new(0, 2),
+                MapPosition::new(0, 1),
+                MapPosition::new(0, 0)
+            ]
+        );
     }
 }

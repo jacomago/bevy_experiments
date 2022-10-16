@@ -15,6 +15,7 @@ pub struct MapBuilder {
     pub map: TileMap,
     pub rooms: Vec<Rect>,
     pub player_start: MapPosition,
+    pub winitem_start: MapPosition,
     pub rng: RngComponent,
 }
 

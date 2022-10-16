@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use self::{monsters::MonstersPlugin, player::PlayerPlugin};
 
 pub mod components;
+mod items;
 mod monsters;
 mod player;
 

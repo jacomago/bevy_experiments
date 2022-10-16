@@ -58,11 +58,11 @@ impl DjikstraMap {
 
     fn path_to(&self, p: &MapPosition) -> Vec<MapPosition> {
         let mut path = vec![p.to_owned()];
-        let mut current = p;
+        let mut current = *p;
         while current.as_utuple() != self.start {
-            let next = self.next_along_path(current);
+            let next = self.next_along_path(&current);
             path.push(next);
-            current = &next.clone();
+            current = next;
         }
         path
     }

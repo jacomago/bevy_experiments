@@ -4,6 +4,7 @@ use bevy_turborand::rng::{Rng, TurboRand};
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use nannou_core::prelude::Rect;
 
+use super::djikstra::DjikstraMapCalc;
 use super::map_position::MapPosition;
 use super::tile_map::{in_bounds, TileMap, TileType};
 use super::{MAP_HEIGHT, MAP_WIDTH, MAX_ROOM_SIZE};
@@ -44,8 +45,13 @@ impl MapBuilder {
         mb.fill(TileType::Wall);
         mb.build_random_rooms(rng.get_mut(), width, height, max_room_size);
         mb.build_corridors(&mut rng);
-        let longest_path = mb.map.calculate_longest_path();
-        mb.player_start = MapPosition::new(mb.rooms[0].x() as i32, mb.rooms[0].y() as i32);
+        let dmap = mb.map.djikstra_map(&MapPosition::new(
+            mb.rooms[0].x() as i32,
+            mb.rooms[0].y() as i32,
+        ));
+        let longest_path = dmap.calculate_longest_path();
+        mb.player_start = longest_path[0];
+        mb.winitem_start = *longest_path.last().unwrap();
         mb.rng = rng;
         mb
     }

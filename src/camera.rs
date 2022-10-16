@@ -5,6 +5,7 @@ use crate::{
     GameState,
 };
 
+/// Plugin to setup the camera
 pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
@@ -16,6 +17,7 @@ impl Plugin for CameraPlugin {
     }
 }
 
+/// Insert the game camera
 fn setup_camera(mut commands: Commands, map_builder: Res<MapBuilder>) {
     commands.spawn_bundle(Camera2dBundle {
         transform: Transform::from_translation(map_builder.player_start.translation(CHARACTER_Z)),
@@ -23,6 +25,7 @@ fn setup_camera(mut commands: Commands, map_builder: Res<MapBuilder>) {
     });
 }
 
+/// Focus the camera on the player sprite
 pub fn focus_camera(
     camera_query: &mut Query<&mut Transform, With<Camera2d>>,
     transform: Mut<Transform>,

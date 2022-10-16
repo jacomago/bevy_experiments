@@ -1,10 +1,10 @@
 use crate::GameState;
 use bevy::{prelude::*, render::camera::RenderTarget};
 
+/// This plugin listens for keyboard input and converts the input into Actions
+/// Actions can then be used as a resource in other systems to act on the player input.
 pub struct ActionsPlugin;
 
-// This plugin listens for keyboard input and converts the input into Actions
-// Actions can then be used as a resource in other systems to act on the player input.
 impl Plugin for ActionsPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<Actions>().add_system_set(
@@ -15,18 +15,25 @@ impl Plugin for ActionsPlugin {
     }
 }
 
+/// Possible input actions
 #[derive(Default)]
 pub struct Actions {
+    /// moving the player
     pub player_movement: Option<Vec2>,
+    /// Mouse rollover
     pub mouse_rollover: Option<MousePosition>,
 }
 
+/// Position of the mouse cursor
 #[derive(Default, Debug)]
 pub struct MousePosition {
+    /// In the game
     pub game_position: Vec2,
+    /// on the screen
     pub screen_position: Vec2,
 }
 
+/// Code the convert cursor location to game location
 fn cursor_system(
     mut actions: ResMut<Actions>,
     // need to get window dimensions
@@ -71,6 +78,7 @@ fn cursor_system(
     }
 }
 
+/// From keyboard input turn into player movement
 fn set_movement_actions(
     mut actions: ResMut<Actions>,
     mut mut_keyboard_input: ResMut<Input<KeyCode>>,
@@ -136,15 +144,22 @@ fn set_movement_actions(
     }
 }
 
+/// Possible Player actions
 enum GameControl {
+    /// Move up
     Up,
+    /// Move down
     Down,
+    /// Move left
     Left,
+    /// Move right
     Right,
+    /// Wait a turn
     Wait,
 }
 
 impl GameControl {
+    /// Convert keyboard input to game control on released
     fn just_released(&self, keyboard_input: &Input<KeyCode>) -> bool {
         match self {
             GameControl::Up => {
@@ -167,6 +182,7 @@ impl GameControl {
         }
     }
 
+    /// Convert keyboard input to game control on pressed
     fn pressed(&self, keyboard_input: &Input<KeyCode>) -> bool {
         match self {
             GameControl::Up => {
@@ -185,6 +201,7 @@ impl GameControl {
         }
     }
 
+    /// Convert keyboard input to game control on just pressed
     fn just_pressed(&self, keyboard_input: &Input<KeyCode>) -> bool {
         match self {
             GameControl::Up => {

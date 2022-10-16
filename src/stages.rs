@@ -7,24 +7,36 @@ use crate::{
     GameState,
 };
 
+/// Stages of a game, per turn
 #[derive(Debug, Clone, Eq, PartialEq, Hash, StageLabel)]
 pub enum GameStage {
+    /// Move the player
     MovePlayer,
+    /// Stage where player attacks monsters
     PlayerCombat,
+    /// Generate the mve of the monsters
     GenerateMonsterMoves,
+    /// Do any required movements
     MoveMonsters,
+    /// Let the monsters attack the player
     MonsterCombat,
 }
 
+/// States a turn can be in
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum TurnState {
+    /// Waiting input from the player
     #[default]
     AwaitingInput,
+    /// The players turn
     PlayerTurn,
+    /// The Monster#s turn
     MonsterTurn,
+    /// The game has been lost
     GameOver,
 }
 
+/// Plugin for adding all the stages and the sequences of them
 pub struct StagePlugin;
 
 impl Plugin for StagePlugin {
@@ -62,6 +74,7 @@ impl Plugin for StagePlugin {
     }
 }
 
+/// After each turn we use this to figure out what the next turn is
 pub fn end_turn(
     mut commands: Commands,
     turn_state: Res<TurnState>,
@@ -84,6 +97,7 @@ pub fn end_turn(
     commands.insert_resource(new_state);
 }
 
+/// Trigures the game over
 fn game_over(mut commands: Commands, mut state: ResMut<State<GameState>>) {
     commands.insert_resource(PlayerMessage {
         message: LOST_MESSAGE.to_owned(),

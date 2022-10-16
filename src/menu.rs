@@ -2,9 +2,12 @@ use crate::loading::FontAssets;
 use crate::GameState;
 use bevy::prelude::*;
 
+/// Starting message displayed in the Menu
 static WELCOME_MESSAGE: &str = "Welcome to the dungeon!";
+/// Message displayed if the game is lost
 pub static LOST_MESSAGE: &str = "You lost :( Try again?";
 
+/// Pluging for the Menu for starting new games
 pub struct MenuPlugin;
 
 /// This plugin is responsible for the game menu (containing only one button...)
@@ -19,7 +22,9 @@ impl Plugin for MenuPlugin {
     }
 }
 
+/// Message displayed in the menu
 pub struct PlayerMessage {
+    /// The main message
     pub message: String,
 }
 
@@ -31,8 +36,11 @@ impl Default for PlayerMessage {
     }
 }
 
+/// Colors of the button
 struct ButtonColors {
+    /// Color with no hover
     normal: UiColor,
+    /// color with hover
     hovered: UiColor,
 }
 
@@ -45,9 +53,11 @@ impl Default for ButtonColors {
     }
 }
 
+/// Component that has the full menu
 #[derive(Component)]
 struct Menu;
 
+/// Set up the menu/ spawn into the game
 fn setup_menu(
     mut commands: Commands,
     font_assets: Res<FontAssets>,
@@ -120,6 +130,7 @@ fn setup_menu(
         });
 }
 
+/// Action after clicking the play button
 fn click_play_button(
     button_colors: Res<ButtonColors>,
     mut state: ResMut<State<GameState>>,
@@ -142,6 +153,8 @@ fn click_play_button(
             }
         });
 }
+
+/// Remove the menu from the app after started playing
 
 fn cleanup_menu(
     mut commands: Commands,

@@ -2,15 +2,16 @@
 //! the health industry.
 
 // #![warn(clippy::pedantic)] // turn on for extra hints
-
 #![deny(
     missing_docs,
+    missing_doc_code_examples,
     trivial_casts,
     trivial_numeric_casts,
     unused_extern_crates,
     unused_import_braces,
     variant_size_differences
 )]
+#![forbid(clippy::missing_docs_in_private_items)]
 
 mod actions;
 mod actors;
@@ -41,16 +42,16 @@ use map::MapPlugin;
 use stages::StagePlugin;
 use systems::SystemsPlugin;
 
-// This game uses States to separate logic
-// See https://bevy-cheatbook.github.io/programming/states.html
-// Or https://github.com/bevyengine/bevy/blob/main/examples/ecs/state.rs
+/// This game uses States to separate logic
+/// See https://bevy-cheatbook.github.io/programming/states.html
+/// Or https://github.com/bevyengine/bevy/blob/main/examples/ecs/state.rs
 #[derive(Clone, Eq, PartialEq, Debug, Hash)]
 enum GameState {
-    // During the loading State the LoadingPlugin will load our assets
+    /// During the loading State the LoadingPlugin will load our assets
     Loading,
-    // During this State the actual game logic is executed
+    /// During this State the actual game logic is executed
     Playing,
-    // Here the menu is drawn and waiting for player interaction
+    /// Here the menu is drawn and waiting for player interaction
     Menu,
 }
 

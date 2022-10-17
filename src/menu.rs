@@ -3,9 +3,12 @@ use crate::GameState;
 use bevy::prelude::*;
 
 /// Starting message displayed in the Menu
-static WELCOME_MESSAGE: &str = "Welcome to the dungeon!";
+pub static WELCOME_MESSAGE: &str = "Welcome to the dungeon!";
 /// Message displayed if the game is lost
 pub static LOST_MESSAGE: &str = "You lost :( Try again?";
+
+/// Message displayed if the game is won
+pub static WIN_MESSAGE: &str = "You Won! :D Try again?";
 
 /// Pluging for the Menu for starting new games
 pub struct MenuPlugin;

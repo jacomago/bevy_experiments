@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
+    cleanup::cleanup_components,
     game_ui::tooltip::Interactive,
     loading::TextureAtlasAssets,
     map::{map_builder::MapBuilder, map_position::MapPosition},
@@ -14,7 +15,10 @@ pub struct ItemsPlugin;
 
 impl Plugin for ItemsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_wintitem));
+        app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_wintitem))
+            .add_system_set(
+                SystemSet::on_exit(GameState::Playing).with_system(cleanup_components::<Item>),
+            );
     }
 }
 
@@ -35,7 +39,7 @@ pub struct ItemBundle {
 }
 
 static WINITEM_NAME: &str = "Cake of destiny";
-const WINITEM_SPRITE_INDEX: usize = 1;
+const WINITEM_SPRITE_INDEX: usize = 124;
 
 pub fn spawn_wintitem(
     mut commands: Commands,

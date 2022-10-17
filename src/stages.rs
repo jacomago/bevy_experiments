@@ -2,8 +2,9 @@ use bevy::prelude::*;
 use iyes_loopless::prelude::IntoConditionalSystem;
 
 use crate::{
-    actors::{components::health::Health, Player},
-    menu::{PlayerMessage, LOST_MESSAGE},
+    actors::{components::health::Health, Player, WinItem},
+    map::map_position::MapPosition,
+    menu::{PlayerMessage, LOST_MESSAGE, WELCOME_MESSAGE, WIN_MESSAGE},
     GameState,
 };
 
@@ -23,7 +24,7 @@ pub enum GameStage {
 }
 
 /// States a turn can be in
-#[derive(Debug, Clone, Eq, PartialEq, Hash, Default)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
 pub enum TurnState {
     /// Waiting input from the player
     #[default]
@@ -34,6 +35,8 @@ pub enum TurnState {
     MonsterTurn,
     /// The game has been lost
     GameOver,
+    /// The game has been won
+    Victory,
 }
 
 /// Plugin for adding all the stages and the sequences of them
@@ -69,7 +72,8 @@ impl Plugin for StagePlugin {
         .init_resource::<TurnState>()
         .add_system_set(
             SystemSet::on_update(GameState::Playing)
-                .with_system(game_over.run_if_resource_equals(TurnState::GameOver)),
+                .with_system(end_game.run_if_resource_equals(TurnState::GameOver))
+                .with_system(end_game.run_if_resource_equals(TurnState::Victory)),
         );
     }
 }
@@ -78,11 +82,16 @@ impl Plugin for StagePlugin {
 pub fn end_turn(
     mut commands: Commands,
     turn_state: Res<TurnState>,
-    player: Query<(&Health, With<Player>)>,
+    win_item: Query<(&MapPosition, With<WinItem>)>,
+    player: Query<(&Health, &MapPosition, With<Player>)>,
 ) {
     info!("end turn: {:?}", turn_state);
-    let new_state = if player.single().0.current < 1 {
+    let (player_health, player_position, _) = player.single();
+    let (win_item_position, _) = win_item.single();
+    let new_state: TurnState = if player_health.current < 1 {
         TurnState::GameOver
+    } else if player_position == win_item_position {
+        TurnState::Victory
     } else {
         match *turn_state {
             // In the source project, AwaitingInput returns AwaitingInput, however, it's actually an unreachable
@@ -90,7 +99,7 @@ pub fn end_turn(
             TurnState::AwaitingInput => unreachable!(),
             TurnState::PlayerTurn => TurnState::MonsterTurn,
             TurnState::MonsterTurn => TurnState::AwaitingInput,
-            TurnState::GameOver => TurnState::GameOver,
+            _ => *turn_state,
         }
     };
 
@@ -98,9 +107,17 @@ pub fn end_turn(
 }
 
 /// Trigures the game over
-fn game_over(mut commands: Commands, mut state: ResMut<State<GameState>>) {
+fn end_game(
+    mut commands: Commands,
+    mut state: ResMut<State<GameState>>,
+    turn_state: Res<TurnState>,
+) {
     commands.insert_resource(PlayerMessage {
-        message: LOST_MESSAGE.to_owned(),
+        message: match *turn_state {
+            TurnState::GameOver => LOST_MESSAGE.to_owned(),
+            TurnState::Victory => WIN_MESSAGE.to_owned(),
+            _ => WELCOME_MESSAGE.to_owned(),
+        },
     });
     commands.insert_resource(TurnState::AwaitingInput);
 

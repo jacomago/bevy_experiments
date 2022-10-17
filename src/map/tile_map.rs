@@ -9,15 +9,8 @@ use super::{
     grid_graph::{neighbours::Neighbours, DjikstraMapCalc},
     map_builder::MapBuilder,
     map_position::MapPosition,
-    FLOOR_SPRITE_INDEX, MAP_Z, WALL_SPRITE_INDEX,
+    tile::{TileBundle, TileType},
 };
-
-#[derive(Copy, Clone, PartialEq, Eq, Default, Debug)]
-pub enum TileType {
-    Wall,
-    #[default]
-    Floor,
-}
 
 #[derive(Default, Debug)]
 pub struct TileMap {
@@ -33,9 +26,6 @@ pub fn in_bounds(point: IVec2, width: usize, height: usize) -> bool {
         && height > point.y.try_into().unwrap()
 }
 
-#[derive(Component)]
-pub struct Tile;
-
 pub fn spawn_map(
     mut commands: Commands,
     textures: Res<TextureAtlasAssets>,
@@ -47,23 +37,7 @@ pub fn spawn_map(
         .indexed_iter()
         .for_each(|((y, x), t)| {
             let position = MapPosition::new(x.try_into().unwrap(), y.try_into().unwrap());
-            commands
-                .spawn_bundle(SpriteSheetBundle {
-                    transform: Transform {
-                        translation: position.translation(MAP_Z),
-                        ..default()
-                    },
-                    texture_atlas: textures.texture_atlas.clone(),
-                    sprite: TextureAtlasSprite {
-                        index: match *t {
-                            TileType::Floor => FLOOR_SPRITE_INDEX,
-                            TileType::Wall => WALL_SPRITE_INDEX,
-                        },
-                        ..default()
-                    },
-                    ..default()
-                })
-                .insert(Tile);
+            commands.spawn_bundle(TileBundle::new(position, textures.as_ref(), *t));
         });
 }
 

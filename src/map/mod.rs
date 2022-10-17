@@ -1,16 +1,14 @@
 pub mod grid_graph;
 pub mod map_builder;
 pub mod map_position;
+pub mod tile;
 pub mod tile_map;
 
 use bevy::prelude::*;
 
 use crate::{cleanup::cleanup_components, GameState};
 
-use self::{
-    map_builder::insert_mapbuilder,
-    tile_map::{spawn_map, Tile},
-};
+use self::{map_builder::insert_mapbuilder, tile::Tile, tile_map::spawn_map};
 
 const MAP_Z: f32 = 0.0;
 const WALL_SPRITE_INDEX: usize = 35;

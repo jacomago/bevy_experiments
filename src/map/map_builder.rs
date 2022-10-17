@@ -6,7 +6,8 @@ use nannou_core::prelude::Rect;
 
 use super::grid_graph::DjikstraMapCalc;
 use super::map_position::MapPosition;
-use super::tile_map::{in_bounds, TileMap, TileType};
+use super::tile::TileType;
+use super::tile_map::{in_bounds, TileMap};
 use super::{MAP_HEIGHT, MAP_WIDTH, MAX_ROOM_SIZE};
 
 const NUM_ROOMS: usize = 20;

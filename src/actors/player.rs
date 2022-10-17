@@ -5,6 +5,7 @@ use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
 use crate::stages::{end_turn, GameStage, TurnState};
 use crate::systems::combat::{combat, WantsToAttack};
+use crate::systems::fov::FieldOfView;
 use crate::systems::movement::{movement, WantsToMove, CHARACTER_Z};
 use crate::GameState;
 
@@ -26,6 +27,7 @@ pub struct PlayerBundle {
     _player: Player,
     pub position: MapPosition,
     pub health: Health,
+    pub fov: FieldOfView,
     #[bundle]
     sprite: SpriteSheetBundle,
 }
@@ -72,6 +74,7 @@ fn spawn_player(
             current: 20,
             max: 20,
         },
+        fov: FieldOfView::new(8),
         sprite: SpriteSheetBundle {
             transform: Transform {
                 translation: player_start.translation(CHARACTER_Z),

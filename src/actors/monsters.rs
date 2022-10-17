@@ -12,6 +12,7 @@ use crate::map::map_position::MapPosition;
 use crate::stages::{end_turn, TurnState};
 use crate::systems::chasing_player::{chase_player, ChasingPlayer};
 use crate::systems::combat::combat;
+use crate::systems::fov::FieldOfView;
 use crate::systems::movement::{movement, CHARACTER_Z};
 use crate::systems::random_actor::{random_move, RandomMover};
 use crate::GameState;
@@ -69,6 +70,7 @@ pub struct MonsterBundle {
     pub position: MapPosition,
     pub interactive: Interactive,
     pub health: Health,
+    pub fov: FieldOfView,
     #[bundle]
     sprite: SpriteSheetBundle,
 }
@@ -153,6 +155,7 @@ fn spawn_monster(
             current: config.health,
             max: config.health,
         },
+        fov: FieldOfView::new(6),
         interactive: Interactive {
             text: format!("{} hp:{}", &config.name, config.health),
         },

@@ -13,12 +13,16 @@ use crate::{
 pub enum GameStage {
     /// Move the player
     MovePlayer,
+    /// Calculate Player Field of view
+    PlayerFOV,
     /// Stage where player attacks monsters
     PlayerCombat,
     /// Generate the mve of the monsters
     GenerateMonsterMoves,
     /// Do any required movements
     MoveMonsters,
+    /// Calculate Monster field of view
+    MonsterFOV,
     /// Let the monsters attack the player
     MonsterCombat,
 }
@@ -56,6 +60,11 @@ impl Plugin for StagePlugin {
         )
         .add_stage_after(
             GameStage::MovePlayer,
+            GameStage::PlayerFOV,
+            SystemStage::parallel(),
+        )
+        .add_stage_after(
+            GameStage::PlayerFOV,
             GameStage::GenerateMonsterMoves,
             SystemStage::parallel(),
         )
@@ -67,6 +76,11 @@ impl Plugin for StagePlugin {
         .add_stage_after(
             GameStage::MonsterCombat,
             GameStage::MoveMonsters,
+            SystemStage::parallel(),
+        )
+        .add_stage_after(
+            GameStage::MoveMonsters,
+            GameStage::MonsterFOV,
             SystemStage::parallel(),
         )
         .init_resource::<TurnState>()

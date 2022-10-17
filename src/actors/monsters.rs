@@ -12,7 +12,7 @@ use crate::map::map_position::MapPosition;
 use crate::stages::{end_turn, TurnState};
 use crate::systems::chasing_player::{chase_player, ChasingPlayer};
 use crate::systems::combat::combat;
-use crate::systems::fov::FieldOfView;
+use crate::systems::fov::{fov, FieldOfView};
 use crate::systems::movement::{movement, CHARACTER_Z};
 use crate::systems::random_actor::{random_move, RandomMover};
 use crate::GameState;
@@ -52,6 +52,13 @@ impl Plugin for MonstersPlugin {
                 ConditionSet::new()
                     .run_if_resource_equals(TurnState::MonsterTurn)
                     .with_system(movement)
+                    .into(),
+            )
+            .add_system_set_to_stage(
+                GameStage::MonsterFOV,
+                ConditionSet::new()
+                    .run_if_resource_equals(TurnState::MonsterTurn)
+                    .with_system(fov)
                     .with_system(end_turn)
                     .into(),
             )

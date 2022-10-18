@@ -40,7 +40,7 @@ impl DjikstraMap {
             .unwrap_or(p)
     }
 
-    fn furthest_point(&self) -> MapPosition {
+    pub fn furthest_point(&self) -> MapPosition {
         let max = self
             .result
             .indexed_iter()

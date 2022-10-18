@@ -10,13 +10,18 @@ use crate::entities::TileType;
 use super::grid_map::DjikstraMapCalc;
 use super::tile_map::{in_bounds, TileMap};
 
+mod empty;
+trait MapArchitect {
+    fn builder(&mut self, height: usize, width: usize, rng: &mut RngComponent) -> MapBuilder;
+}
+
 #[derive(Debug, Default)]
 pub struct MapBuilder {
     pub map: TileMap,
     pub rooms: Vec<Rect>,
+    pub monster_spawns: Vec<MapPosition>,
     pub player_start: MapPosition,
     pub winitem_start: MapPosition,
-    pub rng: RngComponent,
 }
 
 enum Direction {
@@ -41,6 +46,12 @@ impl MapBuilder {
         mb.fill(TileType::Wall);
         mb.build_random_rooms(rng.get_mut(), width, height, max_room_size, num_rooms);
         mb.build_corridors(&mut rng);
+        mb.monster_spawns = mb
+            .rooms
+            .iter()
+            .skip(1)
+            .map(|room| MapPosition::new(room.x() as i32, room.y() as i32))
+            .collect();
         let dmap = mb.map.djikstra_map(&MapPosition::new(
             mb.rooms[0].x() as i32,
             mb.rooms[0].y() as i32,
@@ -48,8 +59,11 @@ impl MapBuilder {
         let longest_path = dmap.calculate_longest_path();
         mb.player_start = longest_path[0];
         mb.winitem_start = *longest_path.last().unwrap();
-        mb.rng = rng;
         mb
+    }
+
+    fn find_most_distant(&self) -> MapPosition {
+        self.map.djikstra_map(&self.player_start).furthest_point()
     }
 
     fn fill(&mut self, tile: TileType) {

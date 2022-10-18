@@ -7,6 +7,10 @@ pub struct MapPosition {
 }
 
 impl MapPosition {
+    pub const ZERO: Self = MapPosition {
+        position: IVec2::ZERO,
+    };
+
     pub fn new(x: i32, y: i32) -> Self {
         Self {
             position: IVec2::from_array([x, y]),

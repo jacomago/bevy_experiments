@@ -137,8 +137,7 @@ fn spawn_monsters(
     map_builder: Res<MapBuilder>,
     mut rng: ResMut<GlobalRng>,
 ) {
-    map_builder.rooms.iter().skip(1).for_each(|room| {
-        let position = MapPosition::new(room.x() as i32, room.y() as i32);
+    map_builder.monster_spawns.iter().for_each(|position| {
         let rng_comp = RngComponent::from(&mut rng);
         spawn_monster(&mut commands, position, &textures, rng_comp);
     });
@@ -146,7 +145,7 @@ fn spawn_monsters(
 
 fn spawn_monster(
     commands: &mut Commands,
-    position: MapPosition,
+    position: &MapPosition,
     textures: &Res<TextureAtlasAssets>,
     mut rng: RngComponent,
 ) {
@@ -158,7 +157,7 @@ fn spawn_monster(
     };
     let mut monster = commands.spawn_bundle(MonsterBundle {
         name: CharacterName(config.name.clone()),
-        position,
+        position: *position,
         health: Health {
             current: config.health,
             max: config.health,

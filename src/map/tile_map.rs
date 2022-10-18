@@ -6,7 +6,7 @@ use ndarray::{Array, Ix2};
 use crate::loading::TextureAtlasAssets;
 
 use super::{
-    grid_graph::{neighbours::Neighbours, DjikstraMapCalc},
+    grid_graph::{base_map::BaseMap, DjikstraMapCalc},
     map_builder::MapBuilder,
     map_position::MapPosition,
     tile::{TileBundle, TileType},
@@ -41,7 +41,7 @@ pub fn spawn_map(
         });
 }
 
-impl Neighbours for TileMap {
+impl BaseMap for TileMap {
     fn can_enter_tile(&self, point: &MapPosition) -> bool {
         self.in_bounds(point.position)
             && self
@@ -49,9 +49,6 @@ impl Neighbours for TileMap {
                 .get(point.as_utuple())
                 .map_or(false, |&s| s == TileType::Floor)
     }
-}
-
-impl DjikstraMapCalc for TileMap {
     fn height(&self) -> usize {
         self.height
     }
@@ -61,6 +58,7 @@ impl DjikstraMapCalc for TileMap {
     }
 }
 
+impl DjikstraMapCalc for TileMap {}
 impl TileMap {
     pub fn new(height: usize, width: usize) -> Self {
         Self {

@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::{
     actors::Player,
     camera::focus_camera,
-    map::{grid_graph::neighbours::Neighbours, map_builder::MapBuilder, map_position::MapPosition},
+    map::{grid_graph::base_map::BaseMap, map_builder::MapBuilder, map_position::MapPosition},
 };
 
 use super::fov::FieldOfView;

@@ -1,11 +1,8 @@
 use crate::map::map_position::MapPosition;
 
-use super::{djikstra_map::DjikstraMap, neighbours::Neighbours};
+use super::{base_map::BaseMap, djikstra_map::DjikstraMap};
 
-pub trait DjikstraMapCalc: Neighbours {
-    fn height(&self) -> usize;
-    fn width(&self) -> usize;
-
+pub trait DjikstraMapCalc: BaseMap {
     fn depth_djikstra_map(&self, start_node: &MapPosition, max_depth: Option<i32>) -> DjikstraMap {
         let mut dmap = DjikstraMap::new(self.height(), self.width(), start_node.as_utuple());
 

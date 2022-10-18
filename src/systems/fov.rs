@@ -4,7 +4,7 @@ use nannou_core::prelude::PI;
 use crate::{
     actors::Player,
     map::{
-        grid_graph::neighbours::Neighbours, map_builder::MapBuilder, map_position::MapPosition,
+        grid_graph::base_map::BaseMap, map_builder::MapBuilder, map_position::MapPosition,
         tile::Tile, tile_map::TileMap,
     },
 };

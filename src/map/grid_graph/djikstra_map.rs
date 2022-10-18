@@ -2,7 +2,7 @@ use ndarray::{Array, Ix2};
 
 use crate::map::map_position::MapPosition;
 
-use super::{djikstra::DjikstraMapCalc, neighbours::Neighbours};
+use super::{base_map::BaseMap, djikstra::DjikstraMapCalc};
 
 #[derive(Debug)]
 pub struct DjikstraMap {
@@ -68,13 +68,11 @@ impl DjikstraMap {
     }
 }
 
-impl Neighbours for DjikstraMap {
+impl BaseMap for DjikstraMap {
     fn can_enter_tile(&self, p: &MapPosition) -> bool {
         self.result.get(p.as_utuple()).unwrap_or(&None).is_some()
     }
-}
 
-impl DjikstraMapCalc for DjikstraMap {
     fn height(&self) -> usize {
         self.height
     }
@@ -83,18 +81,19 @@ impl DjikstraMapCalc for DjikstraMap {
         self.width
     }
 }
+impl DjikstraMapCalc for DjikstraMap {}
 
 #[cfg(test)]
 mod tests {
 
     use super::*;
-    pub struct BaseMap {
+    pub struct TestMap {
         height: usize,
         width: usize,
         result: Array<i32, Ix2>,
     }
 
-    impl BaseMap {
+    impl TestMap {
         pub fn new(height: usize, width: usize) -> Self {
             Self {
                 height,
@@ -104,13 +103,7 @@ mod tests {
         }
     }
 
-    impl Neighbours for BaseMap {
-        fn can_enter_tile(&self, p: &crate::map::map_position::MapPosition) -> bool {
-            self.result.get(p.as_utuple()).is_some()
-        }
-    }
-
-    impl DjikstraMapCalc for BaseMap {
+    impl BaseMap for TestMap {
         fn height(&self) -> usize {
             self.height
         }
@@ -118,11 +111,16 @@ mod tests {
         fn width(&self) -> usize {
             self.width
         }
+        fn can_enter_tile(&self, p: &crate::map::map_position::MapPosition) -> bool {
+            self.result.get(p.as_utuple()).is_some()
+        }
     }
+
+    impl DjikstraMapCalc for TestMap {}
 
     #[test]
     fn test_next_along_path() {
-        let map = BaseMap::new(10, 1);
+        let map = TestMap::new(10, 1);
         let dmap = map.djikstra_map(&MapPosition::new(0, 0));
         let next = dmap.next_along_path(&MapPosition::new(0, 1));
         assert_eq!(next, MapPosition::new(0, 0));
@@ -130,7 +128,7 @@ mod tests {
 
     #[test]
     fn test_furthest_point() {
-        let map = BaseMap::new(10, 1);
+        let map = TestMap::new(10, 1);
         let dmap = map.djikstra_map(&MapPosition::new(0, 0));
         let furthest = dmap.furthest_point();
         assert_eq!(furthest, MapPosition::new(0, 9));
@@ -138,7 +136,7 @@ mod tests {
 
     #[test]
     fn test_path_to() {
-        let map = BaseMap::new(10, 1);
+        let map = TestMap::new(10, 1);
         let dmap = map.djikstra_map(&MapPosition::new(0, 0));
         let path = dmap.path_to(&MapPosition::new(0, 2));
         assert_eq!(
@@ -152,7 +150,7 @@ mod tests {
     }
     #[test]
     fn test_calculate_longest_path() {
-        let map = BaseMap::new(10, 1);
+        let map = TestMap::new(10, 1);
         let dmap = map.djikstra_map(&MapPosition::new(0, 0));
         let path = dmap.calculate_longest_path();
         assert_eq!(

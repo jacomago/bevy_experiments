@@ -2,7 +2,9 @@ use bevy::math::ivec2;
 
 use crate::map::map_position::MapPosition;
 
-pub trait Neighbours {
+pub trait BaseMap {
+    fn height(&self) -> usize;
+    fn width(&self) -> usize;
     fn can_enter_tile(&self, p: &MapPosition) -> bool;
     fn neighbours(&self, p: &MapPosition) -> Vec<MapPosition> {
         vec![ivec2(-1, 0), ivec2(1, 0), ivec2(0, -1), ivec2(0, 1)]

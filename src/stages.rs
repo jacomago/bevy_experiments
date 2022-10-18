@@ -2,8 +2,8 @@ use bevy::prelude::*;
 use iyes_loopless::prelude::IntoConditionalSystem;
 
 use crate::{
-    actors::{components::health::Health, Player, WinItem},
-    map::map_position::MapPosition,
+    components::{health::Health, map_position::MapPosition},
+    entities::{Player, WinItem},
     menu::{PlayerMessage, LOST_MESSAGE, WELCOME_MESSAGE, WIN_MESSAGE},
     GameState,
 };

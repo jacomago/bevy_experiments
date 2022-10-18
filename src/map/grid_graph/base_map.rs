@@ -1,6 +1,6 @@
 use bevy::math::ivec2;
 
-use crate::map::map_position::MapPosition;
+use crate::components::map_position::MapPosition;
 
 pub trait BaseMap {
     fn height(&self) -> usize;

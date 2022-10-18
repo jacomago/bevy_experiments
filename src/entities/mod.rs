@@ -1,15 +1,17 @@
 use bevy::prelude::*;
 
-use self::{items::ItemsPlugin, monsters::MonstersPlugin, player::PlayerPlugin};
+use self::{items::ItemsPlugin, monsters::MonstersPlugin, player::PlayerPlugin, tile::TilePlugin};
 
-pub mod components;
 mod items;
 mod monsters;
 mod player;
+mod tile;
 
 pub use items::WinItem;
 pub use monsters::Monster;
 pub use player::Player;
+pub use tile::Tile;
+pub use tile::TileType;
 
 pub const MONSTER_FOV_RADIUS: i32 = 6;
 
@@ -19,6 +21,7 @@ impl Plugin for ActorsPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugin(PlayerPlugin)
             .add_plugin(MonstersPlugin)
-            .add_plugin(ItemsPlugin);
+            .add_plugin(ItemsPlugin)
+            .add_plugin(TilePlugin);
     }
 }

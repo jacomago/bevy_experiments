@@ -1,6 +1,6 @@
 use ndarray::{Array, Ix2};
 
-use crate::map::map_position::MapPosition;
+use crate::components::map_position::MapPosition;
 
 use super::{base_map::BaseMap, djikstra::DjikstraMapCalc};
 
@@ -111,7 +111,7 @@ mod tests {
         fn width(&self) -> usize {
             self.width
         }
-        fn can_enter_tile(&self, p: &crate::map::map_position::MapPosition) -> bool {
+        fn can_enter_tile(&self, p: &MapPosition) -> bool {
             self.result.get(p.as_utuple()).is_some()
         }
     }

@@ -1,8 +1,9 @@
 use bevy::prelude::*;
 
 use crate::{
-    actors::{Monster, Player, MONSTER_FOV_RADIUS},
-    map::{grid_graph::DjikstraMapCalc, map_builder::MapBuilder, map_position::MapPosition},
+    components::map_position::MapPosition,
+    entities::{Monster, Player, MONSTER_FOV_RADIUS},
+    map::{grid_graph::DjikstraMapCalc, map_builder::MapBuilder},
 };
 
 use super::{combat::WantsToAttack, fov::FieldOfView, movement::WantsToMove};

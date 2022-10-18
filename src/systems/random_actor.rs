@@ -2,8 +2,8 @@ use bevy::{math::ivec2, prelude::*};
 use bevy_turborand::{DelegatedRng, RngComponent};
 
 use crate::{
-    actors::{Monster, Player},
-    map::map_position::MapPosition,
+    components::map_position::MapPosition,
+    entities::{Monster, Player},
 };
 
 use super::{combat::WantsToAttack, movement::WantsToMove};

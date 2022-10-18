@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::actors::{components::health::Health, Player};
+use crate::{components::health::Health, entities::Player};
 
 pub struct CombatPlugin;
 

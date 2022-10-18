@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 
 use crate::{
-    actors::Player,
     camera::focus_camera,
-    map::{grid_graph::base_map::BaseMap, map_builder::MapBuilder, map_position::MapPosition},
+    components::map_position::MapPosition,
+    entities::Player,
+    map::{grid_graph::base_map::BaseMap, map_builder::MapBuilder},
 };
 
 use super::fov::FieldOfView;

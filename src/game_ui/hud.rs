@@ -1,9 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    actors::{components::health::Health, Player},
-    cleanup::cleanup_components,
-    loading::FontAssets,
+    cleanup::cleanup_components, components::health::Health, entities::Player, loading::FontAssets,
     GameState,
 };
 

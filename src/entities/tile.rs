@@ -1,14 +1,45 @@
 use bevy::prelude::*;
 
-use crate::loading::TextureAtlasAssets;
+use crate::{
+    cleanup::cleanup_components, components::map_position::MapPosition,
+    loading::TextureAtlasAssets, map::map_builder::MapBuilder, GameState,
+};
 
-use super::{map_position::MapPosition, FLOOR_SPRITE_INDEX, MAP_Z, WALL_SPRITE_INDEX};
+const MAP_Z: f32 = 0.0;
+const WALL_SPRITE_INDEX: usize = 35;
+const FLOOR_SPRITE_INDEX: usize = 46;
+
+pub struct TilePlugin;
+
+impl Plugin for TilePlugin {
+    fn build(&self, app: &mut App) {
+        app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_map))
+            .add_system_set(
+                SystemSet::on_exit(GameState::Playing).with_system(cleanup_components::<Tile>),
+            );
+    }
+}
 
 #[derive(Copy, Clone, PartialEq, Eq, Default, Debug, Component)]
 pub enum TileType {
     Wall,
     #[default]
     Floor,
+}
+
+pub fn spawn_map(
+    mut commands: Commands,
+    textures: Res<TextureAtlasAssets>,
+    map_builder: Res<MapBuilder>,
+) {
+    map_builder
+        .map
+        .tiles
+        .indexed_iter()
+        .for_each(|((y, x), t)| {
+            let position = MapPosition::new(x.try_into().unwrap(), y.try_into().unwrap());
+            commands.spawn_bundle(TileBundle::new(position, textures.as_ref(), *t));
+        });
 }
 
 #[derive(Component, Default)]

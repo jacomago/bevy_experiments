@@ -6,9 +6,11 @@
 //! - Supplement Pusher
 
 use crate::cleanup::cleanup_components;
+use crate::components::health::Health;
+use crate::components::map_position::MapPosition;
+use crate::components::name::CharacterName;
 use crate::game_ui::tooltip::Interactive;
 use crate::map::map_builder::MapBuilder;
-use crate::map::map_position::MapPosition;
 use crate::stages::{end_turn, TurnState};
 use crate::systems::chasing_player::{chase_player, ChasingPlayer};
 use crate::systems::combat::combat;
@@ -22,8 +24,6 @@ use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use iyes_loopless::prelude::ConditionSet;
 
-use super::components::health::Health;
-use super::components::name::CharacterName;
 use super::MONSTER_FOV_RADIUS;
 
 pub struct MonstersPlugin;

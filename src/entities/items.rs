@@ -2,14 +2,13 @@ use bevy::prelude::*;
 
 use crate::{
     cleanup::cleanup_components,
+    components::{map_position::MapPosition, name::CharacterName},
     game_ui::tooltip::Interactive,
     loading::TextureAtlasAssets,
-    map::{map_builder::MapBuilder, map_position::MapPosition},
+    map::map_builder::MapBuilder,
     systems::movement::CHARACTER_Z,
     GameState,
 };
-
-use super::components::name::CharacterName;
 
 pub struct ItemsPlugin;
 

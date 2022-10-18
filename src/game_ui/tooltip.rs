@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
 use crate::{
-    actions::Actions, cleanup::cleanup_components, loading::FontAssets,
-    map::map_position::TILE_SIZE, GameState,
+    actions::Actions, cleanup::cleanup_components, components::map_position::TILE_SIZE,
+    loading::FontAssets, GameState,
 };
 
 pub struct TooltipPlugin;

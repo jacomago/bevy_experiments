@@ -1,4 +1,4 @@
-use crate::map::map_position::MapPosition;
+use crate::components::map_position::MapPosition;
 
 use super::{base_map::BaseMap, djikstra_map::DjikstraMap};
 

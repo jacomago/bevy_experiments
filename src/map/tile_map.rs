@@ -3,14 +3,9 @@ use std::usize;
 use bevy::prelude::*;
 use ndarray::{Array, Ix2};
 
-use crate::loading::TextureAtlasAssets;
+use crate::{components::map_position::MapPosition, entities::TileType};
 
-use super::{
-    grid_graph::{base_map::BaseMap, DjikstraMapCalc},
-    map_builder::MapBuilder,
-    map_position::MapPosition,
-    tile::{TileBundle, TileType},
-};
+use super::grid_graph::{base_map::BaseMap, DjikstraMapCalc};
 
 #[derive(Default, Debug)]
 pub struct TileMap {
@@ -24,21 +19,6 @@ pub fn in_bounds(point: IVec2, width: usize, height: usize) -> bool {
         && width > point.x.try_into().unwrap()
         && point.y >= 0
         && height > point.y.try_into().unwrap()
-}
-
-pub fn spawn_map(
-    mut commands: Commands,
-    textures: Res<TextureAtlasAssets>,
-    map_builder: Res<MapBuilder>,
-) {
-    map_builder
-        .map
-        .tiles
-        .indexed_iter()
-        .for_each(|((y, x), t)| {
-            let position = MapPosition::new(x.try_into().unwrap(), y.try_into().unwrap());
-            commands.spawn_bundle(TileBundle::new(position, textures.as_ref(), *t));
-        });
 }
 
 impl BaseMap for TileMap {

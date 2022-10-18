@@ -14,10 +14,11 @@
 //#![forbid(clippy::missing_docs_in_private_items)]
 
 mod actions;
-mod actors;
 mod audio;
 mod camera;
 mod cleanup;
+mod components;
+mod entities;
 mod game_ui;
 mod loading;
 mod map;
@@ -30,13 +31,13 @@ use crate::audio::InternalAudioPlugin;
 use crate::loading::LoadingPlugin;
 use crate::menu::MenuPlugin;
 
-use actors::ActorsPlugin;
 use bevy::app::App;
 #[cfg(debug_assertions)]
 use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::prelude::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
 use camera::CameraPlugin;
+use entities::ActorsPlugin;
 use game_ui::GameUiPlugin;
 use map::MapPlugin;
 use stages::StagePlugin;

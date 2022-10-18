@@ -8,6 +8,7 @@ mod monsters;
 mod player;
 
 pub use items::WinItem;
+pub use monsters::Monster;
 pub use player::Player;
 pub struct ActorsPlugin;
 

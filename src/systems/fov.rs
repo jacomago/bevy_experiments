@@ -1,15 +1,23 @@
 use bevy::{math::ivec2, prelude::*, utils::HashSet};
 use nannou_core::prelude::PI;
 
-use crate::map::{
-    grid_graph::neighbours::Neighbours, map_builder::MapBuilder, map_position::MapPosition,
-    tile_map::TileMap,
+use crate::{
+    actors::Player,
+    map::{
+        grid_graph::neighbours::Neighbours, map_builder::MapBuilder, map_position::MapPosition,
+        tile_map::TileMap,
+    },
+    GameState,
 };
 
 pub struct FOVPlugin;
 
 impl Plugin for FOVPlugin {
-    fn build(&self, _: &mut App) {}
+    fn build(&self, app: &mut App) {
+        app.add_system_set(
+            SystemSet::on_update(GameState::Playing).with_system(set_fov_visibility),
+        );
+    }
 }
 
 pub fn fov(mut query: Query<(&MapPosition, &mut FieldOfView)>, map: Res<MapBuilder>) {
@@ -20,6 +28,20 @@ pub fn fov(mut query: Query<(&MapPosition, &mut FieldOfView)>, map: Res<MapBuild
             f.visible_positions = field_of_view_set(p, f.radius, &map);
             f.is_dirty = false;
         });
+}
+
+fn set_fov_visibility(
+    player_fov: Query<(&FieldOfView, With<Player>)>,
+    mut visibility_query: Query<(&mut Visibility, &MapPosition)>,
+) {
+    let (fov, _) = player_fov.single();
+    visibility_query.iter_mut().for_each(|(mut v, p)| {
+        if fov.visible_positions.contains(p) {
+            v.is_visible = true;
+        } else {
+            v.is_visible = false;
+        }
+    });
 }
 
 #[derive(Component, Default)]

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    actors::Player,
+    actors::{Monster, Player},
     map::{grid_graph::DjikstraMapCalc, map_builder::MapBuilder, map_position::MapPosition},
 };
 
@@ -13,7 +13,7 @@ pub struct ChasingPlayer {}
 pub fn chase_player(
     player_query: Query<(Entity, &MapPosition, With<Player>)>,
     map: Res<MapBuilder>,
-    all_positions: Query<&MapPosition, Without<Player>>,
+    all_positions: Query<&MapPosition, With<Monster>>,
     mut chasers: Query<(Entity, &mut ChasingPlayer, &MapPosition)>,
     mut move_events: EventWriter<WantsToMove>,
     mut combat_events: EventWriter<WantsToAttack>,

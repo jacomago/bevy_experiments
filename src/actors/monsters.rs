@@ -24,6 +24,7 @@ use iyes_loopless::prelude::ConditionSet;
 
 use super::components::health::Health;
 use super::components::name::CharacterName;
+use super::MONSTER_FOV_RADIUS;
 
 pub struct MonstersPlugin;
 
@@ -162,7 +163,7 @@ fn spawn_monster(
             current: config.health,
             max: config.health,
         },
-        fov: FieldOfView::new(6),
+        fov: FieldOfView::new(MONSTER_FOV_RADIUS),
         interactive: Interactive {
             text: format!("{} hp:{}", &config.name, config.health),
         },

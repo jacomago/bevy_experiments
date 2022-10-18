@@ -7,10 +7,14 @@ use nannou_core::prelude::Rect;
 use crate::components::map_position::MapPosition;
 use crate::entities::TileType;
 
+use self::standard::StandardArchitect;
+
 use super::grid_map::DjikstraMapCalc;
 use super::tile_map::{in_bounds, TileMap};
 
 mod empty;
+mod standard;
+
 trait MapArchitect {
     fn builder(&mut self, height: usize, width: usize, rng: &mut RngComponent) -> MapBuilder;
 }
@@ -30,36 +34,9 @@ enum Direction {
 }
 
 impl MapBuilder {
-    pub fn new(
-        mut rng: RngComponent,
-        height: usize,
-        width: usize,
-        max_room_size: usize,
-        num_rooms: usize,
-    ) -> Self {
-        let mut mb = MapBuilder {
-            map: TileMap::new(height, width),
-            rooms: Vec::new(),
-            player_start: MapPosition::default(),
-            ..default()
-        };
-        mb.fill(TileType::Wall);
-        mb.build_random_rooms(rng.get_mut(), width, height, max_room_size, num_rooms);
-        mb.build_corridors(&mut rng);
-        mb.monster_spawns = mb
-            .rooms
-            .iter()
-            .skip(1)
-            .map(|room| MapPosition::new(room.x() as i32, room.y() as i32))
-            .collect();
-        let dmap = mb.map.djikstra_map(&MapPosition::new(
-            mb.rooms[0].x() as i32,
-            mb.rooms[0].y() as i32,
-        ));
-        let longest_path = dmap.calculate_longest_path();
-        mb.player_start = longest_path[0];
-        mb.winitem_start = *longest_path.last().unwrap();
-        mb
+    pub fn new(mut rng: RngComponent, height: usize, width: usize) -> Self {
+        let mut architect = StandardArchitect::new();
+        architect.builder(height, width, &mut rng)
     }
 
     fn find_most_distant(&self) -> MapPosition {

@@ -12,9 +12,6 @@ use self::map_builder::MapBuilder;
 pub const MAP_WIDTH: usize = 80;
 pub const MAP_HEIGHT: usize = 50;
 
-pub const MAX_ROOM_SIZE: usize = 10;
-
-const NUM_ROOMS: usize = 20;
 pub struct MapPlugin;
 
 impl Plugin for MapPlugin {
@@ -28,7 +25,5 @@ pub fn insert_mapbuilder(mut commands: Commands, mut rng: ResMut<GlobalRng>) {
         RngComponent::from(&mut rng),
         MAP_HEIGHT,
         MAP_WIDTH,
-        MAX_ROOM_SIZE,
-        NUM_ROOMS,
     ));
 }

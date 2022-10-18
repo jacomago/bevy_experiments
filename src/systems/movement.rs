@@ -6,6 +6,8 @@ use crate::{
     map::{grid_graph::neighbours::Neighbours, map_builder::MapBuilder, map_position::MapPosition},
 };
 
+use super::fov::FieldOfView;
+
 pub const CHARACTER_Z: f32 = 1.;
 
 pub struct MovementPlugin;
@@ -25,6 +27,7 @@ pub struct WantsToMove {
 pub fn movement(
     mut move_events: EventReader<WantsToMove>,
     mut query: Query<(&mut Transform, &mut MapPosition, Without<Camera2d>)>,
+    mut fovs: Query<&mut FieldOfView>,
     player_query: Query<Entity, With<Player>>,
     mut camera_query: Query<&mut Transform, With<Camera2d>>,
     map_builder: Res<MapBuilder>,
@@ -43,6 +46,9 @@ pub fn movement(
                     // If moving player also move camera
                     if entity == player {
                         focus_camera(&mut camera_query, transform);
+                    }
+                    if let Ok(mut fov) = fovs.get_mut(entity) {
+                        *fov = fov.clone_dirty();
                     }
                 }
             }

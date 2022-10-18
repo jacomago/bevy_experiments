@@ -5,7 +5,7 @@ use crate::map::map_builder::MapBuilder;
 use crate::map::map_position::MapPosition;
 use crate::stages::{end_turn, GameStage, TurnState};
 use crate::systems::combat::{combat, WantsToAttack};
-use crate::systems::fov::{fov, FieldOfView};
+use crate::systems::fov::{fov, set_fov_visibility, FieldOfView};
 use crate::systems::movement::{movement, WantsToMove, CHARACTER_Z};
 use crate::GameState;
 
@@ -39,7 +39,8 @@ impl Plugin for PlayerPlugin {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_player))
             .add_system_set(
                 SystemSet::on_update(GameState::Playing)
-                    .with_system(player_input.run_if_resource_equals(TurnState::AwaitingInput)),
+                    .with_system(player_input.run_if_resource_equals(TurnState::AwaitingInput))
+                    .with_system(set_fov_visibility),
             )
             .add_system_set_to_stage(
                 GameStage::PlayerCombat,
@@ -75,11 +76,14 @@ fn spawn_player(
     map_builder: Res<MapBuilder>,
 ) {
     let player_start = map_builder.player_start;
+    let mut fov = FieldOfView::new(8);
+    fov.update(&player_start, &map_builder.map);
+    const PLAYER_MAX_HEALTH: i32 = 10;
     commands.spawn_bundle(PlayerBundle {
         position: player_start,
         health: Health {
-            current: 20,
-            max: 20,
+            current: PLAYER_MAX_HEALTH,
+            max: PLAYER_MAX_HEALTH,
         },
         fov: FieldOfView::new(8),
         sprite: SpriteSheetBundle {

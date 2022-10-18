@@ -25,12 +25,11 @@ pub fn fov(mut query: Query<(&MapPosition, &mut FieldOfView)>, map: Res<MapBuild
         .iter_mut()
         .filter(|(_, f)| f.is_dirty)
         .for_each(|(p, mut f)| {
-            f.visible_positions = field_of_view_set(p, f.radius, &map);
-            f.is_dirty = false;
+            f.update(p, &map.map);
         });
 }
 
-fn set_fov_visibility(
+pub fn set_fov_visibility(
     player_fov: Query<(&FieldOfView, With<Player>)>,
     mut visibility_query: Query<(&mut Visibility, &MapPosition)>,
 ) {
@@ -44,7 +43,7 @@ fn set_fov_visibility(
     });
 }
 
-#[derive(Component, Default)]
+#[derive(Component, Default, Debug)]
 pub struct FieldOfView {
     pub visible_positions: HashSet<MapPosition>,
     pub radius: i32,
@@ -65,6 +64,10 @@ impl FieldOfView {
             radius: self.radius,
             is_dirty: true,
         }
+    }
+    pub fn update(&mut self, p: &MapPosition, map: &TileMap) {
+        self.visible_positions = field_of_view_set(p, self.radius, &map);
+        self.is_dirty = false;
     }
 }
 
@@ -112,14 +115,17 @@ fn trace_path(
     res
 }
 
-fn field_of_view_set(p: &MapPosition, radius: i32, map: &MapBuilder) -> HashSet<MapPosition> {
+fn field_of_view_set(p: &MapPosition, radius: i32, map: &TileMap) -> HashSet<MapPosition> {
     // go through values of circle making a paht
     // adding to visible points on the way
     // if hit wall halt path
     let circle_set = circle_set(radius);
     circle_set
         .iter()
-        .flat_map(|(x, y)| trace_path(p, &MapPosition::new(*x, *y), radius, &map.map))
+        .flat_map(|(x, y)| {
+            let end_pos = MapPosition::from_ivec2(p.position + ivec2(*x, *y));
+            trace_path(p, &end_pos, radius, map)
+        })
         .collect()
 }
 
@@ -192,6 +198,63 @@ mod tests {
                 MapPosition::new(3, 4),
                 MapPosition::new(3, 3),
                 MapPosition::new(5, 5)
+            ]
+            .into_iter()
+            .collect()
+        );
+    }
+    #[test]
+    fn test_trace_path_backwards() {
+        let p = MapPosition::new(5, 5);
+        let p2 = MapPosition::new(1, 5);
+        let map = TileMap::new(10, 10);
+        assert_eq!(
+            trace_path(&p, &p2, 4, &map),
+            vec![
+                MapPosition::new(1, 5),
+                MapPosition::new(2, 5),
+                MapPosition::new(3, 5),
+                MapPosition::new(4, 5),
+                MapPosition::new(5, 5)
+            ]
+            .into_iter()
+            .collect()
+        );
+    }
+    #[test]
+    fn test_field_of_view_set_simple() {
+        let p = MapPosition::new(0, 0);
+        let map = TileMap::new(10, 10);
+        // In corner so no negatives
+        assert_eq!(
+            field_of_view_set(&p, 2, &map),
+            vec![
+                MapPosition::new(0, 0),
+                MapPosition::new(1, 1),
+                MapPosition::new(0, 1),
+                MapPosition::new(1, 0),
+                MapPosition::new(2, 1),
+                MapPosition::new(1, 2),
+                MapPosition::new(0, 2),
+                MapPosition::new(2, 0),
+            ]
+            .into_iter()
+            .collect()
+        );
+    }
+    #[test]
+    fn test_field_of_view_set_not_centre() {
+        let p = MapPosition::new(4, 3);
+        let map = TileMap::new(10, 10);
+        // In corner so no negatives
+        assert_eq!(
+            field_of_view_set(&p, 1, &map),
+            vec![
+                MapPosition::new(4, 3),
+                MapPosition::new(3, 3),
+                MapPosition::new(4, 4),
+                MapPosition::new(5, 3),
+                MapPosition::new(4, 2)
             ]
             .into_iter()
             .collect()

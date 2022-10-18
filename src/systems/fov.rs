@@ -5,20 +5,9 @@ use crate::{
     actors::Player,
     map::{
         grid_graph::neighbours::Neighbours, map_builder::MapBuilder, map_position::MapPosition,
-        tile_map::TileMap,
+        tile::Tile, tile_map::TileMap,
     },
-    GameState,
 };
-
-pub struct FOVPlugin;
-
-impl Plugin for FOVPlugin {
-    fn build(&self, app: &mut App) {
-        app.add_system_set(
-            SystemSet::on_update(GameState::Playing).with_system(set_fov_visibility),
-        );
-    }
-}
 
 pub fn fov(mut query: Query<(&MapPosition, &mut FieldOfView)>, map: Res<MapBuilder>) {
     query
@@ -31,12 +20,18 @@ pub fn fov(mut query: Query<(&MapPosition, &mut FieldOfView)>, map: Res<MapBuild
 
 pub fn set_fov_visibility(
     player_fov: Query<(&FieldOfView, With<Player>)>,
-    mut visibility_query: Query<(&mut Visibility, &MapPosition)>,
+    mut visibility_query: Query<(Entity, &mut Visibility, &MapPosition)>,
+    mut tiles: Query<(&mut TextureAtlasSprite, With<Tile>)>,
 ) {
     let (fov, _) = player_fov.single();
-    visibility_query.iter_mut().for_each(|(mut v, p)| {
+    visibility_query.iter_mut().for_each(|(entity, mut v, p)| {
         if fov.visible_positions.contains(p) {
             v.is_visible = true;
+            if let Ok((mut tile_sprite, _)) = tiles.get_mut(entity) {
+                tile_sprite.color = Color::WHITE;
+            }
+        } else if let Ok((mut tile_sprite, _)) = tiles.get_mut(entity) {
+            tile_sprite.color = Color::DARK_GRAY;
         } else {
             v.is_visible = false;
         }
@@ -49,6 +44,7 @@ pub struct FieldOfView {
     pub radius: i32,
     pub is_dirty: bool,
 }
+
 impl FieldOfView {
     pub fn new(radius: i32) -> Self {
         Self {
@@ -106,9 +102,8 @@ fn trace_path(
             position: ivec2(v.x.round() as i32, v.y.round() as i32),
         })
     {
-        if map.can_enter_tile(&p) {
-            res.insert(p);
-        } else {
+        res.insert(p);
+        if !map.can_enter_tile(&p) {
             break;
         }
     }
@@ -225,13 +220,19 @@ mod tests {
     fn test_field_of_view_set_simple() {
         let p = MapPosition::new(0, 0);
         let map = TileMap::new(10, 10);
-        // In corner so no negatives
+        // In corner so no negatives other than walls
         assert_eq!(
             field_of_view_set(&p, 2, &map),
             vec![
                 MapPosition::new(0, 0),
                 MapPosition::new(1, 1),
                 MapPosition::new(0, 1),
+                MapPosition::new(-1, 0),
+                MapPosition::new(0, 0),
+                MapPosition::new(-1, -1),
+                MapPosition::new(-1, 1),
+                MapPosition::new(1, -1),
+                MapPosition::new(0, -1),
                 MapPosition::new(1, 0),
                 MapPosition::new(2, 1),
                 MapPosition::new(1, 2),

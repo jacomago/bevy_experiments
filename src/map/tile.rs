@@ -15,7 +15,6 @@ pub enum TileType {
 pub struct Tile;
 
 #[derive(Bundle, Default)]
-
 pub struct TileBundle {
     _t: Tile,
     tile_type: TileType,
@@ -30,6 +29,7 @@ impl TileBundle {
             position,
             tile_type,
             sprite: SpriteSheetBundle {
+                visibility: Visibility { is_visible: false },
                 transform: Transform {
                     translation: position.translation(MAP_Z),
                     ..default()

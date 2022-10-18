@@ -4,10 +4,9 @@ use self::{combat::CombatPlugin, movement::MovementPlugin};
 
 pub mod chasing_player;
 pub mod combat;
+pub mod fov;
 pub mod movement;
 pub mod random_actor;
-pub mod fov;
-
 pub struct SystemsPlugin;
 
 impl Plugin for SystemsPlugin {

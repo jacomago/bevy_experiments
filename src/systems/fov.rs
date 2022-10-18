@@ -66,7 +66,7 @@ impl FieldOfView {
         }
     }
     pub fn update(&mut self, p: &MapPosition, map: &TileMap) {
-        self.visible_positions = field_of_view_set(p, self.radius, &map);
+        self.visible_positions = field_of_view_set(p, self.radius, map);
         self.is_dirty = false;
     }
 }

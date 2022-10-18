@@ -4,7 +4,7 @@ use nannou_core::prelude::PI;
 use crate::{
     components::map_position::MapPosition,
     entities::{Player, Tile},
-    map::{grid_graph::base_map::BaseMap, map_builder::MapBuilder, tile_map::TileMap},
+    map::{grid_map::base_map::BaseMap, map_builder::MapBuilder, tile_map::TileMap},
 };
 
 pub fn fov(mut query: Query<(&MapPosition, &mut FieldOfView)>, map: Res<MapBuilder>) {

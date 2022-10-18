@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::{
     components::map_position::MapPosition,
     entities::{Monster, Player, MONSTER_FOV_RADIUS},
-    map::{grid_graph::DjikstraMapCalc, map_builder::MapBuilder},
+    map::{grid_map::DjikstraMapCalc, map_builder::MapBuilder},
 };
 
 use super::{combat::WantsToAttack, fov::FieldOfView, movement::WantsToMove};

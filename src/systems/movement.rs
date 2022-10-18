@@ -4,7 +4,7 @@ use crate::{
     camera::focus_camera,
     components::map_position::MapPosition,
     entities::Player,
-    map::{grid_graph::base_map::BaseMap, map_builder::MapBuilder},
+    map::{grid_map::base_map::BaseMap, map_builder::MapBuilder},
 };
 
 use super::fov::FieldOfView;

@@ -5,7 +5,7 @@ use ndarray::{Array, Ix2};
 
 use crate::{components::map_position::MapPosition, entities::TileType};
 
-use super::grid_graph::{base_map::BaseMap, DjikstraMapCalc};
+use super::grid_map::{base_map::BaseMap, DjikstraMapCalc};
 
 #[derive(Default, Debug)]
 pub struct TileMap {

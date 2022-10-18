@@ -7,7 +7,7 @@ use nannou_core::prelude::Rect;
 use crate::components::map_position::MapPosition;
 use crate::entities::TileType;
 
-use super::grid_graph::DjikstraMapCalc;
+use super::grid_map::DjikstraMapCalc;
 use super::tile_map::{in_bounds, TileMap};
 use super::{MAP_HEIGHT, MAP_WIDTH, MAX_ROOM_SIZE};
 

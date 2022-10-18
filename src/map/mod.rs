@@ -1,4 +1,4 @@
-pub mod grid_graph;
+pub mod grid_map;
 pub mod map_builder;
 pub mod tile_map;
 

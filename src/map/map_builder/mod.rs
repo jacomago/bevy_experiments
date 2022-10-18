@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use bevy_turborand::rng::{Rng, TurboRand};
-use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
+use bevy_turborand::{DelegatedRng, RngComponent};
 use nannou_core::prelude::Rect;
 
 use crate::components::map_position::MapPosition;
@@ -9,9 +9,6 @@ use crate::entities::TileType;
 
 use super::grid_map::DjikstraMapCalc;
 use super::tile_map::{in_bounds, TileMap};
-use super::{MAP_HEIGHT, MAP_WIDTH, MAX_ROOM_SIZE};
-
-const NUM_ROOMS: usize = 20;
 
 #[derive(Debug, Default)]
 pub struct MapBuilder {
@@ -27,17 +24,14 @@ enum Direction {
     Vertical,
 }
 
-pub fn insert_mapbuilder(mut commands: Commands, mut rng: ResMut<GlobalRng>) {
-    commands.insert_resource(MapBuilder::new(
-        RngComponent::from(&mut rng),
-        MAP_HEIGHT,
-        MAP_WIDTH,
-        MAX_ROOM_SIZE,
-    ));
-}
-
 impl MapBuilder {
-    pub fn new(mut rng: RngComponent, height: usize, width: usize, max_room_size: usize) -> Self {
+    pub fn new(
+        mut rng: RngComponent,
+        height: usize,
+        width: usize,
+        max_room_size: usize,
+        num_rooms: usize,
+    ) -> Self {
         let mut mb = MapBuilder {
             map: TileMap::new(height, width),
             rooms: Vec::new(),
@@ -45,7 +39,7 @@ impl MapBuilder {
             ..default()
         };
         mb.fill(TileType::Wall);
-        mb.build_random_rooms(rng.get_mut(), width, height, max_room_size);
+        mb.build_random_rooms(rng.get_mut(), width, height, max_room_size, num_rooms);
         mb.build_corridors(&mut rng);
         let dmap = mb.map.djikstra_map(&MapPosition::new(
             mb.rooms[0].x() as i32,
@@ -68,8 +62,9 @@ impl MapBuilder {
         width: usize,
         height: usize,
         max_room_size: usize,
+        num_rooms: usize,
     ) {
-        while NUM_ROOMS > self.rooms.len() {
+        while num_rooms > self.rooms.len() {
             let room = Rect::from_x_y_w_h(
                 rng.usize(1..width) as f32,
                 rng.usize(1..height) as f32,

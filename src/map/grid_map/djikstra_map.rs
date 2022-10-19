@@ -24,10 +24,6 @@ impl DjikstraMap {
         }
     }
 
-    pub fn value(&self, p: &MapPosition) -> Option<i32> {
-        *self.result.get(p.as_utuple()).unwrap_or(&None)
-    }
-
     pub fn set(&mut self, p: &MapPosition, value: i32) {
         self.result[p.as_utuple()] = Some(value);
     }
@@ -69,6 +65,7 @@ impl DjikstraMap {
 }
 
 impl BaseMap for DjikstraMap {
+    type Output = Option<i32>;
     fn can_enter_tile(&self, p: &MapPosition) -> bool {
         self.result.get(p.as_utuple()).unwrap_or(&None).is_some()
     }
@@ -79,6 +76,10 @@ impl BaseMap for DjikstraMap {
 
     fn width(&self) -> usize {
         self.width
+    }
+
+    fn value(&self, p: &MapPosition) -> Option<i32> {
+        *self.result.get(p.as_utuple()).unwrap_or(&None)
     }
 }
 impl DjikstraMapCalc for DjikstraMap {}
@@ -104,6 +105,7 @@ mod tests {
     }
 
     impl BaseMap for TestMap {
+        type Output = i32;
         fn height(&self) -> usize {
             self.height
         }
@@ -113,6 +115,10 @@ mod tests {
         }
         fn can_enter_tile(&self, p: &MapPosition) -> bool {
             self.result.get(p.as_utuple()).is_some()
+        }
+
+        fn value(&self, p: &MapPosition) -> Self::Output {
+            self.result[p.as_utuple()]
         }
     }
 

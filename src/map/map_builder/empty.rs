@@ -28,3 +28,15 @@ impl MapArchitect for EmptyArchitect {
         mb
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn build() {
+        let mut arch = EmptyArchitect {};
+        let mut rng = RngComponent::new();
+        let mb = arch.builder(10, 20, &mut rng);
+        println!("{}", mb.map);
+    }
+}

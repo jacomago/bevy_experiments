@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use bevy::prelude::*;
 
 use crate::{
@@ -25,6 +27,15 @@ pub enum TileType {
     Wall,
     #[default]
     Floor,
+}
+
+impl Display for TileType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TileType::Wall => f.write_fmt(format_args!("#")),
+            TileType::Floor => f.write_fmt(format_args!(".")),
+        }
+    }
 }
 
 pub fn spawn_map(

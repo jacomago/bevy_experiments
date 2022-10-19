@@ -1,7 +1,7 @@
-use std::usize;
-
 use bevy::prelude::*;
 use ndarray::{Array, Ix2};
+use std::fmt::Display;
+use std::usize;
 
 use crate::{components::map_position::MapPosition, entities::TileType};
 
@@ -22,6 +22,7 @@ pub fn in_bounds(point: IVec2, width: usize, height: usize) -> bool {
 }
 
 impl BaseMap for TileMap {
+    type Output = TileType;
     fn can_enter_tile(&self, point: &MapPosition) -> bool {
         self.in_bounds(point.position)
             && self
@@ -36,9 +37,20 @@ impl BaseMap for TileMap {
     fn width(&self) -> usize {
         self.width
     }
+
+    fn value(&self, p: &MapPosition) -> Self::Output {
+        self.tiles[p.as_utuple()]
+    }
 }
 
 impl DjikstraMapCalc for TileMap {}
+
+impl Display for TileMap {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("{}", self.tiles))
+    }
+}
+
 impl TileMap {
     pub fn new(height: usize, width: usize) -> Self {
         Self {

@@ -12,8 +12,35 @@ monsters_settings:
                 name: "Yoga Bunny",
                 max_health: 1,
             },
+            behaviour: Random,
+            proportion: 50,
+        },
+        {
+            actor_settings: {
+                sprite_index: 111,
+                name: "Nutritionist",
+                max_health: 2,
+            },
             behaviour: Chasing,
-            proportion: 60,
+            proportion: 10,
+        },
+        {
+            actor_settings: {
+                sprite_index: 79,
+                name: "Gym Bro",
+                max_health: 4,
+            },
+            behaviour: Chasing,
+            proportion: 30,
+        },
+        {
+            actor_settings: {
+                sprite_index: 103,
+                name: "Supplement Pusher",
+                max_health: 3,
+            },
+            behaviour: Chasing,
+            proportion: 10,
         },
     ]
 map_settings: 

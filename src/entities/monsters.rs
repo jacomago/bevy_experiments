@@ -1,10 +1,3 @@
-//! Monsters:
-//!
-//! - Nutritionist
-//! - Yoga Bunny
-//! - Gym Bro
-//! - Supplement Pusher
-
 use crate::cleanup::cleanup_components;
 use crate::components::health::Health;
 use crate::components::map_position::MapPosition;

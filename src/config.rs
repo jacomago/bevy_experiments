@@ -58,7 +58,6 @@ pub struct ItemsSettings {
 
 #[derive(Debug, Deserialize)]
 pub struct Settings {
-    pub seed: u64,
     pub tile_size: i32,
     pub monsters_settings: MonstersSettings,
     pub map_settings: MapSettings,

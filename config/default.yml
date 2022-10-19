@@ -1,5 +1,4 @@
 
-seed: 1000
 tile_size: 32
 monsters_settings: 
     fov_radius: 6

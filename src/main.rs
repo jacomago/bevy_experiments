@@ -12,7 +12,7 @@ use winit::window::Icon;
 
 const WIDTH: f32 = 800.0;
 const HEIGHT: f32 = 600.0;
-const RNG_SEED: u64 = 1000;
+// const RNG_SEED: u64 = 1000;
 
 fn main() {
     App::new()
@@ -26,7 +26,7 @@ fn main() {
             ..Default::default()
         })
         .add_plugins(DefaultPlugins)
-        .add_plugin(RngPlugin::new().with_rng_seed(RNG_SEED))
+        .add_plugin(RngPlugin::new())
         .add_plugin(GamePlugin)
         .add_startup_system(set_window_icon)
         .run();

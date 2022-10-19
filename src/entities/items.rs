@@ -7,7 +7,6 @@ use crate::{
     game_ui::tooltip::Interactive,
     loading::TextureAtlasAssets,
     map::map_builder::MapBuilder,
-    systems::movement::CHARACTER_Z,
     GameState,
 };
 
@@ -54,7 +53,8 @@ pub fn spawn_wintitem(
             },
             sprite: SpriteSheetBundle {
                 transform: Transform {
-                    translation: position.translation(CHARACTER_Z, settings.tile_size),
+                    translation: position
+                        .translation(settings.items_settings.z_level, settings.tile_size),
                     ..default()
                 },
                 texture_atlas: textures.texture_atlas.clone(),

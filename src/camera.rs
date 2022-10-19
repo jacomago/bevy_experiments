@@ -1,8 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    cleanup::cleanup_components, config::Settings, map::map_builder::MapBuilder,
-    systems::movement::CHARACTER_Z, GameState,
+    cleanup::cleanup_components, config::Settings, map::map_builder::MapBuilder, GameState,
 };
 
 /// Plugin to setup the camera
@@ -23,7 +22,7 @@ fn setup_camera(mut commands: Commands, map_builder: Res<MapBuilder>, settings: 
         transform: Transform::from_translation(
             map_builder
                 .player_start
-                .translation(CHARACTER_Z, settings.tile_size),
+                .translation(settings.monsters_settings.z_level, settings.tile_size),
         ),
         ..default()
     });

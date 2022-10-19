@@ -55,6 +55,7 @@ pub struct MapSettings {
 pub struct ItemsSettings {
     pub winitem_sprite_index: usize,
     pub winitem_name: String,
+    pub z_level: f32,
 }
 
 #[derive(Debug, Deserialize)]

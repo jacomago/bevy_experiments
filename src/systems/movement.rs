@@ -10,8 +10,6 @@ use crate::{
 
 use super::fov::FieldOfView;
 
-pub const CHARACTER_Z: f32 = 1.;
-
 pub struct MovementPlugin;
 
 impl Plugin for MovementPlugin {
@@ -44,7 +42,8 @@ pub fn movement(
          }| {
             if map_builder.map.can_enter_tile(&destination) {
                 if let Ok((mut transform, mut position, _)) = query.get_mut(entity) {
-                    transform.translation = destination.translation(CHARACTER_Z, tile_size);
+                    transform.translation =
+                        destination.translation(settings.monsters_settings.z_level, tile_size);
                     position.position = destination.position;
 
                     // If moving player also move camera

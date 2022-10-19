@@ -8,7 +8,7 @@ use crate::map::map_builder::MapBuilder;
 use crate::stages::{end_turn, GameStage, TurnState};
 use crate::systems::combat::{combat, WantsToAttack};
 use crate::systems::fov::{fov, set_fov_visibility, FieldOfView};
-use crate::systems::movement::{movement, WantsToMove, CHARACTER_Z};
+use crate::systems::movement::{movement, WantsToMove};
 use crate::GameState;
 
 use super::monsters::Monster;
@@ -86,7 +86,8 @@ fn spawn_player(
         fov: FieldOfView::new(8),
         sprite: SpriteSheetBundle {
             transform: Transform {
-                translation: player_start.translation(CHARACTER_Z, settings.tile_size),
+                translation: player_start
+                    .translation(settings.monsters_settings.z_level, settings.tile_size),
                 ..default()
             },
             texture_atlas: textures.texture_atlas.clone(),

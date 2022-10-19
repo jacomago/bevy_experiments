@@ -9,7 +9,7 @@ use crate::stages::{end_turn, TurnState};
 use crate::systems::chasing_player::{chase_player, ChasingPlayer};
 use crate::systems::combat::combat;
 use crate::systems::fov::{fov, FieldOfView};
-use crate::systems::movement::{movement, CHARACTER_Z};
+use crate::systems::movement::movement;
 use crate::systems::random_actor::{random_move, RandomMover};
 use crate::GameState;
 use crate::{loading::TextureAtlasAssets, stages::GameStage};
@@ -92,6 +92,7 @@ fn spawn_monsters(
             rng_comp,
             monster_settings,
             settings.tile_size,
+            settings.monsters_settings.z_level,
         );
     });
 }
@@ -107,6 +108,7 @@ fn spawn_monster(
     mut rng: RngComponent,
     settings: &MonstersSettings,
     tile_size: i32,
+    z_level: f32,
 ) {
     let config = rng.weighted_sample(&settings.monsters, weights).unwrap();
     let mut monster = commands.spawn_bundle(MonsterBundle {
@@ -125,7 +127,7 @@ fn spawn_monster(
         },
         sprite: SpriteSheetBundle {
             transform: Transform {
-                translation: position.translation(CHARACTER_Z, tile_size),
+                translation: position.translation(z_level, tile_size),
                 ..default()
             },
             texture_atlas: textures.texture_atlas.clone(),

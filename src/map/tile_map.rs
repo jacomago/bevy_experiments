@@ -47,7 +47,19 @@ impl DjikstraMapCalc for TileMap {}
 
 impl Display for TileMap {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("{}", self.tiles))
+        let str_tiles = self
+            .tiles
+            .rows()
+            .into_iter()
+            .map(|row| {
+                row.iter()
+                    .map(|tile| format!("{}", tile))
+                    .collect::<Vec<String>>()
+                    .join("")
+            })
+            .collect::<Vec<String>>()
+            .join("\n");
+        f.write_fmt(format_args!("{}", str_tiles))
     }
 }
 

@@ -5,7 +5,6 @@ use crate::components::map_position::MapPosition;
 use crate::entities::TileType;
 
 use self::empty::EmptyArchitect;
-use self::standard::StandardArchitect;
 
 use super::grid_map::DjikstraMapCalc;
 use super::tile_map::TileMap;

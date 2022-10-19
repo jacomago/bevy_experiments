@@ -29,6 +29,8 @@ impl MapArchitect for CellularAutomataArchitect {
             map: TileMap::new(height, width),
             ..default()
         };
+        self.random_noise_map(rng, &mut mb.map);
+        self.iteration(&mut mb.map);
         mb
     }
 }

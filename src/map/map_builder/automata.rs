@@ -2,7 +2,7 @@ use bevy::{
     math::ivec2,
     prelude::{default, IVec2},
 };
-use bevy_turborand::DelegatedRng;
+use bevy_turborand::{DelegatedRng, RngComponent};
 
 use crate::{
     components::map_position::MapPosition,
@@ -35,6 +35,13 @@ impl MapArchitect for CellularAutomataArchitect {
     }
 }
 impl CellularAutomataArchitect {
+    fn new() -> Self {
+        Self {
+            percent_floor: 45,
+            max_neighbours: 4,
+            min_neighbours: 0,
+        }
+    }
     fn random_noise_map(&mut self, rng: &mut bevy_turborand::RngComponent, map: &mut TileMap) {
         map.tiles.iter_mut().for_each(|tile| {
             let roll = rng.i32(0..100);
@@ -72,4 +79,12 @@ impl CellularAutomataArchitect {
         });
         map.tiles = new_tiles;
     }
+}
+
+#[test]
+fn build() {
+    let mut arch = CellularAutomataArchitect::new();
+    let mut rng = RngComponent::new();
+    let mb = arch.builder(40, 80, &mut rng);
+    println!("{}", mb.map);
 }

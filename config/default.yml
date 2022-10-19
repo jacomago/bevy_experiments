@@ -50,6 +50,7 @@ map_settings:
     z_level: 0.0
 items_settings: 
     winitem_sprite_index: 124
+    winitem_name: "Cake of Destiny"
 player_settings: {
     sprite_index: 64,
     name: "Cake Addict",

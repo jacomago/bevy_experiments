@@ -38,9 +38,6 @@ pub struct ItemBundle {
     sprite: SpriteSheetBundle,
 }
 
-static WINITEM_NAME: &str = "Cake of destiny";
-const WINITEM_SPRITE_INDEX: usize = 124;
-
 pub fn spawn_wintitem(
     mut commands: Commands,
     textures: Res<TextureAtlasAssets>,
@@ -50,10 +47,10 @@ pub fn spawn_wintitem(
     let position = map_builder.winitem_start;
     commands
         .spawn_bundle(ItemBundle {
-            name: CharacterName(WINITEM_NAME.to_owned()),
+            name: CharacterName(settings.items_settings.winitem_name.clone()),
             position,
             interactive: Interactive {
-                text: WINITEM_NAME.to_string(),
+                text: settings.items_settings.winitem_name.clone(),
             },
             sprite: SpriteSheetBundle {
                 transform: Transform {
@@ -62,7 +59,7 @@ pub fn spawn_wintitem(
                 },
                 texture_atlas: textures.texture_atlas.clone(),
                 sprite: TextureAtlasSprite {
-                    index: WINITEM_SPRITE_INDEX,
+                    index: settings.items_settings.winitem_sprite_index,
                     ..default()
                 },
 

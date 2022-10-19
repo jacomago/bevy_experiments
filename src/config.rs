@@ -44,16 +44,17 @@ pub struct MonstersSettings {
 
 #[derive(Debug, Deserialize)]
 pub struct MapSettings {
-    floor_sprite_index: usize,
-    wall_sprite_index: usize,
-    width: usize,
-    height: usize,
-    z_level: f32,
+    pub floor_sprite_index: usize,
+    pub wall_sprite_index: usize,
+    pub width: usize,
+    pub height: usize,
+    pub z_level: f32,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct ItemsSettings {
-    winitem_sprite_index: usize,
+    pub winitem_sprite_index: usize,
+    pub winitem_name: String,
 }
 
 #[derive(Debug, Deserialize)]

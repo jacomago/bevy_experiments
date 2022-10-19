@@ -37,6 +37,8 @@ bevy_turborand = "0.3"
 ndarray = { version = "0.15.6" }
 nannou_core = "0.18"
 iyes_loopless = "0.7.1"
+config = { version = "0.13" }
+serde = { version = "1" }
 
 # keep the following in sync with Bevy's dependencies
 winit = { version = "0.26.0", default-features = false }

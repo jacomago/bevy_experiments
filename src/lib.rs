@@ -18,6 +18,7 @@ mod audio;
 mod camera;
 mod cleanup;
 mod components;
+mod config;
 mod entities;
 mod game_ui;
 mod loading;

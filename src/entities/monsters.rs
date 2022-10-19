@@ -18,8 +18,6 @@ use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use iyes_loopless::prelude::ConditionSet;
 
-use super::MONSTER_FOV_RADIUS;
-
 pub struct MonstersPlugin;
 
 /// This plugin handles player related stuff like movement
@@ -118,7 +116,7 @@ fn spawn_monster(
             current: config.actor_settings.max_health,
             max: config.actor_settings.max_health,
         },
-        fov: FieldOfView::new(MONSTER_FOV_RADIUS),
+        fov: FieldOfView::new(config.actor_settings.fov_radius),
         interactive: Interactive {
             text: format!(
                 "{} hp:{}",

@@ -2,6 +2,7 @@ use crate::actions::Actions;
 use crate::cleanup::cleanup_components;
 use crate::components::health::Health;
 use crate::components::map_position::MapPosition;
+use crate::config::Settings;
 use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
 use crate::stages::{end_turn, GameStage, TurnState};
@@ -73,6 +74,7 @@ fn spawn_player(
     mut commands: Commands,
     textures: Res<TextureAtlasAssets>,
     map_builder: Res<MapBuilder>,
+    settings: Res<Settings>,
 ) {
     let player_start = map_builder.player_start;
     let mut fov = FieldOfView::new(8);
@@ -87,7 +89,7 @@ fn spawn_player(
         fov: FieldOfView::new(8),
         sprite: SpriteSheetBundle {
             transform: Transform {
-                translation: player_start.translation(CHARACTER_Z),
+                translation: player_start.translation(CHARACTER_Z, settings.tile_size),
                 ..default()
             },
             texture_atlas: textures.texture_atlas.clone(),

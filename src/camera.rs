@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
 use crate::{
-    cleanup::cleanup_components, map::map_builder::MapBuilder, systems::movement::CHARACTER_Z,
-    GameState,
+    cleanup::cleanup_components, config::Settings, map::map_builder::MapBuilder,
+    systems::movement::CHARACTER_Z, GameState,
 };
 
 /// Plugin to setup the camera
@@ -18,9 +18,13 @@ impl Plugin for CameraPlugin {
 }
 
 /// Insert the game camera
-fn setup_camera(mut commands: Commands, map_builder: Res<MapBuilder>) {
+fn setup_camera(mut commands: Commands, map_builder: Res<MapBuilder>, settings: Res<Settings>) {
     commands.spawn_bundle(Camera2dBundle {
-        transform: Transform::from_translation(map_builder.player_start.translation(CHARACTER_Z)),
+        transform: Transform::from_translation(
+            map_builder
+                .player_start
+                .translation(CHARACTER_Z, settings.tile_size),
+        ),
         ..default()
     });
 }

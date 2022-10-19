@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 
-pub const TILE_SIZE: i32 = 32;
 #[derive(Component, Default, PartialEq, Eq, Clone, Copy, Debug, Hash)]
 pub struct MapPosition {
     pub position: IVec2,
@@ -21,10 +20,10 @@ impl MapPosition {
         Self::new(pair.1 as i32, pair.0 as i32)
     }
 
-    pub fn translation(self, z: f32) -> Vec3 {
+    pub fn translation(self, z: f32, tile_size: i32) -> Vec3 {
         Vec3::new(
-            (self.position.x * TILE_SIZE) as f32,
-            (self.position.y * TILE_SIZE) as f32,
+            (self.position.x * tile_size) as f32,
+            (self.position.y * tile_size) as f32,
             z,
         )
     }

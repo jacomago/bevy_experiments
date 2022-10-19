@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use crate::{
     camera::focus_camera,
     components::map_position::MapPosition,
+    config::Settings,
     entities::Player,
     map::{grid_map::base_map::BaseMap, map_builder::MapBuilder},
 };
@@ -32,8 +33,10 @@ pub fn movement(
     player_query: Query<Entity, With<Player>>,
     mut camera_query: Query<&mut Transform, With<Camera2d>>,
     map_builder: Res<MapBuilder>,
+    settings: Res<Settings>,
 ) {
     let player = player_query.single();
+    let tile_size = settings.tile_size;
     move_events.iter().for_each(
         |&WantsToMove {
              entity,
@@ -41,7 +44,7 @@ pub fn movement(
          }| {
             if map_builder.map.can_enter_tile(&destination) {
                 if let Ok((mut transform, mut position, _)) = query.get_mut(entity) {
-                    transform.translation = destination.translation(CHARACTER_Z);
+                    transform.translation = destination.translation(CHARACTER_Z, tile_size);
                     position.position = destination.position;
 
                     // If moving player also move camera

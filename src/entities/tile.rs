@@ -3,7 +3,7 @@ use std::fmt::Display;
 use bevy::prelude::*;
 
 use crate::{
-    cleanup::cleanup_components, components::map_position::MapPosition,
+    cleanup::cleanup_components, components::map_position::MapPosition, config::Settings,
     loading::TextureAtlasAssets, map::map_builder::MapBuilder, GameState,
 };
 
@@ -42,6 +42,7 @@ pub fn spawn_map(
     mut commands: Commands,
     textures: Res<TextureAtlasAssets>,
     map_builder: Res<MapBuilder>,
+    settings: Res<Settings>,
 ) {
     map_builder
         .map
@@ -49,7 +50,12 @@ pub fn spawn_map(
         .indexed_iter()
         .for_each(|((y, x), t)| {
             let position = MapPosition::new(x.try_into().unwrap(), y.try_into().unwrap());
-            commands.spawn_bundle(TileBundle::new(position, textures.as_ref(), *t));
+            commands.spawn_bundle(TileBundle::new(
+                position,
+                textures.as_ref(),
+                *t,
+                settings.tile_size,
+            ));
         });
 }
 
@@ -66,14 +72,19 @@ pub struct TileBundle {
 }
 
 impl TileBundle {
-    pub fn new(position: MapPosition, textures: &TextureAtlasAssets, tile_type: TileType) -> Self {
+    pub fn new(
+        position: MapPosition,
+        textures: &TextureAtlasAssets,
+        tile_type: TileType,
+        tile_size: i32,
+    ) -> Self {
         Self {
             position,
             tile_type,
             sprite: SpriteSheetBundle {
                 visibility: Visibility { is_visible: false },
                 transform: Transform {
-                    translation: position.translation(MAP_Z),
+                    translation: position.translation(MAP_Z, tile_size),
                     ..default()
                 },
                 texture_atlas: textures.texture_atlas.clone(),

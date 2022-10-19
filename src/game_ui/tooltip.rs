@@ -1,8 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    actions::Actions, cleanup::cleanup_components, components::map_position::TILE_SIZE,
-    loading::FontAssets, GameState,
+    actions::Actions, cleanup::cleanup_components, config::Settings, loading::FontAssets, GameState,
 };
 
 pub struct TooltipPlugin;
@@ -40,6 +39,7 @@ fn mouse_rollover(
     actions: Res<Actions>,
     interactives: Query<(&Transform, &Interactive)>,
     mut tooltip_event: EventWriter<ToolTipInfo>,
+    settings: Res<Settings>,
 ) {
     if actions.mouse_rollover.is_none() {
         return;
@@ -47,11 +47,10 @@ fn mouse_rollover(
     let mut overlap = false;
     let mouse_position = actions.mouse_rollover.as_ref().unwrap();
     interactives.iter().for_each(|(transform, interactive)| {
-        if transform
-            .translation
-            .truncate()
-            .abs_diff_eq(mouse_position.game_position, TILE_SIZE as f32 / 2.0)
-        {
+        if transform.translation.truncate().abs_diff_eq(
+            mouse_position.game_position,
+            settings.tile_size as f32 / 2.0,
+        ) {
             tooltip_event.send(ToolTipInfo {
                 text: Some(interactive.text.clone()),
                 position: Some(mouse_position.screen_position),

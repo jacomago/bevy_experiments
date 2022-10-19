@@ -93,6 +93,7 @@ fn spawn_monsters(
             &textures,
             rng_comp,
             monster_settings,
+            settings.tile_size,
         );
     });
 }
@@ -107,6 +108,7 @@ fn spawn_monster(
     textures: &Res<TextureAtlasAssets>,
     mut rng: RngComponent,
     settings: &MonstersSettings,
+    tile_size: i32,
 ) {
     let config = rng.weighted_sample(&settings.monsters, weights).unwrap();
     let mut monster = commands.spawn_bundle(MonsterBundle {
@@ -125,7 +127,7 @@ fn spawn_monster(
         },
         sprite: SpriteSheetBundle {
             transform: Transform {
-                translation: position.translation(CHARACTER_Z),
+                translation: position.translation(CHARACTER_Z, tile_size),
                 ..default()
             },
             texture_atlas: textures.texture_atlas.clone(),

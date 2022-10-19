@@ -16,6 +16,8 @@ pub struct CellularAutomataArchitect {
     percent_floor: i32,
     max_neighbours: usize,
     min_neighbours: usize,
+    num_monsters: usize,
+    monster_distance: f32,
 }
 
 impl MapArchitect for CellularAutomataArchitect {
@@ -31,15 +33,20 @@ impl MapArchitect for CellularAutomataArchitect {
         };
         self.random_noise_map(rng, &mut mb.map);
         self.iteration(&mut mb.map);
+        mb.player_start = self.find_start(&mb.map);
+        mb.monster_spawns = self.monster_spawns(&mb.player_start, &mb.map, rng);
+        mb.winitem_start = mb.find_most_distant();
         mb
     }
 }
 impl CellularAutomataArchitect {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             percent_floor: 45,
             max_neighbours: 4,
             min_neighbours: 0,
+            num_monsters: 50,
+            monster_distance: 10.0,
         }
     }
 
@@ -57,6 +64,30 @@ impl CellularAutomataArchitect {
             .map(|(idx, _)| idx)
             .unwrap();
         closest_point
+    }
+
+    fn monster_spawns(
+        &self,
+        start: &MapPosition,
+        map: &TileMap,
+        rng: &mut RngComponent,
+    ) -> Vec<MapPosition> {
+        let tiles = map
+            .tiles
+            .indexed_iter()
+            .map(|(idx, t)| (MapPosition::from_utuple(&idx), t))
+            .filter(|(idx, t)| {
+                **t == TileType::Floor && idx.distance(start) > self.monster_distance
+            })
+            .map(|(idx, _)| idx)
+            .collect::<Vec<MapPosition>>();
+
+        let spawns = rng
+            .sample_multiple(&tiles, self.num_monsters)
+            .iter()
+            .map(|f| **f)
+            .collect();
+        spawns
     }
 
     fn random_noise_map(&mut self, rng: &mut bevy_turborand::RngComponent, map: &mut TileMap) {

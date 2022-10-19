@@ -17,6 +17,10 @@ impl MapPosition {
         }
     }
 
+    pub fn from_utuple(pair: &(usize, usize)) -> Self {
+        Self::new(pair.1 as i32, pair.0 as i32)
+    }
+
     pub fn translation(self, z: f32) -> Vec3 {
         Vec3::new(
             (self.position.x * TILE_SIZE) as f32,

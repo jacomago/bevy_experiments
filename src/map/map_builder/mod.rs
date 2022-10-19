@@ -4,6 +4,7 @@ use nannou_core::prelude::Rect;
 use crate::components::map_position::MapPosition;
 use crate::entities::TileType;
 
+use self::automata::CellularAutomataArchitect;
 use self::empty::EmptyArchitect;
 
 use super::grid_map::DjikstraMapCalc;
@@ -27,7 +28,7 @@ pub struct MapBuilder {
 
 impl MapBuilder {
     pub fn new(mut rng: RngComponent, height: usize, width: usize) -> Self {
-        let mut architect = EmptyArchitect {};
+        let mut architect = CellularAutomataArchitect::new();
         architect.builder(height, width, &mut rng)
     }
 

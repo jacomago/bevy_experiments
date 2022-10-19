@@ -15,8 +15,6 @@ use super::monsters::Monster;
 use bevy::prelude::*;
 use iyes_loopless::prelude::*;
 
-const PLAYER_SPRITE_INDEX: usize = 64;
-
 pub struct PlayerPlugin;
 
 #[derive(Component, Default)]
@@ -77,14 +75,13 @@ fn spawn_player(
     settings: Res<Settings>,
 ) {
     let player_start = map_builder.player_start;
-    let mut fov = FieldOfView::new(8);
+    let mut fov = FieldOfView::new(settings.player_settings.fov_radius);
     fov.update(&player_start, &map_builder.map);
-    const PLAYER_MAX_HEALTH: i32 = 10;
     commands.spawn_bundle(PlayerBundle {
         position: player_start,
         health: Health {
-            current: PLAYER_MAX_HEALTH,
-            max: PLAYER_MAX_HEALTH,
+            current: settings.player_settings.max_health,
+            max: settings.player_settings.max_health,
         },
         fov: FieldOfView::new(8),
         sprite: SpriteSheetBundle {
@@ -94,7 +91,7 @@ fn spawn_player(
             },
             texture_atlas: textures.texture_atlas.clone(),
             sprite: TextureAtlasSprite {
-                index: PLAYER_SPRITE_INDEX,
+                index: settings.player_settings.sprite_index,
                 ..default()
             },
             ..default()

@@ -13,8 +13,6 @@ pub use player::Player;
 pub use tile::Tile;
 pub use tile::TileType;
 
-pub const MONSTER_FOV_RADIUS: i32 = 6;
-
 pub struct ActorsPlugin;
 
 impl Plugin for ActorsPlugin {

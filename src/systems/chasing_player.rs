@@ -2,7 +2,8 @@ use bevy::prelude::*;
 
 use crate::{
     components::map_position::MapPosition,
-    entities::{Monster, Player, MONSTER_FOV_RADIUS},
+    config::Settings,
+    entities::{Monster, Player},
     map::{grid_map::DjikstraMapCalc, map_builder::MapBuilder},
 };
 
@@ -18,11 +19,11 @@ pub fn chase_player(
     mut chasers: Query<(Entity, &mut ChasingPlayer, &FieldOfView, &MapPosition)>,
     mut move_events: EventWriter<WantsToMove>,
     mut combat_events: EventWriter<WantsToAttack>,
+    settings: Res<Settings>,
 ) {
     let (player, player_position, _) = player_query.single();
-    let dmap = map
-        .map
-        .depth_djikstra_map(player_position, Some(MONSTER_FOV_RADIUS));
+    let max_fov = settings.max_fov;
+    let dmap = map.map.depth_djikstra_map(player_position, Some(max_fov));
     // Find all the new positions
     chasers.iter_mut().for_each(|(entity, _, fov, p)| {
         if fov.visible_positions.contains(player_position) {

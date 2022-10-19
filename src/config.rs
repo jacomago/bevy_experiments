@@ -18,6 +18,7 @@ pub struct ActorSettings {
     pub name: String,
     pub sprite_index: usize,
     pub max_health: i32,
+    pub fov_radius: i32,
 }
 
 #[derive(Debug, Deserialize, Default)]
@@ -36,7 +37,6 @@ pub struct MonsterSettings {
 
 #[derive(Debug, Deserialize)]
 pub struct MonstersSettings {
-    pub fov_radius: i32,
     pub monsters: Vec<MonsterSettings>,
     pub amount: usize,
     pub z_level: f32,
@@ -60,6 +60,7 @@ pub struct ItemsSettings {
 #[derive(Debug, Deserialize)]
 pub struct Settings {
     pub tile_size: i32,
+    pub max_fov: i32,
     pub monsters_settings: MonstersSettings,
     pub map_settings: MapSettings,
     pub items_settings: ItemsSettings,

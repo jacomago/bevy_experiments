@@ -1,0 +1,32 @@
+
+seed: 1000
+tile_size: 32
+monsters_settings: 
+    fov_radius: 6
+    amount: 50
+    z_level: 1
+    monsters: [
+        {
+            actor_settings: {
+                sprite_index: 69,
+                name: "Yoga Bunny",
+                max_health: 1,
+            },
+            behaviour: Chasing,
+            proportion: 60,
+        },
+    ]
+map_settings: 
+    floor_sprite_index: 46
+    wall_sprite_index: 35
+    width: 80
+    height: 50
+    z_level: 0.0
+items_settings: 
+    winitem_sprite_index: 124
+player_settings: {
+    sprite_index: 64,
+    name: "Cake Addict",
+    max_health: 10
+}
+

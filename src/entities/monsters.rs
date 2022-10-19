@@ -9,6 +9,7 @@ use crate::cleanup::cleanup_components;
 use crate::components::health::Health;
 use crate::components::map_position::MapPosition;
 use crate::components::name::CharacterName;
+use crate::config::{Behaviour, MonsterSettings, MonstersSettings, Settings};
 use crate::game_ui::tooltip::Interactive;
 use crate::map::map_builder::MapBuilder;
 use crate::stages::{end_turn, TurnState};
@@ -83,64 +84,28 @@ pub struct MonsterBundle {
     sprite: SpriteSheetBundle,
 }
 
-enum Behaviour {
-    Random,
-    Chasing,
-}
-
-struct MonsterConfig {
-    name: String,
-    health: i32,
-    sprite_index: usize,
-    behaviour: Behaviour,
-}
-
-fn nutritionist() -> MonsterConfig {
-    MonsterConfig {
-        sprite_index: 111,
-        name: "Nutritionist".to_string(),
-        health: 2,
-        behaviour: Behaviour::Random,
-    }
-}
-
-fn yoga_bunny() -> MonsterConfig {
-    MonsterConfig {
-        sprite_index: 69,
-        name: "Yoga Bunny".to_string(),
-        health: 1,
-        behaviour: Behaviour::Chasing,
-    }
-}
-
-fn gym_bro() -> MonsterConfig {
-    MonsterConfig {
-        sprite_index: 79,
-        name: "Gym Bro".to_string(),
-        health: 4,
-        behaviour: Behaviour::Chasing,
-    }
-}
-
-fn supplement_pusher() -> MonsterConfig {
-    MonsterConfig {
-        sprite_index: 103,
-        name: "Supplement Pusher".to_string(),
-        health: 3,
-        behaviour: Behaviour::Chasing,
-    }
-}
-
 fn spawn_monsters(
     mut commands: Commands,
     textures: Res<TextureAtlasAssets>,
     map_builder: Res<MapBuilder>,
     mut rng: ResMut<GlobalRng>,
+    settings: Res<Settings>,
 ) {
+    let monster_settings = &settings.monsters_settings;
     map_builder.monster_spawns.iter().for_each(|position| {
         let rng_comp = RngComponent::from(&mut rng);
-        spawn_monster(&mut commands, position, &textures, rng_comp);
+        spawn_monster(
+            &mut commands,
+            position,
+            &textures,
+            rng_comp,
+            monster_settings,
+        );
     });
+}
+
+fn weights(setting: &MonsterSettings) -> f64 {
+    0.01 * setting.proportion
 }
 
 fn spawn_monster(
@@ -148,23 +113,22 @@ fn spawn_monster(
     position: &MapPosition,
     textures: &Res<TextureAtlasAssets>,
     mut rng: RngComponent,
+    settings: &MonstersSettings,
 ) {
-    let config = match rng.usize(0..100) {
-        0..=60 => yoga_bunny(),
-        61..=80 => gym_bro(),
-        81..=95 => nutritionist(),
-        _ => supplement_pusher(),
-    };
+    let config = rng.weighted_sample(&settings.monsters, weights).unwrap();
     let mut monster = commands.spawn_bundle(MonsterBundle {
-        name: CharacterName(config.name.clone()),
+        name: CharacterName(config.actor_settings.name.clone()),
         position: *position,
         health: Health {
-            current: config.health,
-            max: config.health,
+            current: config.actor_settings.max_health,
+            max: config.actor_settings.max_health,
         },
         fov: FieldOfView::new(MONSTER_FOV_RADIUS),
         interactive: Interactive {
-            text: format!("{} hp:{}", &config.name, config.health),
+            text: format!(
+                "{} hp:{}",
+                &config.actor_settings.name, config.actor_settings.max_health
+            ),
         },
         sprite: SpriteSheetBundle {
             transform: Transform {
@@ -173,7 +137,7 @@ fn spawn_monster(
             },
             texture_atlas: textures.texture_atlas.clone(),
             sprite: TextureAtlasSprite {
-                index: config.sprite_index,
+                index: config.actor_settings.sprite_index,
                 ..default()
             },
 

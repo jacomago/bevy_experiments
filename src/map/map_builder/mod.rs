@@ -1,8 +1,6 @@
-use bevy_turborand::RngComponent;
-use nannou_core::prelude::Rect;
-
 use crate::components::map_position::MapPosition;
 use crate::entities::TileType;
+use bevy_turborand::RngComponent;
 
 use self::automata::CellularAutomataArchitect;
 use self::empty::EmptyArchitect;

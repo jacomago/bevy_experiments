@@ -146,7 +146,7 @@ fn click_play_button(
         .iter_mut()
         .for_each(|(interaction, mut color)| match *interaction {
             Interaction::Clicked => {
-                state.set(GameState::Playing).unwrap();
+                state.set(GameState::Generation).unwrap();
             }
             Interaction::Hovered => {
                 *color = button_colors.hovered;

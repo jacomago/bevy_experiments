@@ -50,6 +50,8 @@ use systems::SystemsPlugin;
 enum GameState {
     /// During the loading State the LoadingPlugin will load our assets
     Loading,
+    /// Generate procedural objects
+    Generation,
     /// During this State the actual game logic is executed
     Playing,
     /// Here the menu is drawn and waiting for player interaction

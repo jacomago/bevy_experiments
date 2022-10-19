@@ -16,14 +16,21 @@ pub struct MapPlugin;
 
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(GameState::Loading).with_system(insert_mapbuilder));
+        app.add_system_set(
+            SystemSet::on_enter(GameState::Generation).with_system(insert_mapbuilder),
+        )
+        .add_system_set(SystemSet::on_update(GameState::Generation).with_system(end_gen));
     }
 }
 
-pub fn insert_mapbuilder(mut commands: Commands, mut rng: ResMut<GlobalRng>) {
+fn insert_mapbuilder(mut commands: Commands, mut rng: ResMut<GlobalRng>) {
     commands.insert_resource(MapBuilder::new(
         RngComponent::from(&mut rng),
         MAP_HEIGHT,
         MAP_WIDTH,
     ));
+}
+
+fn end_gen(mut state: ResMut<State<GameState>>) {
+    state.set(GameState::Playing).unwrap();
 }

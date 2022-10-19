@@ -42,6 +42,23 @@ impl CellularAutomataArchitect {
             min_neighbours: 0,
         }
     }
+
+    fn find_start(&self, map: &TileMap) -> MapPosition {
+        let center = MapPosition::new(map.width as i32 / 2, map.height as i32 / 2);
+        let closest_point = map
+            .tiles
+            .indexed_iter()
+            .filter(|(_, t)| **t == TileType::Floor)
+            .map(|(idx, _)| {
+                let pos = MapPosition::new(idx.1 as i32, idx.0 as i32);
+                (pos, center.distance(&pos))
+            })
+            .min_by(|(_, d), (_, d2)| d.partial_cmp(d2).unwrap())
+            .map(|(idx, _)| idx)
+            .unwrap();
+        closest_point
+    }
+
     fn random_noise_map(&mut self, rng: &mut bevy_turborand::RngComponent, map: &mut TileMap) {
         map.tiles.iter_mut().for_each(|tile| {
             let roll = rng.i32(0..100);

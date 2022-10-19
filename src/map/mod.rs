@@ -25,6 +25,7 @@ fn insert_mapbuilder(mut commands: Commands, mut rng: ResMut<GlobalRng>, setting
         RngComponent::from(&mut rng),
         settings.map_settings.height,
         settings.map_settings.width,
+        &settings.map_settings.architect,
     ));
 }
 

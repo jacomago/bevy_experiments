@@ -1,6 +1,6 @@
 use std::env;
 
-use bevy::prelude::{default, Plugin};
+use bevy::prelude::Plugin;
 use config::{Config, ConfigError, Environment, File};
 use serde::Deserialize;
 
@@ -27,6 +27,13 @@ pub enum Behaviour {
     #[default]
     Chasing,
 }
+#[derive(Debug, Deserialize, Default)]
+pub enum Architect {
+    Empty,
+    #[default]
+    Standard,
+    Automata,
+}
 
 #[derive(Debug, Deserialize)]
 pub struct MonsterSettings {
@@ -49,6 +56,7 @@ pub struct MapSettings {
     pub width: usize,
     pub height: usize,
     pub z_level: f32,
+    pub architect: Architect,
 }
 
 #[derive(Debug, Deserialize)]

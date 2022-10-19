@@ -1,9 +1,11 @@
 use crate::components::map_position::MapPosition;
+use crate::config::Architect;
 use crate::entities::TileType;
 use bevy_turborand::RngComponent;
 
 use self::automata::CellularAutomataArchitect;
 use self::empty::EmptyArchitect;
+use self::standard::StandardArchitect;
 
 use super::grid_map::DjikstraMapCalc;
 use super::tile_map::TileMap;
@@ -24,10 +26,18 @@ pub struct MapBuilder {
     pub winitem_start: MapPosition,
 }
 
+fn pick_architect(architect: &Architect) -> Box<dyn MapArchitect> {
+    match architect {
+        Architect::Empty => Box::new(EmptyArchitect {}),
+        Architect::Standard => Box::new(StandardArchitect::new()),
+        Architect::Automata => Box::new(CellularAutomataArchitect::new()),
+    }
+}
+
 impl MapBuilder {
-    pub fn new(mut rng: RngComponent, height: usize, width: usize) -> Self {
-        let mut architect = CellularAutomataArchitect::new();
-        architect.builder(height, width, &mut rng)
+    pub fn new(mut rng: RngComponent, height: usize, width: usize, architect: &Architect) -> Self {
+        let mut map_arch = pick_architect(&architect);
+        map_arch.builder(height, width, &mut rng)
     }
 
     fn find_most_distant(&self) -> MapPosition {

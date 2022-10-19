@@ -43,29 +43,27 @@ impl MapArchitect for StandardArchitect {
     fn builder(&mut self, height: usize, width: usize, rng: &mut RngComponent) -> MapBuilder {
         let mut mb = MapBuilder {
             map: TileMap::new(height, width),
-            rooms: Vec::new(),
             player_start: MapPosition::default(),
             ..default()
         };
         mb.fill(TileType::Wall);
-        mb.build_random_rooms(
+        let rooms = self.build_random_rooms(
+            &mut mb.map,
             rng.get_mut(),
             width,
             height,
             self.max_room_size,
             self.num_rooms,
         );
-        mb.build_corridors(rng);
-        mb.monster_spawns = mb
-            .rooms
+        self.build_corridors(&rooms, &mut mb.map, rng);
+        mb.monster_spawns = rooms
             .iter()
             .skip(1)
             .map(|room| MapPosition::new(room.x() as i32, room.y() as i32))
             .collect();
-        let dmap = mb.map.djikstra_map(&MapPosition::new(
-            mb.rooms[0].x() as i32,
-            mb.rooms[0].y() as i32,
-        ));
+        let dmap = mb
+            .map
+            .djikstra_map(&MapPosition::new(rooms[0].x() as i32, rooms[0].y() as i32));
         let longest_path = dmap.calculate_longest_path();
         mb.player_start = longest_path[0];
         mb.winitem_start = *longest_path.last().unwrap();
@@ -73,16 +71,18 @@ impl MapArchitect for StandardArchitect {
     }
 }
 
-impl MapBuilder {
+impl StandardArchitect {
     fn build_random_rooms(
         &mut self,
+        map: &mut TileMap,
         rng: &mut Rng,
         width: usize,
         height: usize,
         max_room_size: usize,
         num_rooms: usize,
-    ) {
-        while num_rooms > self.rooms.len() {
+    ) -> Vec<Rect> {
+        let mut rooms: Vec<Rect> = Vec::new();
+        while num_rooms > rooms.len() {
             let room = Rect::from_x_y_w_h(
                 rng.usize(1..width) as f32,
                 rng.usize(1..height) as f32,
@@ -90,7 +90,7 @@ impl MapBuilder {
                 rng.usize(2..max_room_size) as f32,
             );
             let mut overlap = false;
-            for r in &self.rooms {
+            for r in &rooms {
                 if r.overlap(room).is_some() {
                     overlap = true;
                     break;
@@ -104,31 +104,40 @@ impl MapBuilder {
                             .into_iter()
                             .for_each(|y| {
                                 if in_bounds(IVec2::from_array([x, y]), width, height) {
-                                    self.map.tiles[[y as usize, x as usize]] = TileType::Floor;
+                                    map.tiles[[y as usize, x as usize]] = TileType::Floor;
                                 }
                             });
                     });
 
-                self.rooms.push(room);
+                rooms.push(room);
             }
         }
+
+        rooms
     }
 
-    fn apply_tunnel(&mut self, inc1: usize, inc2: usize, x_or_y: usize, direction: &Direction) {
+    fn apply_tunnel(
+        &mut self,
+        map: &mut TileMap,
+        inc1: usize,
+        inc2: usize,
+        x_or_y: usize,
+        direction: &Direction,
+    ) {
         use std::cmp::{max, min};
         for inc in min(inc1, inc2)..max(inc1, inc2) {
             let pair = match direction {
                 Direction::Horizontal => (x_or_y, inc),
                 Direction::Vertical => (inc, x_or_y),
             };
-            if let Some(tile) = self.map.tiles.get_mut(pair) {
+            if let Some(tile) = map.tiles.get_mut(pair) {
                 *tile = TileType::Floor;
             }
         }
     }
 
-    fn build_corridors(&mut self, rng: &mut RngComponent) {
-        let mut rooms = self.rooms.clone();
+    fn build_corridors(&mut self, in_rooms: &Vec<Rect>, map: &mut TileMap, rng: &mut RngComponent) {
+        let mut rooms = in_rooms.clone();
         rooms.sort_by(|a, b| (a.xy().x as i32).cmp(&(b.xy().x as i32)));
         for (i, room) in rooms.iter().enumerate().skip(1) {
             let prev = rooms[i - 1].xy();
@@ -136,12 +145,14 @@ impl MapBuilder {
 
             if rng.usize(0..2) == 1 {
                 self.apply_tunnel(
+                    map,
                     prev.x as usize,
                     new.x as usize,
                     prev.y as usize,
                     &Direction::Horizontal,
                 );
                 self.apply_tunnel(
+                    map,
                     prev.y as usize,
                     new.y as usize,
                     new.x as usize,
@@ -149,12 +160,14 @@ impl MapBuilder {
                 );
             } else {
                 self.apply_tunnel(
+                    map,
                     prev.x as usize,
                     new.x as usize,
                     new.y as usize,
                     &Direction::Horizontal,
                 );
                 self.apply_tunnel(
+                    map,
                     prev.y as usize,
                     new.y as usize,
                     prev.x as usize,

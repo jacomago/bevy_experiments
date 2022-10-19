@@ -20,7 +20,6 @@ trait MapArchitect {
 #[derive(Debug, Default)]
 pub struct MapBuilder {
     pub map: TileMap,
-    pub rooms: Vec<Rect>,
     pub monster_spawns: Vec<MapPosition>,
     pub player_start: MapPosition,
     pub winitem_start: MapPosition,

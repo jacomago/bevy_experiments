@@ -11,7 +11,6 @@ impl MapArchitect for EmptyArchitect {
     fn builder(&mut self, height: usize, width: usize, rng: &mut RngComponent) -> MapBuilder {
         let mut mb = MapBuilder {
             map: TileMap::new(height, width),
-            rooms: Vec::new(),
             monster_spawns: Vec::new(),
             player_start: MapPosition::ZERO,
             winitem_start: MapPosition::ZERO,

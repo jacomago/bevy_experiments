@@ -7,10 +7,6 @@ use crate::{
     loading::TextureAtlasAssets, map::map_builder::MapBuilder, GameState,
 };
 
-const MAP_Z: f32 = 0.0;
-const WALL_SPRITE_INDEX: usize = 35;
-const FLOOR_SPRITE_INDEX: usize = 46;
-
 pub struct TilePlugin;
 
 impl Plugin for TilePlugin {
@@ -55,6 +51,9 @@ pub fn spawn_map(
                 textures.as_ref(),
                 *t,
                 settings.tile_size,
+                settings.map_settings.z_level,
+                settings.map_settings.floor_sprite_index,
+                settings.map_settings.wall_sprite_index,
             ));
         });
 }
@@ -77,6 +76,9 @@ impl TileBundle {
         textures: &TextureAtlasAssets,
         tile_type: TileType,
         tile_size: i32,
+        z_level: f32,
+        floor_index: usize,
+        wall_index: usize,
     ) -> Self {
         Self {
             position,
@@ -84,14 +86,14 @@ impl TileBundle {
             sprite: SpriteSheetBundle {
                 visibility: Visibility { is_visible: false },
                 transform: Transform {
-                    translation: position.translation(MAP_Z, tile_size),
+                    translation: position.translation(z_level, tile_size),
                     ..default()
                 },
                 texture_atlas: textures.texture_atlas.clone(),
                 sprite: TextureAtlasSprite {
                     index: match tile_type {
-                        TileType::Floor => FLOOR_SPRITE_INDEX,
-                        TileType::Wall => WALL_SPRITE_INDEX,
+                        TileType::Floor => floor_index,
+                        TileType::Wall => wall_index,
                     },
                     ..default()
                 },

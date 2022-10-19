@@ -5,12 +5,9 @@ pub mod tile_map;
 use bevy::prelude::*;
 use bevy_turborand::{GlobalRng, RngComponent};
 
-use crate::GameState;
+use crate::{config::Settings, GameState};
 
 use self::map_builder::MapBuilder;
-
-pub const MAP_WIDTH: usize = 80;
-pub const MAP_HEIGHT: usize = 50;
 
 pub struct MapPlugin;
 
@@ -23,11 +20,11 @@ impl Plugin for MapPlugin {
     }
 }
 
-fn insert_mapbuilder(mut commands: Commands, mut rng: ResMut<GlobalRng>) {
+fn insert_mapbuilder(mut commands: Commands, mut rng: ResMut<GlobalRng>, settings: Res<Settings>) {
     commands.insert_resource(MapBuilder::new(
         RngComponent::from(&mut rng),
-        MAP_HEIGHT,
-        MAP_WIDTH,
+        settings.map_settings.height,
+        settings.map_settings.width,
     ));
 }
 

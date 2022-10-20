@@ -29,7 +29,7 @@ pub fn set_fov_visibility(
                 tile_sprite.color = Color::WHITE;
             }
         } else if let Ok((mut tile_sprite, _)) = tiles.get_mut(entity) {
-            tile_sprite.color = Color::DARK_GRAY;
+            tile_sprite.color = Color::GRAY;
         } else {
             v.is_visible = false;
         }

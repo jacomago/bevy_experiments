@@ -128,3 +128,14 @@ impl Display for MapBuilder {
         f.write_fmt(format_args!("{}", str_tiles))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn build() {
+        let rng = RngComponent::new();
+        let mb = MapBuilder::new(rng, 40, 80, &Architect::Drunkard);
+        println!("{}", mb);
+    }
+}

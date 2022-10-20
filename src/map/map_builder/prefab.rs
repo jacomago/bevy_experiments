@@ -81,7 +81,7 @@ fn place_fortress(map_builder: &mut MapBuilder, fortress: &Fortress, placement: 
     fortress
         .input
         .trim()
-        .split("\n")
+        .split('\n')
         .into_iter()
         .enumerate()
         .for_each(|(y, s)| {

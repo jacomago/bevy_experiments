@@ -2,7 +2,7 @@ use bevy::{
     math::ivec2,
     prelude::{default, IVec2},
 };
-use bevy_turborand::{DelegatedRng, RngComponent};
+use bevy_turborand::DelegatedRng;
 
 use crate::{
     components::map_position::MapPosition,
@@ -21,6 +21,14 @@ pub struct CellularAutomataArchitect {
 }
 
 impl MapArchitect for CellularAutomataArchitect {
+    fn monster_distance(&self) -> f32 {
+        self.monster_distance
+    }
+
+    fn num_monsters(&self) -> usize {
+        self.num_monsters
+    }
+
     fn builder(
         &mut self,
         height: usize,
@@ -51,7 +59,7 @@ impl CellularAutomataArchitect {
     }
 
     fn find_start(&self, map: &TileMap) -> MapPosition {
-        let center = MapPosition::new(map.width as i32 / 2, map.height as i32 / 2);
+        let center = map.centre();
         let closest_point = map
             .tiles
             .indexed_iter()
@@ -64,30 +72,6 @@ impl CellularAutomataArchitect {
             .map(|(idx, _)| idx)
             .unwrap();
         closest_point
-    }
-
-    fn monster_spawns(
-        &self,
-        start: &MapPosition,
-        map: &TileMap,
-        rng: &mut RngComponent,
-    ) -> Vec<MapPosition> {
-        let tiles = map
-            .tiles
-            .indexed_iter()
-            .map(|(idx, t)| (MapPosition::from_utuple(&idx), t))
-            .filter(|(idx, t)| {
-                **t == TileType::Floor && idx.distance(start) > self.monster_distance
-            })
-            .map(|(idx, _)| idx)
-            .collect::<Vec<MapPosition>>();
-
-        let spawns = rng
-            .sample_multiple(&tiles, self.num_monsters)
-            .iter()
-            .map(|f| **f)
-            .collect();
-        spawns
     }
 
     fn random_noise_map(&mut self, rng: &mut bevy_turborand::RngComponent, map: &mut TileMap) {
@@ -129,10 +113,17 @@ impl CellularAutomataArchitect {
     }
 }
 
-#[test]
-fn build() {
-    let mut arch = CellularAutomataArchitect::new();
-    let mut rng = RngComponent::new();
-    let mb = arch.builder(40, 80, &mut rng);
-    println!("{}", mb.map);
+#[cfg(test)]
+mod tests {
+    use bevy_turborand::RngComponent;
+
+    use super::*;
+
+    #[test]
+    fn build() {
+        let mut arch = CellularAutomataArchitect::new();
+        let mut rng = RngComponent::new();
+        let mb = arch.builder(40, 80, &mut rng);
+        println!("{}", mb.map);
+    }
 }

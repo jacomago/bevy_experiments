@@ -24,10 +24,6 @@ impl DjikstraMap {
         }
     }
 
-    pub fn set(&mut self, p: &MapPosition, value: i32) {
-        self.result[p.as_utuple()] = Some(value);
-    }
-
     pub fn next_along_path(&self, p: &MapPosition) -> MapPosition {
         *self
             .neighbours(p)
@@ -81,6 +77,10 @@ impl BaseMap for DjikstraMap {
     fn value(&self, p: &MapPosition) -> Option<i32> {
         *self.result.get(p.as_utuple()).unwrap_or(&None)
     }
+
+    fn set(&mut self, p: &MapPosition, value: Option<i32>) {
+        self.result[p.as_utuple()] = value;
+    }
 }
 impl DjikstraMapCalc for DjikstraMap {}
 
@@ -119,6 +119,9 @@ mod tests {
 
         fn value(&self, p: &MapPosition) -> Self::Output {
             self.result[p.as_utuple()]
+        }
+        fn set(&mut self, p: &MapPosition, value: Self::Output) {
+            self.result[p.as_utuple()] = value;
         }
     }
 

@@ -33,6 +33,7 @@ pub enum Architect {
     #[default]
     Standard,
     Automata,
+    Drunkard,
 }
 
 #[derive(Debug, Deserialize)]

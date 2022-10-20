@@ -4,7 +4,7 @@
 // #![warn(clippy::pedantic)] // turn on for extra hints
 #![deny(
     missing_docs,
-    missing_doc_code_examples,
+    rustdoc::missing_doc_code_examples,
     trivial_casts,
     trivial_numeric_casts,
     unused_extern_crates,

@@ -28,6 +28,7 @@ enum Direction {
 pub struct StandardArchitect {
     max_room_size: usize,
     num_rooms: usize,
+    rooms: Vec<Rect>,
 }
 
 impl StandardArchitect {
@@ -35,11 +36,30 @@ impl StandardArchitect {
         Self {
             max_room_size: MAX_ROOM_SIZE,
             num_rooms: NUM_ROOMS,
+            rooms: Vec::new(),
         }
     }
 }
 
 impl MapArchitect for StandardArchitect {
+    fn monster_distance(&self) -> f32 {
+        0.0
+    }
+    fn num_monsters(&self) -> usize {
+        self.num_rooms
+    }
+    fn monster_spawns(
+        &self,
+        _: &MapPosition,
+        _: &TileMap,
+        _: &mut RngComponent,
+    ) -> Vec<MapPosition> {
+        self.rooms
+            .iter()
+            .skip(1)
+            .map(|room| MapPosition::new(room.x() as i32, room.y() as i32))
+            .collect()
+    }
     fn builder(&mut self, height: usize, width: usize, rng: &mut RngComponent) -> MapBuilder {
         let mut mb = MapBuilder {
             map: TileMap::new(height, width),
@@ -47,7 +67,7 @@ impl MapArchitect for StandardArchitect {
             ..default()
         };
         mb.fill(TileType::Wall);
-        let rooms = self.build_random_rooms(
+        self.rooms = self.build_random_rooms(
             &mut mb.map,
             rng.get_mut(),
             width,
@@ -55,15 +75,12 @@ impl MapArchitect for StandardArchitect {
             self.max_room_size,
             self.num_rooms,
         );
-        self.build_corridors(&rooms, &mut mb.map, rng);
-        mb.monster_spawns = rooms
-            .iter()
-            .skip(1)
-            .map(|room| MapPosition::new(room.x() as i32, room.y() as i32))
-            .collect();
-        let dmap = mb
-            .map
-            .djikstra_map(&MapPosition::new(rooms[0].x() as i32, rooms[0].y() as i32));
+        self.build_corridors(&self.rooms.clone(), &mut mb.map, rng);
+        mb.monster_spawns = self.monster_spawns(&MapPosition::ZERO, &mb.map, rng);
+        let dmap = mb.map.djikstra_map(&MapPosition::new(
+            self.rooms[0].x() as i32,
+            self.rooms[0].y() as i32,
+        ));
         let longest_path = dmap.calculate_longest_path();
         mb.player_start = longest_path[0];
         mb.winitem_start = *longest_path.last().unwrap();
@@ -136,8 +153,8 @@ impl StandardArchitect {
         }
     }
 
-    fn build_corridors(&mut self, in_rooms: &Vec<Rect>, map: &mut TileMap, rng: &mut RngComponent) {
-        let mut rooms = in_rooms.clone();
+    fn build_corridors(&mut self, in_rooms: &[Rect], map: &mut TileMap, rng: &mut RngComponent) {
+        let mut rooms = Vec::from(in_rooms);
         rooms.sort_by(|a, b| (a.xy().x as i32).cmp(&(b.xy().x as i32)));
         for (i, room) in rooms.iter().enumerate().skip(1) {
             let prev = rooms[i - 1].xy();

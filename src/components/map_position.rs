@@ -1,10 +1,15 @@
 use bevy::prelude::*;
 
-#[derive(Component, Default, PartialEq, Eq, Clone, Copy, Debug, Hash)]
+#[derive(Component, PartialEq, Eq, Clone, Copy, Debug, Hash)]
 pub struct MapPosition {
     pub position: IVec2,
 }
 
+impl Default for MapPosition {
+    fn default() -> Self {
+        Self::ZERO
+    }
+}
 impl MapPosition {
     pub const ZERO: Self = MapPosition {
         position: IVec2::ZERO,

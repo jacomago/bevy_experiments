@@ -16,7 +16,7 @@ pub trait DjikstraMapCalc: BaseMap {
                 if max_depth.is_none() || f_value <= max_depth.unwrap() {
                     self.neighbours(f).iter().for_each(|n| {
                         if dmap.value(n).is_none() {
-                            dmap.set(n, f_value + 1);
+                            dmap.set(n, Some(f_value + 1));
                             new_frontier.push(*n);
                         }
                     });

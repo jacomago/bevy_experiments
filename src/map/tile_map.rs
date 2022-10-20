@@ -24,7 +24,7 @@ pub fn in_bounds(point: IVec2, width: usize, height: usize) -> bool {
 impl BaseMap for TileMap {
     type Output = TileType;
     fn can_enter_tile(&self, point: &MapPosition) -> bool {
-        self.in_bounds(point.position)
+        self.in_bounds(point)
             && self
                 .tiles
                 .get(point.as_utuple())
@@ -40,6 +40,10 @@ impl BaseMap for TileMap {
 
     fn value(&self, p: &MapPosition) -> Self::Output {
         self.tiles[p.as_utuple()]
+    }
+
+    fn set(&mut self, p: &MapPosition, value: Self::Output) {
+        self.tiles[p.as_utuple()] = value;
     }
 }
 
@@ -72,8 +76,8 @@ impl TileMap {
         }
     }
 
-    pub fn in_bounds(&self, point: IVec2) -> bool {
-        in_bounds(point, self.width, self.height)
+    pub fn in_bounds(&self, point: &MapPosition) -> bool {
+        in_bounds(point.position, self.width, self.height)
     }
 }
 

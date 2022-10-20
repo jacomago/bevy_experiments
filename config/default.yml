@@ -52,7 +52,7 @@ map_settings:
     width: 80
     height: 50
     z_level: 0.0
-    architect: Automata
+    architect: Drunkard
 items_settings: 
     winitem_sprite_index: 124
     winitem_name: "Cake of Destiny"

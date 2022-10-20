@@ -203,6 +203,6 @@ mod tests {
         let mut arch = StandardArchitect::new();
         let mut rng = RngComponent::new();
         let mb = arch.builder(40, 80, &mut rng);
-        println!("{}", mb.map);
+        println!("{}", mb);
     }
 }

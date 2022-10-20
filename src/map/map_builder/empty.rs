@@ -56,6 +56,6 @@ mod tests {
         let mut arch = EmptyArchitect::new();
         let mut rng = RngComponent::new();
         let mb = arch.builder(10, 20, &mut rng);
-        println!("{}", mb.map);
+        println!("{}", mb);
     }
 }

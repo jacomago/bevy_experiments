@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::components::map_position::MapPosition;
 use crate::config::Architect;
 use crate::entities::TileType;
@@ -8,6 +10,7 @@ use self::drunkard::DrunkardArchitect;
 use self::empty::EmptyArchitect;
 use self::standard::StandardArchitect;
 
+use super::grid_map::base_map::BaseMap;
 use super::grid_map::DjikstraMapCalc;
 use super::tile_map::TileMap;
 
@@ -75,5 +78,47 @@ impl MapBuilder {
 
     fn fill(&mut self, tile: TileType) {
         self.map.tiles.iter_mut().for_each(|t| *t = tile);
+    }
+
+    fn fill_in_unreachable(&mut self) {
+        self.map
+            .djikstra_map(&self.player_start)
+            .far_points(None)
+            .iter()
+            .for_each(|p| {
+                self.map.set(p, TileType::Wall);
+            });
+    }
+}
+
+impl Display for MapBuilder {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str_tiles = self
+            .map
+            .tiles
+            .rows()
+            .into_iter()
+            .enumerate()
+            .map(|(x, row)| {
+                row.iter()
+                    .enumerate()
+                    .map(|(y, tile)| {
+                        let mp = MapPosition::from_utuple(&(x, y));
+                        if self.player_start == mp {
+                            "@".to_string()
+                        } else if self.winitem_start == mp {
+                            "?".to_string()
+                        } else if self.monster_spawns.contains(&mp) {
+                            "M".to_string()
+                        } else {
+                            format!("{}", tile)
+                        }
+                    })
+                    .collect::<Vec<String>>()
+                    .join("")
+            })
+            .collect::<Vec<String>>()
+            .join("\n");
+        f.write_fmt(format_args!("{}", str_tiles))
     }
 }

@@ -42,10 +42,12 @@ impl DjikstraMap {
         MapPosition::new(max.1 as i32, max.0 as i32)
     }
 
-    pub fn far_points(&self, distance: i32) -> Vec<MapPosition> {
+    pub fn far_points(&self, distance: Option<i32>) -> Vec<MapPosition> {
         self.result
             .indexed_iter()
-            .filter(|(_, &v)| v.is_none() || v.map(|x| x > distance).unwrap())
+            .filter(|(_, &v)| {
+                v.is_none() || (distance.is_some() && v.map(|x| x > distance.unwrap()).unwrap())
+            })
             .map(|(p, _)| MapPosition::from_utuple(&p))
             .collect()
     }

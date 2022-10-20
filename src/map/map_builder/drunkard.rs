@@ -68,7 +68,7 @@ impl MapArchitect for DrunkardArchitect {
             ..default()
         };
         mb.fill(TileType::Wall);
-
+        mb.player_start = mb.map.centre();
         self.drunkard(mb.map.centre(), rng, &mut mb.map);
         let num_open_tiles = (self.ratio * (width * height) as f32) as usize;
         while mb
@@ -82,14 +82,14 @@ impl MapArchitect for DrunkardArchitect {
             let rand_pos = MapPosition::new(rng.i32(0..width as i32), rng.i32(0..height as i32));
             self.drunkard(rand_pos, rng, &mut mb.map);
             mb.map
-                .djikstra_map(&mb.map.centre())
-                .far_points(self.max_distance)
+                .djikstra_map(&mb.player_start)
+                .far_points(Some(self.max_distance))
                 .iter()
                 .for_each(|p| {
                     mb.map.set(p, TileType::Wall);
                 });
         }
-        mb.monster_spawns = self.monster_spawns(&mb.map.centre(), &mb.map, rng);
+        mb.monster_spawns = self.monster_spawns(&mb.player_start, &mb.map, rng);
         mb.winitem_start = mb.find_most_distant();
         mb
     }
@@ -111,6 +111,6 @@ mod tests {
         let mut arch = DrunkardArchitect::new();
         let mut rng = RngComponent::new();
         let mb = arch.builder(40, 80, &mut rng);
-        println!("{}", mb.map);
+        println!("{}", mb);
     }
 }

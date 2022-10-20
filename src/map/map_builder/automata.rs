@@ -42,6 +42,7 @@ impl MapArchitect for CellularAutomataArchitect {
         self.random_noise_map(rng, &mut mb.map);
         self.iteration(&mut mb.map);
         mb.player_start = self.find_start(&mb.map);
+        mb.fill_in_unreachable();
         mb.monster_spawns = self.monster_spawns(&mb.player_start, &mb.map, rng);
         mb.winitem_start = mb.find_most_distant();
         mb
@@ -124,6 +125,6 @@ mod tests {
         let mut arch = CellularAutomataArchitect::new();
         let mut rng = RngComponent::new();
         let mb = arch.builder(40, 80, &mut rng);
-        println!("{}", mb.map);
+        println!("{}", mb);
     }
 }

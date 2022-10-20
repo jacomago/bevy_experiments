@@ -42,6 +42,14 @@ impl DjikstraMap {
         MapPosition::new(max.1 as i32, max.0 as i32)
     }
 
+    pub fn far_points(&self, distance: i32) -> Vec<MapPosition> {
+        self.result
+            .indexed_iter()
+            .filter(|(_, &v)| v.is_none() || v.map(|x| x > distance).unwrap())
+            .map(|(p, _)| MapPosition::from_utuple(&p))
+            .collect()
+    }
+
     fn path_to(&self, p: &MapPosition) -> Vec<MapPosition> {
         let mut path = vec![p.to_owned()];
         let mut current = *p;

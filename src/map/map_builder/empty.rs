@@ -1,7 +1,7 @@
+use bevy::prelude::default;
 use bevy_turborand::RngComponent;
 
 use crate::{
-    components::map_position::MapPosition,
     entities::TileType,
     map::{grid_map::base_map::BaseMap, tile_map::TileMap},
 };
@@ -28,9 +28,7 @@ impl MapArchitect for EmptyArchitect {
     fn builder(&mut self, height: usize, width: usize, rng: &mut RngComponent) -> MapBuilder {
         let mut mb = MapBuilder {
             map: TileMap::new(height, width),
-            monster_spawns: Vec::new(),
-            player_start: MapPosition::ZERO,
-            winitem_start: MapPosition::ZERO,
+            ..default()
         };
         mb.fill(TileType::Floor);
         mb.player_start = mb.map.centre();

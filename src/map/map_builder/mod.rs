@@ -3,11 +3,13 @@ use std::fmt::Display;
 use crate::components::map_position::MapPosition;
 use crate::config::Architect;
 use crate::entities::TileType;
+use bevy::utils::HashSet;
 use bevy_turborand::{DelegatedRng, RngComponent};
 
 use self::automata::CellularAutomataArchitect;
 use self::drunkard::DrunkardArchitect;
 use self::empty::EmptyArchitect;
+use self::prefab::apply_prefab;
 use self::standard::StandardArchitect;
 
 use super::grid_map::base_map::BaseMap;
@@ -17,6 +19,7 @@ use super::tile_map::TileMap;
 mod automata;
 mod drunkard;
 mod empty;
+mod prefab;
 mod standard;
 
 trait MapArchitect {
@@ -29,7 +32,7 @@ trait MapArchitect {
         start: &MapPosition,
         map: &TileMap,
         rng: &mut RngComponent,
-    ) -> Vec<MapPosition> {
+    ) -> HashSet<MapPosition> {
         let tiles = map
             .tiles
             .indexed_iter()
@@ -52,7 +55,7 @@ trait MapArchitect {
 #[derive(Debug, Default)]
 pub struct MapBuilder {
     pub map: TileMap,
-    pub monster_spawns: Vec<MapPosition>,
+    pub monster_spawns: HashSet<MapPosition>,
     pub player_start: MapPosition,
     pub winitem_start: MapPosition,
 }
@@ -69,7 +72,10 @@ fn pick_architect(architect: &Architect) -> Box<dyn MapArchitect> {
 impl MapBuilder {
     pub fn new(mut rng: RngComponent, height: usize, width: usize, architect: &Architect) -> Self {
         let mut map_arch = pick_architect(architect);
-        map_arch.builder(height, width, &mut rng)
+        let mut mb = map_arch.builder(height, width, &mut rng);
+        const MAX_ATTEMPTS: usize = 10;
+        apply_prefab(&mut mb, MAX_ATTEMPTS, &mut rng, 20, 2000);
+        mb
     }
 
     fn find_most_distant(&self) -> MapPosition {

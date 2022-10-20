@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, utils::HashSet};
 use bevy_turborand::{
     rng::{Rng, TurboRand},
     DelegatedRng, RngComponent,
@@ -53,7 +53,7 @@ impl MapArchitect for StandardArchitect {
         _: &MapPosition,
         _: &TileMap,
         _: &mut RngComponent,
-    ) -> Vec<MapPosition> {
+    ) -> HashSet<MapPosition> {
         self.rooms
             .iter()
             .skip(1)

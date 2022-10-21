@@ -16,21 +16,22 @@ pub struct DrunkardArchitect {
     stagger_distance: usize,
     ratio: f32,
     num_monsters: usize,
-    monster_distance: f32,
+    num_items: usize,
+    entity_distance: f32,
     max_distance: i32,
 }
 
 impl DrunkardArchitect {
-    pub fn new() -> Self {
+    pub fn new(num_monsters: usize, num_items: usize, entity_distance: f32) -> Self {
         Self {
             stagger_distance: 400,
             ratio: 0.3,
-            num_monsters: 50,
-            monster_distance: 10.0,
+            num_monsters,
+            num_items,
+            entity_distance,
             max_distance: 2000,
         }
     }
-
     fn drunkard(&mut self, start: MapPosition, rng: &mut RngComponent, map: &mut TileMap) {
         let mut drunkard = start;
         let mut distance_staggered = 0;
@@ -89,17 +90,21 @@ impl MapArchitect for DrunkardArchitect {
                     mb.map.set(p, TileType::Wall);
                 });
         }
-        mb.monster_spawns = self.monster_spawns(&mb.player_start, &mb.map, rng);
+        mb.monster_spawns = self.entity_spawns(&mb.player_start, &mb.map, rng);
+        mb.item_spawns = self.entity_spawns(&mb.player_start, &mb.map, rng);
         mb.winitem_start = mb.find_most_distant();
         mb
     }
 
-    fn monster_distance(&self) -> f32 {
-        self.monster_distance
+    fn entity_distance(&self) -> f32 {
+        self.entity_distance
     }
 
     fn num_monsters(&self) -> usize {
         self.num_monsters
+    }
+    fn num_items(&self) -> usize {
+        self.num_items
     }
 }
 
@@ -108,7 +113,7 @@ mod tests {
     use super::*;
     #[test]
     fn build() {
-        let mut arch = DrunkardArchitect::new();
+        let mut arch = DrunkardArchitect::new(50, 20, 10.0);
         let mut rng = RngComponent::new();
         let mb = arch.builder(40, 80, &mut rng);
         println!("{}", mb);

@@ -2,7 +2,6 @@
 tile_size: 32
 max_fov: 15
 monsters_settings: 
-    amount: 50
     z_level: 1
     monsters: [
         {
@@ -60,7 +59,12 @@ map_settings:
     width: 80
     height: 50
     z_level: 0.0
-    architect: Drunkard
+    architect: {
+        architect: Drunkard,
+        num_monsters: 50,
+        num_items: 20,
+        entity_distance: 10.0
+    }
 items_settings: 
     winitem: {
         sprite_index: 124,
@@ -85,7 +89,6 @@ items_settings:
         },
     ]
     z_level: 1.0
-    amount: 20
 player_settings: {
     entity: {
         sprite_index: 64,

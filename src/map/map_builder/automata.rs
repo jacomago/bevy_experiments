@@ -17,16 +17,20 @@ pub struct CellularAutomataArchitect {
     max_neighbours: usize,
     min_neighbours: usize,
     num_monsters: usize,
-    monster_distance: f32,
+    num_items: usize,
+    entity_distance: f32,
 }
 
 impl MapArchitect for CellularAutomataArchitect {
-    fn monster_distance(&self) -> f32 {
-        self.monster_distance
+    fn entity_distance(&self) -> f32 {
+        self.entity_distance
     }
 
     fn num_monsters(&self) -> usize {
         self.num_monsters
+    }
+    fn num_items(&self) -> usize {
+        self.num_items
     }
 
     fn builder(
@@ -43,22 +47,24 @@ impl MapArchitect for CellularAutomataArchitect {
         self.iteration(&mut mb.map);
         mb.player_start = self.find_start(&mb.map);
         mb.fill_in_unreachable();
-        mb.monster_spawns = self.monster_spawns(&mb.player_start, &mb.map, rng);
+        mb.monster_spawns = self.entity_spawns(&mb.player_start, &mb.map, rng);
+
+        mb.item_spawns = self.entity_spawns(&mb.player_start, &mb.map, rng);
         mb.winitem_start = mb.find_most_distant();
         mb
     }
 }
 impl CellularAutomataArchitect {
-    pub fn new() -> Self {
+    pub fn new(num_monsters: usize, num_items: usize, entity_distance: f32) -> Self {
         Self {
             percent_floor: 45,
             max_neighbours: 4,
             min_neighbours: 0,
-            num_monsters: 50,
-            monster_distance: 10.0,
+            num_items,
+            num_monsters,
+            entity_distance,
         }
     }
-
     fn find_start(&self, map: &TileMap) -> MapPosition {
         let center = map.centre();
         let closest_point = map
@@ -122,7 +128,7 @@ mod tests {
 
     #[test]
     fn build() {
-        let mut arch = CellularAutomataArchitect::new();
+        let mut arch = CellularAutomataArchitect::new(50, 20, 10.0);
         let mut rng = RngComponent::new();
         let mb = arch.builder(40, 80, &mut rng);
         println!("{}", mb);

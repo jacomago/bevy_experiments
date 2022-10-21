@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 use crate::components::map_position::MapPosition;
-use crate::config::Architect;
+use crate::config::{Architect, ArchitectSettings};
 use crate::entities::TileType;
 use bevy::utils::HashSet;
 use bevy_turborand::{DelegatedRng, RngComponent};
@@ -23,11 +23,12 @@ mod prefab;
 mod standard;
 
 trait MapArchitect {
-    fn monster_distance(&self) -> f32;
+    fn entity_distance(&self) -> f32;
     fn num_monsters(&self) -> usize;
+    fn num_items(&self) -> usize;
     fn builder(&mut self, height: usize, width: usize, rng: &mut RngComponent) -> MapBuilder;
 
-    fn monster_spawns(
+    fn entity_spawns(
         &self,
         start: &MapPosition,
         map: &TileMap,
@@ -38,7 +39,7 @@ trait MapArchitect {
             .indexed_iter()
             .map(|(idx, t)| (MapPosition::from_utuple(&idx), t))
             .filter(|(idx, t)| {
-                **t == TileType::Floor && idx.distance(start) > self.monster_distance()
+                **t == TileType::Floor && idx.distance(start) > self.entity_distance()
             })
             .map(|(idx, _)| idx)
             .collect::<Vec<MapPosition>>();
@@ -56,21 +57,46 @@ trait MapArchitect {
 pub struct MapBuilder {
     pub map: TileMap,
     pub monster_spawns: HashSet<MapPosition>,
+    pub item_spawns: HashSet<MapPosition>,
     pub player_start: MapPosition,
     pub winitem_start: MapPosition,
 }
 
-fn pick_architect(architect: &Architect) -> Box<dyn MapArchitect> {
-    match architect {
-        Architect::Empty => Box::new(EmptyArchitect::new()),
-        Architect::Standard => Box::new(StandardArchitect::new()),
-        Architect::Automata => Box::new(CellularAutomataArchitect::new()),
-        Architect::Drunkard => Box::new(DrunkardArchitect::new()),
+fn pick_architect(architect: &ArchitectSettings) -> Box<dyn MapArchitect> {
+    match architect.architect {
+        Architect::Empty => Box::new(EmptyArchitect::new(
+            architect.num_monsters,
+            architect.num_items,
+            architect.entity_distance,
+        )),
+        Architect::Standard => Box::new(StandardArchitect::new(
+            architect.num_monsters,
+            architect.num_items,
+            architect.entity_distance,
+        )),
+        Architect::Automata => Box::new(CellularAutomataArchitect::new(
+            architect.num_monsters,
+            architect.num_items,
+            architect.entity_distance,
+        )),
+        Architect::Drunkard => Box::new(DrunkardArchitect::new(
+            architect.num_monsters,
+            architect.num_items,
+            architect.entity_distance,
+        )),
     }
 }
 
 impl MapBuilder {
-    pub fn new(mut rng: RngComponent, height: usize, width: usize, architect: &Architect) -> Self {
+    pub fn new(
+        mut rng: RngComponent,
+        height: usize,
+        width: usize,
+        architect: &ArchitectSettings,
+    ) -> Self
+    where
+        Self: Sized,
+    {
         let mut map_arch = pick_architect(architect);
         let mut mb = map_arch.builder(height, width, &mut rng);
         const MAX_ATTEMPTS: usize = 10;
@@ -135,7 +161,17 @@ mod tests {
     #[test]
     fn build() {
         let rng = RngComponent::new();
-        let mb = MapBuilder::new(rng, 40, 80, &Architect::Drunkard);
+        let mb = MapBuilder::new(
+            rng,
+            40,
+            80,
+            &ArchitectSettings {
+                architect: Architect::Drunkard,
+                num_monsters: 40,
+                num_items: 10,
+                entity_distance: 10.0,
+            },
+        );
         println!("{}", mb);
     }
 }

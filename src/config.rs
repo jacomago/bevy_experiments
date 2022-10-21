@@ -43,7 +43,6 @@ pub struct MonsterSettings {
 #[derive(Debug, Deserialize)]
 pub struct MonstersSettings {
     pub monsters: Vec<MonsterSettings>,
-    pub amount: usize,
     pub z_level: f32,
 }
 
@@ -54,7 +53,7 @@ pub struct MapSettings {
     pub width: usize,
     pub height: usize,
     pub z_level: f32,
-    pub architect: Architect,
+    pub architect: ArchitectSettings,
 }
 
 #[derive(Debug, Deserialize, Default)]
@@ -66,7 +65,15 @@ pub enum Architect {
     Drunkard,
 }
 
-#[derive(Debug, Deserialize, Default, Serialize, PartialEq)]
+#[derive(Debug, Deserialize)]
+pub struct ArchitectSettings {
+    pub architect: Architect,
+    pub num_monsters: usize,
+    pub num_items: usize,
+    pub entity_distance: f32,
+}
+
+#[derive(Debug, Deserialize, Default, Serialize)]
 pub enum ItemType {
     Healing,
     #[default]
@@ -85,7 +92,6 @@ pub struct ItemsSettings {
     pub items: Vec<ItemSettings>,
     pub winitem: EntitySettings,
     pub z_level: f32,
-    pub amount: i32,
 }
 
 #[derive(Debug, Deserialize)]

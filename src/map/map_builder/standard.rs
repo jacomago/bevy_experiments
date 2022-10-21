@@ -16,10 +16,6 @@ use crate::{
 
 use super::{MapArchitect, MapBuilder};
 
-pub const MAX_ROOM_SIZE: usize = 10;
-
-const NUM_ROOMS: usize = 20;
-
 enum Direction {
     Horizontal,
     Vertical,
@@ -31,24 +27,17 @@ pub struct StandardArchitect {
     rooms: Vec<Rect>,
 }
 
-impl StandardArchitect {
-    pub fn new() -> Self {
-        Self {
-            max_room_size: MAX_ROOM_SIZE,
-            num_rooms: NUM_ROOMS,
-            rooms: Vec::new(),
-        }
-    }
-}
-
 impl MapArchitect for StandardArchitect {
-    fn monster_distance(&self) -> f32 {
+    fn entity_distance(&self) -> f32 {
         0.0
     }
     fn num_monsters(&self) -> usize {
         self.num_rooms
     }
-    fn monster_spawns(
+    fn num_items(&self) -> usize {
+        self.num_rooms
+    }
+    fn entity_spawns(
         &self,
         _: &MapPosition,
         _: &TileMap,
@@ -76,7 +65,8 @@ impl MapArchitect for StandardArchitect {
             self.num_rooms,
         );
         self.build_corridors(&self.rooms.clone(), &mut mb.map, rng);
-        mb.monster_spawns = self.monster_spawns(&MapPosition::ZERO, &mb.map, rng);
+        mb.monster_spawns = self.entity_spawns(&MapPosition::ZERO, &mb.map, rng);
+        mb.item_spawns = self.entity_spawns(&MapPosition::ZERO, &mb.map, rng);
         let dmap = mb.map.djikstra_map(&MapPosition::new(
             self.rooms[0].x() as i32,
             self.rooms[0].y() as i32,
@@ -89,6 +79,13 @@ impl MapArchitect for StandardArchitect {
 }
 
 impl StandardArchitect {
+    pub fn new(_num_monsters: usize, num_items: usize, entity_distance: f32) -> Self {
+        Self {
+            max_room_size: entity_distance as usize,
+            num_rooms: num_items,
+            rooms: Vec::new(),
+        }
+    }
     fn build_random_rooms(
         &mut self,
         map: &mut TileMap,
@@ -200,7 +197,7 @@ mod tests {
     use super::*;
     #[test]
     fn build() {
-        let mut arch = StandardArchitect::new();
+        let mut arch = StandardArchitect::new(50, 20, 10.0);
         let mut rng = RngComponent::new();
         let mb = arch.builder(40, 80, &mut rng);
         println!("{}", mb);

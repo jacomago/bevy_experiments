@@ -8,18 +8,18 @@ use crate::{
 
 use super::{MapArchitect, MapBuilder};
 
-const NUM_MONSTERS: usize = 50;
-const MONSTER_DISTANCE: f32 = 10.0;
 pub struct EmptyArchitect {
     num_monsters: usize,
-    monster_distance: f32,
+    num_items: usize,
+    entity_distance: f32,
 }
 
 impl EmptyArchitect {
-    pub fn new() -> Self {
+    pub fn new(num_monsters: usize, num_items: usize, entity_distance: f32) -> Self {
         Self {
-            num_monsters: NUM_MONSTERS,
-            monster_distance: MONSTER_DISTANCE,
+            num_monsters,
+            num_items,
+            entity_distance,
         }
     }
 }
@@ -33,16 +33,21 @@ impl MapArchitect for EmptyArchitect {
         mb.fill(TileType::Floor);
         mb.player_start = mb.map.centre();
         mb.winitem_start = mb.find_most_distant();
-        mb.monster_spawns = self.monster_spawns(&mb.map.centre(), &mb.map, rng);
+        mb.monster_spawns = self.entity_spawns(&mb.map.centre(), &mb.map, rng);
+        mb.item_spawns = self.entity_spawns(&mb.map.centre(), &mb.map, rng);
         mb
     }
 
-    fn monster_distance(&self) -> f32 {
-        self.monster_distance
+    fn entity_distance(&self) -> f32 {
+        self.entity_distance
     }
 
     fn num_monsters(&self) -> usize {
         self.num_monsters
+    }
+
+    fn num_items(&self) -> usize {
+        self.num_items
     }
 }
 
@@ -51,9 +56,9 @@ mod tests {
     use super::*;
     #[test]
     fn build() {
-        let mut arch = EmptyArchitect::new();
+        let mut arch = EmptyArchitect::new(50, 20, 10.0);
         let mut rng = RngComponent::new();
-        let mb = arch.builder(10, 20, &mut rng);
+        let mb = arch.builder(40, 60, &mut rng);
         println!("{}", mb);
     }
 }

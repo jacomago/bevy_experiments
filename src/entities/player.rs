@@ -1,5 +1,6 @@
 use crate::actions::Actions;
 use crate::cleanup::cleanup_components;
+use crate::components::carried::Carried;
 use crate::components::health::Health;
 use crate::components::map_position::MapPosition;
 use crate::config::Settings;
@@ -11,6 +12,7 @@ use crate::systems::fov::{fov, set_fov_visibility, FieldOfView};
 use crate::systems::movement::{movement, WantsToMove};
 use crate::GameState;
 
+use super::items::Item;
 use super::monsters::Monster;
 use bevy::prelude::*;
 use iyes_loopless::prelude::*;
@@ -101,6 +103,7 @@ fn spawn_player(
     });
 }
 
+#[allow(clippy::too_many_arguments)]
 fn player_input(
     mut commands: Commands,
     actions: Res<Actions>,
@@ -109,36 +112,45 @@ fn player_input(
     player_query: Query<(Entity, &MapPosition, With<Player>)>,
     mut player_health: Query<&mut Health, With<Player>>,
     monsters: Query<(Entity, &MapPosition, With<Monster>)>,
+    items: Query<(Entity, &MapPosition, With<Item>)>,
 ) {
-    if actions.player_movement.is_none() {
-        return;
-    }
-
-    let movement = actions.player_movement.unwrap().as_ivec2();
-
-    if movement != IVec2::ZERO {
+    if actions.pick_up_item.is_some() {
         let (entity, position, _) = player_query.single();
-        let new_position = MapPosition::from_ivec2(position.position + movement);
-
-        let monster = monsters
-            .iter()
-            .filter(|(_, m, _)| **m == new_position)
-            .last();
-        if let Some((m, _, _)) = monster {
-            combat_events.send(WantsToAttack {
-                attacker: entity,
-                victim: m,
-            });
-        } else {
-            move_events.send(WantsToMove {
-                entity,
-                destination: new_position,
-            });
+        let poss_item = items.iter().filter(|(e, p, _)| position == *p).last();
+        if let Some((item_entity, _, _)) = poss_item {
+            commands.entity(item_entity).remove::<MapPosition>();
+            commands.entity(item_entity).remove::<Transform>();
+            commands.entity(item_entity).insert(Carried { entity });
         }
-    } else {
-        let mut health = player_health.single_mut();
-        health.current = (health.current + 1).min(health.max);
     }
 
-    commands.insert_resource(TurnState::PlayerTurn);
+    if actions.player_movement.is_some() {
+        let movement = actions.player_movement.unwrap().as_ivec2();
+
+        if movement != IVec2::ZERO {
+            let (entity, position, _) = player_query.single();
+            let new_position = MapPosition::from_ivec2(position.position + movement);
+
+            let monster = monsters
+                .iter()
+                .filter(|(_, m, _)| **m == new_position)
+                .last();
+            if let Some((m, _, _)) = monster {
+                combat_events.send(WantsToAttack {
+                    attacker: entity,
+                    victim: m,
+                });
+            } else {
+                move_events.send(WantsToMove {
+                    entity,
+                    destination: new_position,
+                });
+            }
+        } else {
+            let mut health = player_health.single_mut();
+            health.current = (health.current + 1).min(health.max);
+        }
+
+        commands.insert_resource(TurnState::PlayerTurn);
+    }
 }

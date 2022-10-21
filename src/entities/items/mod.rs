@@ -3,13 +3,13 @@ use bevy::prelude::*;
 use crate::{
     cleanup::cleanup_components,
     components::{map_position::MapPosition, name::CharacterName},
-    config::Settings,
     game_ui::tooltip::Interactive,
-    loading::TextureAtlasAssets,
-    map::map_builder::MapBuilder,
     GameState,
 };
 
+use self::winitem::spawn_wintitem;
+mod winitem;
+pub use winitem::WinItem;
 pub struct ItemsPlugin;
 
 impl Plugin for ItemsPlugin {
@@ -24,9 +24,6 @@ impl Plugin for ItemsPlugin {
 #[derive(Component, Default)]
 pub struct Item;
 
-#[derive(Component)]
-pub struct WinItem;
-
 #[derive(Bundle, Default)]
 pub struct ItemBundle {
     _i: Item,
@@ -35,37 +32,4 @@ pub struct ItemBundle {
     pub interactive: Interactive,
     #[bundle]
     sprite: SpriteSheetBundle,
-}
-
-pub fn spawn_wintitem(
-    mut commands: Commands,
-    textures: Res<TextureAtlasAssets>,
-    map_builder: Res<MapBuilder>,
-    settings: Res<Settings>,
-) {
-    let position = map_builder.winitem_start;
-    commands
-        .spawn_bundle(ItemBundle {
-            name: CharacterName(settings.items_settings.winitem_name.clone()),
-            position,
-            interactive: Interactive {
-                text: settings.items_settings.winitem_name.clone(),
-            },
-            sprite: SpriteSheetBundle {
-                transform: Transform {
-                    translation: position
-                        .translation(settings.items_settings.z_level, settings.tile_size),
-                    ..default()
-                },
-                texture_atlas: textures.texture_atlas.clone(),
-                sprite: TextureAtlasSprite {
-                    index: settings.items_settings.winitem_sprite_index,
-                    ..default()
-                },
-
-                ..default()
-            },
-            ..default()
-        })
-        .insert(WinItem);
 }

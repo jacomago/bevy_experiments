@@ -39,7 +39,13 @@ impl Plugin for PlayerPlugin {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_player))
             .add_system_set(
                 SystemSet::on_update(GameState::Playing)
-                    .with_system(player_input.run_if_resource_equals(TurnState::AwaitingInput))
+                    .with_system(
+                        player_input_pick_up.run_if_resource_equals(TurnState::AwaitingInput),
+                    )
+                    .with_system(
+                        player_input_movement.run_if_resource_equals(TurnState::AwaitingInput),
+                    )
+                    .with_system(player_input_wait.run_if_resource_equals(TurnState::AwaitingInput))
                     .with_system(set_fov_visibility),
             )
             .add_system_set_to_stage(
@@ -103,27 +109,33 @@ fn spawn_player(
     });
 }
 
-#[allow(clippy::too_many_arguments)]
-fn player_input(
+fn player_input_pick_up(
     mut commands: Commands,
     actions: Res<Actions>,
-    mut move_events: EventWriter<WantsToMove>,
-    mut combat_events: EventWriter<WantsToAttack>,
     player_query: Query<(Entity, &MapPosition, With<Player>)>,
-    mut player_health: Query<&mut Health, With<Player>>,
-    monsters: Query<(Entity, &MapPosition, With<Monster>)>,
     items: Query<(Entity, &MapPosition, With<Item>)>,
 ) {
     if actions.pick_up_item.is_some() {
         let (entity, position, _) = player_query.single();
-        let poss_item = items.iter().filter(|(e, p, _)| position == *p).last();
+        let poss_item = items.iter().filter(|(_, p, _)| position == *p).last();
         if let Some((item_entity, _, _)) = poss_item {
             commands.entity(item_entity).remove::<MapPosition>();
             commands.entity(item_entity).remove::<Transform>();
             commands.entity(item_entity).insert(Carried { entity });
         }
-    }
 
+        commands.insert_resource(TurnState::PlayerTurn);
+    }
+}
+
+fn player_input_movement(
+    mut commands: Commands,
+    actions: Res<Actions>,
+    mut move_events: EventWriter<WantsToMove>,
+    mut combat_events: EventWriter<WantsToAttack>,
+    player_query: Query<(Entity, &MapPosition, With<Player>)>,
+    monsters: Query<(Entity, &MapPosition, With<Monster>)>,
+) {
     if actions.player_movement.is_some() {
         let movement = actions.player_movement.unwrap().as_ivec2();
 
@@ -146,7 +158,21 @@ fn player_input(
                     destination: new_position,
                 });
             }
-        } else {
+
+            commands.insert_resource(TurnState::PlayerTurn);
+        }
+    }
+}
+
+fn player_input_wait(
+    mut commands: Commands,
+    actions: Res<Actions>,
+    mut player_health: Query<&mut Health, With<Player>>,
+) {
+    if actions.player_movement.is_some() {
+        let movement = actions.player_movement.unwrap().as_ivec2();
+
+        if movement == IVec2::ZERO {
             let mut health = player_health.single_mut();
             health.current = (health.current + 1).min(health.max);
         }

@@ -141,6 +141,7 @@ fn set_movement_actions(
             mut_keyboard_input.clear();
         }
     } else if GameControl::Wait.just_released(keyboard_input) {
+        info!("Keyboard input made player wait");
         actions.player_movement = Some(Vec2::ZERO);
     } else {
         actions.player_movement = None;
@@ -154,6 +155,7 @@ fn set_item_pick_up(mut actions: ResMut<Actions>, mut mut_keyboard_input: ResMut
         || GameControl::PickUp.just_pressed(keyboard_input)
     {
         actions.pick_up_item = Some(true);
+        info!("Keyboard input made player pick up");
         mut_keyboard_input.clear();
     } else {
         actions.pick_up_item = None;

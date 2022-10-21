@@ -10,7 +10,8 @@ impl Plugin for ActionsPlugin {
         app.init_resource::<Actions>().add_system_set(
             SystemSet::on_update(GameState::Playing)
                 .with_system(set_movement_actions)
-                .with_system(cursor_system),
+                .with_system(cursor_system)
+                .with_system(set_item_pick_up),
         );
     }
 }
@@ -22,6 +23,8 @@ pub struct Actions {
     pub player_movement: Option<Vec2>,
     /// Mouse rollover
     pub mouse_rollover: Option<MousePosition>,
+    /// Pick up item
+    pub pick_up_item: Option<bool>,
 }
 
 /// Position of the mouse cursor
@@ -144,6 +147,19 @@ fn set_movement_actions(
     }
 }
 
+/// From keyboard input turn into player movement
+fn set_item_pick_up(mut actions: ResMut<Actions>, mut mut_keyboard_input: ResMut<Input<KeyCode>>) {
+    let keyboard_input = mut_keyboard_input.as_ref();
+    if GameControl::PickUp.just_released(keyboard_input)
+        || GameControl::PickUp.just_pressed(keyboard_input)
+    {
+        actions.pick_up_item = Some(true);
+        mut_keyboard_input.clear();
+    } else {
+        actions.pick_up_item = None;
+    }
+}
+
 /// Possible Player actions
 enum GameControl {
     /// Move up
@@ -156,6 +172,8 @@ enum GameControl {
     Right,
     /// Wait a turn
     Wait,
+    /// Pick up Item
+    PickUp,
 }
 
 impl GameControl {
@@ -178,6 +196,7 @@ impl GameControl {
                 keyboard_input.just_released(KeyCode::D)
                     || keyboard_input.just_released(KeyCode::Right)
             }
+            GameControl::PickUp => keyboard_input.just_released(KeyCode::G),
             GameControl::Wait => keyboard_input.just_released(KeyCode::Space),
         }
     }
@@ -197,6 +216,7 @@ impl GameControl {
             GameControl::Right => {
                 keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right)
             }
+            GameControl::PickUp => keyboard_input.pressed(KeyCode::G),
             GameControl::Wait => keyboard_input.pressed(KeyCode::Space),
         }
     }
@@ -219,6 +239,7 @@ impl GameControl {
                 keyboard_input.just_pressed(KeyCode::D)
                     || keyboard_input.just_pressed(KeyCode::Right)
             }
+            GameControl::PickUp => keyboard_input.just_pressed(KeyCode::G),
             GameControl::Wait => keyboard_input.just_pressed(KeyCode::Space),
         }
     }

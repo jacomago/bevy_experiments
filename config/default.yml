@@ -6,9 +6,11 @@ monsters_settings:
     z_level: 1
     monsters: [
         {
-            actor_settings: {
-                sprite_index: 69,
-                name: "Yoga Bunny",
+            actor: {
+                entity: {
+                    sprite_index: 69,
+                    name: "Yoga Bunny",
+                },
                 max_health: 1,
                 fov_radius: 6,
             },
@@ -16,9 +18,11 @@ monsters_settings:
             proportion: 50,
         },
         {
-            actor_settings: {
-                sprite_index: 111,
-                name: "Nutritionist",
+            actor: {
+                entity: {
+                    sprite_index: 111,
+                    name: "Nutritionist",
+                },
                 max_health: 2,
                 fov_radius: 6,
             },
@@ -26,9 +30,11 @@ monsters_settings:
             proportion: 10,
         },
         {
-            actor_settings: {
-                sprite_index: 79,
-                name: "Gym Bro",
+            actor: {
+                entity: {
+                    sprite_index: 79,
+                    name: "Gym Bro",
+                },
                 max_health: 4,
                 fov_radius: 6,
             },
@@ -36,9 +42,11 @@ monsters_settings:
             proportion: 30,
         },
         {
-            actor_settings: {
-                sprite_index: 103,
-                name: "Supplement Pusher",
+            actor: {
+                entity: {
+                    sprite_index: 103,
+                    name: "Supplement Pusher",
+                },
                 max_health: 3,
                 fov_radius: 10,
             },
@@ -54,12 +62,35 @@ map_settings:
     z_level: 0.0
     architect: Drunkard
 items_settings: 
-    winitem_sprite_index: 124
-    winitem_name: "Cake of Destiny"
+    winitem: {
+        sprite_index: 124,
+        name: "Cake of Destiny",
+    }
+    items: [
+        {
+            entity: {
+                sprite_index: 33,
+                name: "Fries",
+            },
+            item_type: Healing,
+            proportion: 80,
+        },
+        {
+            entity: {
+                sprite_index: 123,
+                name: "Deep Fried Fish",
+            },
+            item_type: DungeonMap,
+            proportion: 20,
+        },
+    ]
     z_level: 1.0
+    amount: 20
 player_settings: {
-    sprite_index: 64,
-    name: "Cake Addict",
+    entity: {
+        sprite_index: 64,
+        name: "Cake Addict",
+    },
     max_health: 10,
     fov_radius: 10,
 }

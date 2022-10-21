@@ -112,17 +112,17 @@ fn spawn_monster(
 ) {
     let config = rng.weighted_sample(&settings.monsters, weights).unwrap();
     let mut monster = commands.spawn_bundle(MonsterBundle {
-        name: CharacterName(config.actor_settings.name.clone()),
+        name: CharacterName(config.actor.entity.name.clone()),
         position: *position,
         health: Health {
-            current: config.actor_settings.max_health,
-            max: config.actor_settings.max_health,
+            current: config.actor.max_health,
+            max: config.actor.max_health,
         },
-        fov: FieldOfView::new(config.actor_settings.fov_radius),
+        fov: FieldOfView::new(config.actor.fov_radius),
         interactive: Interactive {
             text: format!(
                 "{} hp:{}",
-                &config.actor_settings.name, config.actor_settings.max_health
+                &config.actor.entity.name, config.actor.max_health
             ),
         },
         sprite: SpriteSheetBundle {
@@ -132,7 +132,7 @@ fn spawn_monster(
             },
             texture_atlas: textures.texture_atlas.clone(),
             sprite: TextureAtlasSprite {
-                index: config.actor_settings.sprite_index,
+                index: config.actor.entity.sprite_index,
                 ..default()
             },
 

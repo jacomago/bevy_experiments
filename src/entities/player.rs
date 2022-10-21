@@ -92,7 +92,7 @@ fn spawn_player(
             },
             texture_atlas: textures.texture_atlas.clone(),
             sprite: TextureAtlasSprite {
-                index: settings.player_settings.sprite_index,
+                index: settings.player_settings.entity.sprite_index,
                 ..default()
             },
             ..default()

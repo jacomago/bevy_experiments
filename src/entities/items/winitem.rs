@@ -19,10 +19,10 @@ pub fn spawn_wintitem(
     let position = map_builder.winitem_start;
     commands
         .spawn_bundle(ItemBundle {
-            name: CharacterName(settings.items_settings.winitem_name.clone()),
+            name: CharacterName(settings.items_settings.winitem.name.clone()),
             position,
             interactive: Interactive {
-                text: settings.items_settings.winitem_name.clone(),
+                text: settings.items_settings.winitem.name.clone(),
             },
             sprite: SpriteSheetBundle {
                 transform: Transform {
@@ -32,7 +32,7 @@ pub fn spawn_wintitem(
                 },
                 texture_atlas: textures.texture_atlas.clone(),
                 sprite: TextureAtlasSprite {
-                    index: settings.items_settings.winitem_sprite_index,
+                    index: settings.items_settings.winitem.sprite_index,
                     ..default()
                 },
 

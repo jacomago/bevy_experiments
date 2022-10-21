@@ -8,8 +8,11 @@ use crate::{
 };
 
 use self::winitem::spawn_wintitem;
+mod healing;
 mod winitem;
+
 pub use winitem::WinItem;
+
 pub struct ItemsPlugin;
 
 impl Plugin for ItemsPlugin {

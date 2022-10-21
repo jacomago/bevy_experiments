@@ -2,7 +2,7 @@ use std::env;
 
 use bevy::prelude::Plugin;
 use config::{Config, ConfigError, Environment, File};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 pub struct ConfigPlugin;
 
@@ -15,10 +15,15 @@ impl Plugin for ConfigPlugin {
 
 #[derive(Debug, Deserialize)]
 pub struct ActorSettings {
-    pub name: String,
-    pub sprite_index: usize,
+    pub entity: EntitySettings,
     pub max_health: i32,
     pub fov_radius: i32,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EntitySettings {
+    pub sprite_index: usize,
+    pub name: String,
 }
 
 #[derive(Debug, Deserialize, Default)]
@@ -27,18 +32,10 @@ pub enum Behaviour {
     #[default]
     Chasing,
 }
-#[derive(Debug, Deserialize, Default)]
-pub enum Architect {
-    Empty,
-    #[default]
-    Standard,
-    Automata,
-    Drunkard,
-}
 
 #[derive(Debug, Deserialize)]
 pub struct MonsterSettings {
-    pub actor_settings: ActorSettings,
+    pub actor: ActorSettings,
     pub behaviour: Behaviour,
     pub proportion: f64,
 }
@@ -60,11 +57,35 @@ pub struct MapSettings {
     pub architect: Architect,
 }
 
+#[derive(Debug, Deserialize, Default)]
+pub enum Architect {
+    Empty,
+    #[default]
+    Standard,
+    Automata,
+    Drunkard,
+}
+
+#[derive(Debug, Deserialize, Default, Serialize, PartialEq)]
+pub enum ItemType {
+    Healing,
+    #[default]
+    DungeonMap,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ItemSettings {
+    pub entity: EntitySettings,
+    pub proportion: f64,
+    pub item_type: ItemType,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct ItemsSettings {
-    pub winitem_sprite_index: usize,
-    pub winitem_name: String,
+    pub items: Vec<ItemSettings>,
+    pub winitem: EntitySettings,
     pub z_level: f32,
+    pub amount: i32,
 }
 
 #[derive(Debug, Deserialize)]

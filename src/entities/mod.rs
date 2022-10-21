@@ -1,5 +1,10 @@
 use bevy::prelude::*;
 
+use crate::components::map_position::MapPosition;
+use crate::components::name::CharacterName;
+use crate::config::EntitySettings;
+use crate::game_ui::tooltip::Interactive;
+
 use self::{items::ItemsPlugin, monsters::MonstersPlugin, player::PlayerPlugin, tile::TilePlugin};
 
 mod items;
@@ -21,5 +26,45 @@ impl Plugin for ActorsPlugin {
             .add_plugin(MonstersPlugin)
             .add_plugin(ItemsPlugin)
             .add_plugin(TilePlugin);
+    }
+}
+
+#[derive(Bundle, Default)]
+pub struct GameEntityBundle {
+    pub name: CharacterName,
+    pub position: MapPosition,
+    pub interactive: Interactive,
+    #[bundle]
+    sprite: SpriteSheetBundle,
+}
+
+impl GameEntityBundle {
+    fn from_settings(
+        settings: &EntitySettings,
+        position: &MapPosition,
+        texture_atlas: &Handle<TextureAtlas>,
+        z_level: f32,
+        tile_size: i32,
+    ) -> Self {
+        Self {
+            name: CharacterName(settings.name.clone()),
+            position: *position,
+            interactive: Interactive {
+                text: settings.name.clone(),
+            },
+            sprite: SpriteSheetBundle {
+                transform: Transform {
+                    translation: position.translation(z_level, tile_size),
+                    ..default()
+                },
+                texture_atlas: texture_atlas.clone(),
+                sprite: TextureAtlasSprite {
+                    index: settings.sprite_index,
+                    ..default()
+                },
+
+                ..default()
+            },
+        }
     }
 }

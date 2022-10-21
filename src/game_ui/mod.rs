@@ -2,7 +2,9 @@ use bevy::prelude::*;
 
 use self::{hud::HUDPlugin, tooltip::TooltipPlugin};
 
+mod health_bar;
 mod hud;
+mod inventory;
 pub mod tooltip;
 
 pub struct GameUiPlugin;

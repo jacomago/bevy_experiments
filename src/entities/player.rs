@@ -120,7 +120,9 @@ fn player_input_pick_up(
         let poss_item = items.iter().filter(|(_, p, _)| position == *p).last();
         if let Some((item_entity, _, _)) = poss_item {
             commands.entity(item_entity).remove::<MapPosition>();
-            commands.entity(item_entity).remove::<Transform>();
+            commands
+                .entity(item_entity)
+                .remove_bundle::<SpriteSheetBundle>();
             commands.entity(item_entity).insert(Carried { entity });
         }
 

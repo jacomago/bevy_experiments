@@ -1,5 +1,4 @@
-use bevy::prelude::*;
-use winit::dpi::Position;
+use bevy::{prelude::*, utils::HashMap};
 
 use crate::{
     components::{carried::Carried, name::CharacterName},
@@ -67,13 +66,20 @@ pub fn update_inventory(
     inventory_query: Query<(Entity, With<Inventory>)>,
     font: Res<FontAssets>,
 ) {
+    let mut map = HashMap::new();
+    player_items.iter().for_each(|(_, i)| {
+        let current = map.entry(&i.0).or_insert(0);
+        *current += 1;
+    });
     let (inventory, _) = inventory_query.single();
+    // Remove old inventory from ui.
     commands.entity(inventory).despawn_descendants();
+    // Add updated one.
     commands.entity(inventory).with_children(|parent| {
-        player_items.iter().for_each(|(_, name)| {
+        map.iter().enumerate().for_each(|(i, (name, count))| {
             parent.spawn_bundle(
                 TextBundle::from_section(
-                    name.0.clone(),
+                    format!("{} {}: {}", i + 1, name, count),
                     TextStyle {
                         font: font.fira_sans.clone(),
                         font_size: 10.,

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::components::map_position::MapPosition;
-use crate::components::name::CharacterName;
+use crate::components::name::EntityName;
 use crate::config::EntitySettings;
 use crate::game_ui::tooltip::Interactive;
 
@@ -31,7 +31,7 @@ impl Plugin for ActorsPlugin {
 
 #[derive(Bundle, Default)]
 pub struct GameEntityBundle {
-    pub name: CharacterName,
+    pub name: EntityName,
     pub position: MapPosition,
     pub interactive: Interactive,
     #[bundle]
@@ -47,7 +47,7 @@ impl GameEntityBundle {
         tile_size: i32,
     ) -> Self {
         Self {
-            name: CharacterName(settings.name.clone()),
+            name: EntityName(settings.name.clone()),
             position: *position,
             interactive: Interactive {
                 text: settings.name.clone(),

@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{components::health::Health, entities::Player, loading::FontAssets};
 
-use super::hud::Hud;
+use super::hud::HudComponent;
 
 #[derive(Component)]
 pub struct HealthText;
@@ -29,7 +29,7 @@ pub fn spawn_health_bar(mut commands: Commands, font: Res<FontAssets>) {
             color: UiColor(Color::rgba(0.65, 0.65, 0.65, 0.5)),
             ..default()
         })
-        .insert(Hud)
+        .insert(HudComponent)
         .with_children(|parent| {
             parent
                 .spawn_bundle(NodeBundle {

@@ -1,11 +1,13 @@
 use bevy::{prelude::*, utils::HashMap};
+use bimap::BiMap;
 
 use crate::{
-    components::{carried::Carried, name::CharacterName},
+    components::{carried::Carried, name::EntityName},
+    entities::Player,
     loading::FontAssets,
 };
 
-use super::hud::Hud;
+use super::hud::HudComponent;
 
 pub fn spawn_inventory(mut commands: Commands, font: Res<FontAssets>) {
     // Inventory
@@ -20,7 +22,7 @@ pub fn spawn_inventory(mut commands: Commands, font: Res<FontAssets>) {
             color: UiColor(Color::rgba(0.65, 0.65, 0.65, 0.5)),
             ..default()
         })
-        .insert(Hud)
+        .insert(HudComponent)
         .with_children(|parent| {
             // Title
             parent.spawn_bundle(
@@ -53,33 +55,34 @@ pub fn spawn_inventory(mut commands: Commands, font: Res<FontAssets>) {
                     color: UiColor(Color::rgba(0.65, 0.65, 0.65, 0.5)),
                     ..default()
                 })
-                .insert(Inventory);
+                .insert(HUDInventory);
         });
 }
 
 #[derive(Component)]
-pub struct Inventory;
+pub struct HUDInventory;
 
-pub fn update_inventory(
+pub fn update_inventory_hud(
     mut commands: Commands,
-    player_items: Query<(With<Carried>, &CharacterName)>,
-    inventory_query: Query<(Entity, With<Inventory>)>,
+    mut inventory_query: Query<&mut PlayerInventory>,
+    hud_inventory_query: Query<(Entity, With<HUDInventory>)>,
     font: Res<FontAssets>,
 ) {
-    let mut map = HashMap::new();
-    player_items.iter().for_each(|(_, i)| {
-        let current = map.entry(&i.0).or_insert(0);
-        *current += 1;
-    });
-    let (inventory, _) = inventory_query.single();
+    let mut inventory = inventory_query.single_mut();
+    if !inventory.is_dirty {
+        return;
+    }
+
+    let (hud_inventory, _) = hud_inventory_query.single();
     // Remove old inventory from ui.
-    commands.entity(inventory).despawn_descendants();
+    commands.entity(hud_inventory).despawn_descendants();
     // Add updated one.
-    commands.entity(inventory).with_children(|parent| {
-        map.iter().enumerate().for_each(|(i, (name, count))| {
+    commands.entity(hud_inventory).with_children(|parent| {
+        inventory.counts.iter().for_each(|(name, count)| {
+            let i = inventory.key_map.get_by_right(name).unwrap();
             parent.spawn_bundle(
                 TextBundle::from_section(
-                    format!("{} {}: {}", i + 1, name, count),
+                    format!("{} {}: {}", i, name, count),
                     TextStyle {
                         font: font.fira_sans.clone(),
                         font_size: 10.,
@@ -99,4 +102,39 @@ pub fn update_inventory(
             );
         });
     });
+    inventory.is_dirty = false;
+}
+
+#[derive(Component, Default)]
+pub struct PlayerInventory {
+    key_map: bimap::BiMap<i32, String>,
+    counts: HashMap<String, u32>,
+    is_dirty: bool,
+}
+
+pub fn update_inventory(
+    player_query: Query<(Entity, With<Player>)>,
+    player_items: Query<(&Carried, &EntityName)>,
+    mut inventory_query: Query<&mut PlayerInventory>,
+) {
+    let mut new_inventory = HashMap::new();
+    let (player, _) = player_query.single();
+    player_items
+        .iter()
+        .filter(|(c, _)| c.entity == player)
+        .for_each(|(_, i)| {
+            let current = new_inventory.entry(i.0.clone()).or_insert(0);
+            *current += 1;
+        });
+    let mut inventory = inventory_query.single_mut();
+    if new_inventory != inventory.counts {
+        inventory.is_dirty = true;
+        inventory.key_map = BiMap::from_iter(
+            new_inventory
+                .iter()
+                .enumerate()
+                .map(|(i, (name, _))| (i as i32, name.clone())),
+        );
+        inventory.counts = new_inventory;
+    }
 }

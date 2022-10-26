@@ -4,14 +4,14 @@ use iyes_loopless::prelude::*;
 use crate::{
     actions::Actions,
     components::{health::Health, map_position::MapPosition},
-    entities::{Item, Monster, Player},
+    entities::{ActivateItem, Item, Monster, Player},
     stages::TurnState,
     GameState,
 };
 
 use super::{
     combat::WantsToAttack,
-    inventory::{ActivateItem, Carried, PlayerInventory},
+    inventory::{Carried, PlayerInventory},
     movement::WantsToMove,
 };
 

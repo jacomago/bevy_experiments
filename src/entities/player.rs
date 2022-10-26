@@ -14,6 +14,8 @@ use crate::GameState;
 use bevy::prelude::*;
 use iyes_loopless::prelude::*;
 
+use super::items::use_items;
+
 pub struct PlayerPlugin;
 
 #[derive(Component, Default)]
@@ -41,6 +43,7 @@ impl Plugin for PlayerPlugin {
                 GameStage::PlayerCombat,
                 ConditionSet::new()
                     .run_if_resource_equals(TurnState::PlayerTurn)
+                    .with_system(use_items)
                     .with_system(combat)
                     .into(),
             )

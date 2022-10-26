@@ -18,6 +18,8 @@ use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use iyes_loopless::prelude::ConditionSet;
 
+use super::items::use_items;
+
 pub struct MonstersPlugin;
 
 /// This plugin handles player related stuff like movement
@@ -37,6 +39,7 @@ impl Plugin for MonstersPlugin {
                 GameStage::MonsterCombat,
                 ConditionSet::new()
                     .run_if_resource_equals(TurnState::MonsterTurn)
+                    .with_system(use_items)
                     .with_system(combat)
                     .into(),
             )

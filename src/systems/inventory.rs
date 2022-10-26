@@ -1,8 +1,6 @@
-use std::collections::HashMap;
-
 use bevy::prelude::*;
 
-use crate::{components::name::EntityName, entities::Player, GameState};
+use crate::{components::health::Health, entities::Player, GameState};
 
 #[derive(Debug, Component, Clone, Copy)]
 pub struct Carried {
@@ -15,7 +13,7 @@ impl Plugin for InventoryPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_inventory))
             .add_system_set(SystemSet::on_update(GameState::Playing).with_system(update_inventory))
-            .add_event::<ActivateItem>();
+            ;
     }
 }
 
@@ -32,10 +30,6 @@ fn spawn_inventory(mut commands: Commands) {
     commands.spawn_bundle(InventoryBundle { ..default() });
 }
 
-pub struct ActivateItem {
-    pub used_by: Entity,
-    pub item: Entity,
-}
 
 #[derive(Component, Default, Debug)]
 pub struct PlayerInventory {

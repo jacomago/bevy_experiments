@@ -1,9 +1,9 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, utils::HashMap};
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 
 use crate::{
     cleanup::cleanup_components,
-    components::map_position::MapPosition,
+    components::{health::Health, map_position::MapPosition},
     config::{ItemSettings, ItemType, ItemsSettings, Settings},
     loading::TextureAtlasAssets,
     map::map_builder::MapBuilder,
@@ -30,7 +30,8 @@ impl Plugin for ItemsPlugin {
         )
         .add_system_set(
             SystemSet::on_exit(GameState::Playing).with_system(cleanup_components::<Item>),
-        );
+        )
+        .add_event::<ActivateItem>();
     }
 }
 
@@ -94,4 +95,40 @@ fn spawn_item(
         ItemType::Healing => item.insert(ProvidesHealing { amount: 6 }),
         ItemType::DungeonMap => item.insert(ProvidesMap),
     };
+}
+
+pub struct ActivateItem {
+    pub used_by: Entity,
+    pub item: Entity,
+}
+
+pub fn use_items(
+    mut activation_events: EventReader<ActivateItem>,
+    mut healths: Query<&mut Health>,
+    provides_healing: Query<&ProvidesHealing>,
+    provides_map: Query<&ProvidesHealing>,
+    mut visibility_query: Query<(&mut Visibility, With<MapPosition>)>,
+) {
+    let mut to_heal = HashMap::new();
+    activation_events.iter().for_each(|event| {
+        // healing
+        if let Ok(healing) = provides_healing.get(event.item) {
+            to_heal
+                .entry(event.used_by)
+                .and_modify(|current_heal| *current_heal += healing.amount)
+                .or_insert(0);
+        }
+
+        if provides_map.get(event.item).is_ok() {
+            visibility_query.iter_mut().for_each(|(mut visibility, _)| {
+                visibility.is_visible = true;
+            })
+        }
+    });
+
+    to_heal.iter().for_each(|(entity, heal_amount)| {
+        if let Ok(mut health) = healths.get_mut(*entity) {
+            health.current = health.max.min(health.current + heal_amount);
+        }
+    })
 }

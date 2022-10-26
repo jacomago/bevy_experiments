@@ -11,7 +11,8 @@ impl Plugin for ActionsPlugin {
             SystemSet::on_update(GameState::Playing)
                 .with_system(set_movement_actions)
                 .with_system(cursor_system)
-                .with_system(set_item_pick_up),
+                .with_system(set_item_pick_up)
+                .with_system(use_item),
         );
     }
 }
@@ -25,6 +26,8 @@ pub struct Actions {
     pub mouse_rollover: Option<MousePosition>,
     /// Pick up item
     pub pick_up_item: Option<bool>,
+    /// Use an item in inventory
+    pub use_item: Option<usize>,
 }
 
 /// Position of the mouse cursor
@@ -162,6 +165,26 @@ fn set_item_pick_up(mut actions: ResMut<Actions>, mut mut_keyboard_input: ResMut
     }
 }
 
+/// From keyboard input turn into player inventory choice
+fn use_item(mut actions: ResMut<Actions>, mut mut_keyboard_input: ResMut<Input<KeyCode>>) {
+    let keyboard_input = mut_keyboard_input.as_ref();
+    let mut used = false;
+    (0..9).for_each(|n| {
+        if GameControl::UseItem(n).just_released(keyboard_input)
+            || GameControl::UseItem(n).just_pressed(keyboard_input)
+        {
+            actions.use_item = Some(n);
+            info!("Keyboard input made player pick up");
+            used = true;
+        } else {
+            actions.use_item = None;
+        }
+    });
+    if used {
+        mut_keyboard_input.clear();
+    }
+}
+
 /// Possible Player actions
 enum GameControl {
     /// Move up
@@ -176,6 +199,8 @@ enum GameControl {
     Wait,
     /// Pick up Item
     PickUp,
+    /// Use Item
+    UseItem(usize),
 }
 
 impl GameControl {
@@ -200,6 +225,17 @@ impl GameControl {
             }
             GameControl::PickUp => keyboard_input.just_released(KeyCode::G),
             GameControl::Wait => keyboard_input.just_released(KeyCode::Space),
+            GameControl::UseItem(0) => keyboard_input.just_released(KeyCode::Key0),
+            GameControl::UseItem(1) => keyboard_input.just_released(KeyCode::Key1),
+            GameControl::UseItem(2) => keyboard_input.just_released(KeyCode::Key2),
+            GameControl::UseItem(3) => keyboard_input.just_released(KeyCode::Key3),
+            GameControl::UseItem(4) => keyboard_input.just_released(KeyCode::Key4),
+            GameControl::UseItem(5) => keyboard_input.just_released(KeyCode::Key5),
+            GameControl::UseItem(6) => keyboard_input.just_released(KeyCode::Key6),
+            GameControl::UseItem(7) => keyboard_input.just_released(KeyCode::Key7),
+            GameControl::UseItem(8) => keyboard_input.just_released(KeyCode::Key8),
+            GameControl::UseItem(9) => keyboard_input.just_released(KeyCode::Key9),
+            GameControl::UseItem(_) => false,
         }
     }
 
@@ -220,6 +256,17 @@ impl GameControl {
             }
             GameControl::PickUp => keyboard_input.pressed(KeyCode::G),
             GameControl::Wait => keyboard_input.pressed(KeyCode::Space),
+            GameControl::UseItem(0) => keyboard_input.pressed(KeyCode::Key0),
+            GameControl::UseItem(1) => keyboard_input.pressed(KeyCode::Key1),
+            GameControl::UseItem(2) => keyboard_input.pressed(KeyCode::Key2),
+            GameControl::UseItem(3) => keyboard_input.pressed(KeyCode::Key3),
+            GameControl::UseItem(4) => keyboard_input.pressed(KeyCode::Key4),
+            GameControl::UseItem(5) => keyboard_input.pressed(KeyCode::Key5),
+            GameControl::UseItem(6) => keyboard_input.pressed(KeyCode::Key6),
+            GameControl::UseItem(7) => keyboard_input.pressed(KeyCode::Key7),
+            GameControl::UseItem(8) => keyboard_input.pressed(KeyCode::Key8),
+            GameControl::UseItem(9) => keyboard_input.pressed(KeyCode::Key9),
+            GameControl::UseItem(_) => false,
         }
     }
 
@@ -243,6 +290,17 @@ impl GameControl {
             }
             GameControl::PickUp => keyboard_input.just_pressed(KeyCode::G),
             GameControl::Wait => keyboard_input.just_pressed(KeyCode::Space),
+            GameControl::UseItem(0) => keyboard_input.just_pressed(KeyCode::Key0),
+            GameControl::UseItem(1) => keyboard_input.just_pressed(KeyCode::Key1),
+            GameControl::UseItem(2) => keyboard_input.just_pressed(KeyCode::Key2),
+            GameControl::UseItem(3) => keyboard_input.just_pressed(KeyCode::Key3),
+            GameControl::UseItem(4) => keyboard_input.just_pressed(KeyCode::Key4),
+            GameControl::UseItem(5) => keyboard_input.just_pressed(KeyCode::Key5),
+            GameControl::UseItem(6) => keyboard_input.just_pressed(KeyCode::Key6),
+            GameControl::UseItem(7) => keyboard_input.just_pressed(KeyCode::Key7),
+            GameControl::UseItem(8) => keyboard_input.just_pressed(KeyCode::Key8),
+            GameControl::UseItem(9) => keyboard_input.just_pressed(KeyCode::Key9),
+            GameControl::UseItem(_) => false,
         }
     }
 }

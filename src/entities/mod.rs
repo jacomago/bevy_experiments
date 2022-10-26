@@ -12,6 +12,7 @@ mod monsters;
 mod player;
 mod tile;
 
+pub use items::Item;
 pub use items::WinItem;
 pub use monsters::Monster;
 pub use player::Player;

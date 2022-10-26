@@ -14,7 +14,8 @@ pub struct InventoryPlugin;
 impl Plugin for InventoryPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_inventory))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(update_inventory));
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(update_inventory))
+            .add_event::<ActivateItem>();
     }
 }
 
@@ -31,34 +32,32 @@ fn spawn_inventory(mut commands: Commands) {
     commands.spawn_bundle(InventoryBundle { ..default() });
 }
 
+pub struct ActivateItem {
+    pub used_by: Entity,
+    pub item: Entity,
+}
+
 #[derive(Component, Default, Debug)]
 pub struct PlayerInventory {
-    pub key_map: Vec<String>,
-    pub counts: HashMap<String, u32>,
+    pub key_map: Vec<Entity>,
     pub is_dirty: bool,
 }
 
 pub fn update_inventory(
     player_query: Query<(Entity, With<Player>)>,
-    player_items: Query<(&Carried, &EntityName)>,
+    all_items: Query<(Entity, &Carried)>,
     mut inventory_query: Query<&mut PlayerInventory>,
 ) {
-    let mut new_inventory = HashMap::new();
-    let (player, _) = player_query.single();
-    player_items
-        .iter()
-        .filter(|(c, _)| c.entity == player)
-        .for_each(|(_, i)| {
-            let current = new_inventory.entry(i.0.clone()).or_insert(0);
-            *current += 1;
-        });
     let mut inventory = inventory_query.single_mut();
-    if new_inventory != inventory.counts {
+    let (player, _) = player_query.single();
+    let mut player_items = all_items
+        .iter()
+        .filter(|(_, c)| c.entity == player)
+        .map(|(e, _)| e)
+        .collect::<Vec<_>>();
+    player_items.sort();
+    if inventory.key_map != player_items {
         inventory.is_dirty = true;
-
-        let mut keys = new_inventory.keys().cloned().collect::<Vec<_>>();
-        keys.sort();
-        inventory.key_map = keys;
-        inventory.counts = new_inventory;
+        inventory.key_map = player_items;
     }
 }

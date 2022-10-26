@@ -1,6 +1,10 @@
 use bevy::prelude::*;
 
-use crate::{loading::FontAssets, systems::inventory::PlayerInventory};
+use crate::{
+    components::name::EntityName,
+    loading::FontAssets,
+    systems::inventory::{Carried, PlayerInventory},
+};
 
 use super::hud::HudComponent;
 
@@ -54,6 +58,7 @@ pub struct HUDInventory;
 pub fn update_inventory_hud(
     mut commands: Commands,
     mut inventory_query: Query<&mut PlayerInventory>,
+    items: Query<(With<Carried>, &EntityName)>,
     hud_inventory_query: Query<(Entity, With<HUDInventory>)>,
     font: Res<FontAssets>,
 ) {
@@ -67,23 +72,27 @@ pub fn update_inventory_hud(
     commands.entity(hud_inventory).despawn_descendants();
     // Add updated one.
     commands.entity(hud_inventory).with_children(|parent| {
-        inventory.key_map.iter().enumerate().for_each(|(i, name)| {
-            let count = inventory.counts.get(name).unwrap();
-            parent.spawn_bundle(
-                TextBundle::from_section(
-                    format!("{} {}: {}", i, name, count),
-                    TextStyle {
-                        font: font.fira_sans.clone(),
-                        font_size: 10.,
-                        color: Color::BLACK,
-                    },
-                )
-                .with_style(Style {
-                    size: Size::new(Val::Undefined, Val::Px(25.)),
-                    ..default()
-                }),
-            );
-        });
+        inventory
+            .key_map
+            .iter()
+            .enumerate()
+            .for_each(|(i, entity)| {
+                let (_, name) = items.get(*entity).unwrap();
+                parent.spawn_bundle(
+                    TextBundle::from_section(
+                        format!("{}: {}", i, name),
+                        TextStyle {
+                            font: font.fira_sans.clone(),
+                            font_size: 10.,
+                            color: Color::BLACK,
+                        },
+                    )
+                    .with_style(Style {
+                        size: Size::new(Val::Undefined, Val::Px(25.)),
+                        ..default()
+                    }),
+                );
+            });
     });
     inventory.is_dirty = false;
 }

@@ -1,4 +1,3 @@
-use crate::actions::Actions;
 use crate::cleanup::cleanup_components;
 use crate::components::health::Health;
 use crate::components::map_position::MapPosition;
@@ -6,14 +5,12 @@ use crate::config::Settings;
 use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
 use crate::stages::{end_turn, GameStage, TurnState};
-use crate::systems::combat::{combat, WantsToAttack};
+use crate::systems::combat::combat;
 use crate::systems::fov::{fov, set_fov_visibility, FieldOfView};
-use crate::systems::inventory::Carried;
-use crate::systems::movement::{movement, WantsToMove};
+
+use crate::systems::movement::movement;
 use crate::GameState;
 
-use super::items::Item;
-use super::monsters::Monster;
 use bevy::prelude::*;
 use iyes_loopless::prelude::*;
 
@@ -38,15 +35,7 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_player))
             .add_system_set(
-                SystemSet::on_update(GameState::Playing)
-                    .with_system(
-                        player_input_pick_up.run_if_resource_equals(TurnState::AwaitingInput),
-                    )
-                    .with_system(
-                        player_input_movement.run_if_resource_equals(TurnState::AwaitingInput),
-                    )
-                    .with_system(player_input_wait.run_if_resource_equals(TurnState::AwaitingInput))
-                    .with_system(set_fov_visibility),
+                SystemSet::on_update(GameState::Playing).with_system(set_fov_visibility),
             )
             .add_system_set_to_stage(
                 GameStage::PlayerCombat,
@@ -107,78 +96,4 @@ fn spawn_player(
         },
         ..default()
     });
-}
-
-fn player_input_pick_up(
-    mut commands: Commands,
-    actions: Res<Actions>,
-    player_query: Query<(Entity, &MapPosition, With<Player>)>,
-    items: Query<(Entity, &MapPosition, With<Item>)>,
-) {
-    if actions.pick_up_item.is_some() {
-        let (entity, position, _) = player_query.single();
-        let poss_item = items.iter().filter(|(_, p, _)| position == *p).last();
-        if let Some((item_entity, _, _)) = poss_item {
-            commands.entity(item_entity).remove::<MapPosition>();
-            commands
-                .entity(item_entity)
-                .remove_bundle::<SpriteSheetBundle>();
-            commands.entity(item_entity).insert(Carried { entity });
-        }
-
-        commands.insert_resource(TurnState::PlayerTurn);
-    }
-}
-
-fn player_input_movement(
-    mut commands: Commands,
-    actions: Res<Actions>,
-    mut move_events: EventWriter<WantsToMove>,
-    mut combat_events: EventWriter<WantsToAttack>,
-    player_query: Query<(Entity, &MapPosition, With<Player>)>,
-    monsters: Query<(Entity, &MapPosition, With<Monster>)>,
-) {
-    if actions.player_movement.is_some() {
-        let movement = actions.player_movement.unwrap().as_ivec2();
-
-        if movement != IVec2::ZERO {
-            let (entity, position, _) = player_query.single();
-            let new_position = MapPosition::from_ivec2(position.position + movement);
-
-            let monster = monsters
-                .iter()
-                .filter(|(_, m, _)| **m == new_position)
-                .last();
-            if let Some((m, _, _)) = monster {
-                combat_events.send(WantsToAttack {
-                    attacker: entity,
-                    victim: m,
-                });
-            } else {
-                move_events.send(WantsToMove {
-                    entity,
-                    destination: new_position,
-                });
-            }
-
-            commands.insert_resource(TurnState::PlayerTurn);
-        }
-    }
-}
-
-fn player_input_wait(
-    mut commands: Commands,
-    actions: Res<Actions>,
-    mut player_health: Query<&mut Health, With<Player>>,
-) {
-    if actions.player_movement.is_some() {
-        let movement = actions.player_movement.unwrap().as_ivec2();
-
-        if movement == IVec2::ZERO {
-            let mut health = player_health.single_mut();
-            health.current = (health.current + 1).min(health.max);
-        }
-
-        commands.insert_resource(TurnState::PlayerTurn);
-    }
 }

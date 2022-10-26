@@ -1,5 +1,4 @@
 use bevy::{prelude::*, utils::HashMap};
-use bimap::BiMap;
 
 use crate::{
     components::{carried::Carried, name::EntityName},
@@ -78,8 +77,8 @@ pub fn update_inventory_hud(
     commands.entity(hud_inventory).despawn_descendants();
     // Add updated one.
     commands.entity(hud_inventory).with_children(|parent| {
-        inventory.counts.iter().for_each(|(name, count)| {
-            let i = inventory.key_map.get_by_right(name).unwrap();
+        inventory.key_map.iter().enumerate().for_each(|(i, name)| {
+            let count = inventory.counts.get(name).unwrap();
             parent.spawn_bundle(
                 TextBundle::from_section(
                     format!("{} {}: {}", i, name, count),
@@ -93,7 +92,6 @@ pub fn update_inventory_hud(
                     size: Size::new(Val::Undefined, Val::Px(25.)),
                     margin: UiRect {
                         left: Val::Auto,
-                        right: Val::Auto,
                         top: Val::Auto,
                         ..default()
                     },
@@ -107,7 +105,7 @@ pub fn update_inventory_hud(
 
 #[derive(Component, Default)]
 pub struct PlayerInventory {
-    key_map: bimap::BiMap<i32, String>,
+    key_map: Vec<String>,
     counts: HashMap<String, u32>,
     is_dirty: bool,
 }
@@ -129,12 +127,10 @@ pub fn update_inventory(
     let mut inventory = inventory_query.single_mut();
     if new_inventory != inventory.counts {
         inventory.is_dirty = true;
-        inventory.key_map = BiMap::from_iter(
-            new_inventory
-                .iter()
-                .enumerate()
-                .map(|(i, (name, _))| (i as i32, name.clone())),
-        );
+
+        let mut keys = new_inventory.keys().cloned().collect::<Vec<_>>();
+        keys.sort();
+        inventory.key_map = keys;
         inventory.counts = new_inventory;
     }
 }

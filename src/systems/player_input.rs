@@ -115,10 +115,12 @@ fn use_item(
         let inventory = inventory_query.single();
         let (player, _) = player_query.single();
 
-        use_events.send(ActivateItem {
-            used_by: player,
-            item: inventory.key_map[item_key],
-        });
+        if let Some(item) = inventory.key_map.get(item_key) {
+            use_events.send(ActivateItem {
+                used_by: player,
+                item: *item,
+            });
+        }
 
         commands.insert_resource(TurnState::PlayerTurn);
     }

@@ -104,29 +104,34 @@ pub struct ActivateItem {
 }
 
 pub fn use_items(
+    mut commands: Commands,
     mut activation_events: EventReader<ActivateItem>,
     mut healths: Query<&mut Health>,
     provides_healing: Query<&ProvidesHealing>,
     provides_map: Query<&ProvidesMap>,
+    items: Query<&Item>,
     mut visibility_query: Query<(&mut Visibility, With<MapPosition>)>,
 ) {
     let mut to_heal = HashMap::new();
     activation_events.iter().for_each(|event| {
-        // healing
-        if let Ok(healing) = provides_healing.get(event.item) {
-            info!("used healing");
-            to_heal
-                .entry(event.used_by)
-                .and_modify(|current_heal| *current_heal += healing.amount)
-                .or_insert(healing.amount);
-        }
+        if items.contains(event.item) {
+            // healing
+            if let Ok(healing) = provides_healing.get(event.item) {
+                info!("used healing");
+                to_heal
+                    .entry(event.used_by)
+                    .and_modify(|current_heal| *current_heal += healing.amount)
+                    .or_insert(healing.amount);
+            }
 
-        // reveal map
-        if provides_map.get(event.item).is_ok() {
-            info!("reveal map");
-            visibility_query.iter_mut().for_each(|(mut visibility, _)| {
-                visibility.is_visible = true;
-            })
+            // reveal map
+            if provides_map.get(event.item).is_ok() {
+                info!("reveal map");
+                visibility_query.iter_mut().for_each(|(mut visibility, _)| {
+                    visibility.is_visible = true;
+                })
+            }
+            commands.entity(event.item).despawn_recursive();
         }
     });
 

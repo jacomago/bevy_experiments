@@ -54,8 +54,11 @@ monsters_settings:
         },
     ]
 map_settings: 
-    floor_sprite_index: 46
-    wall_sprite_index: 35
+    tile_sprites: {
+        Floor: 46,
+        Wall: 35,
+        Exit: 62
+    }
     width: 80
     height: 50
     z_level: 0.0

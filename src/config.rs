@@ -1,8 +1,10 @@
 use std::env;
 
-use bevy::prelude::Plugin;
+use bevy::{prelude::Plugin, utils::HashMap};
 use config::{Config, ConfigError, Environment, File};
 use serde::{Deserialize, Serialize};
+
+use crate::entities::TileType;
 
 pub struct ConfigPlugin;
 
@@ -48,8 +50,7 @@ pub struct MonstersSettings {
 
 #[derive(Debug, Deserialize)]
 pub struct MapSettings {
-    pub floor_sprite_index: usize,
-    pub wall_sprite_index: usize,
+    pub tile_sprites: HashMap<TileType, usize>,
     pub width: usize,
     pub height: usize,
     pub z_level: f32,

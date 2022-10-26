@@ -1,4 +1,7 @@
 
 map_settings: 
-    floor_sprite_index: 59
-    wall_sprite_index: 34
+    tile_sprites: {
+        Floor: 59,
+        Wall: 34,
+        Exit: 62
+    }

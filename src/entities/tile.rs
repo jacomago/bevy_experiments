@@ -1,6 +1,7 @@
 use std::fmt::Display;
 
 use bevy::prelude::*;
+use serde::Deserialize;
 
 use crate::{
     cleanup::cleanup_components, components::map_position::MapPosition, config::Settings,
@@ -18,11 +19,12 @@ impl Plugin for TilePlugin {
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Default, Debug, Component)]
+#[derive(Copy, Clone, PartialEq, Eq, Default, Debug, Hash, Component, Deserialize)]
 pub enum TileType {
     Wall,
     #[default]
     Floor,
+    Exit,
 }
 
 impl Display for TileType {
@@ -30,6 +32,7 @@ impl Display for TileType {
         match self {
             TileType::Wall => f.write_fmt(format_args!("#")),
             TileType::Floor => f.write_fmt(format_args!(".")),
+            TileType::Exit => f.write_fmt(format_args!(">")),
         }
     }
 }
@@ -52,8 +55,7 @@ pub fn spawn_map(
                 *t,
                 settings.tile_size,
                 settings.map_settings.z_level,
-                settings.map_settings.floor_sprite_index,
-                settings.map_settings.wall_sprite_index,
+                settings.map_settings.tile_sprites[t],
             ));
         });
 }
@@ -77,8 +79,7 @@ impl TileBundle {
         tile_type: TileType,
         tile_size: i32,
         z_level: f32,
-        floor_index: usize,
-        wall_index: usize,
+        index: usize,
     ) -> Self {
         Self {
             position,
@@ -90,13 +91,7 @@ impl TileBundle {
                     ..default()
                 },
                 texture_atlas: textures.texture_atlas.clone(),
-                sprite: TextureAtlasSprite {
-                    index: match tile_type {
-                        TileType::Floor => floor_index,
-                        TileType::Wall => wall_index,
-                    },
-                    ..default()
-                },
+                sprite: TextureAtlasSprite { index, ..default() },
                 ..default()
             },
             ..default()

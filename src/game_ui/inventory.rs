@@ -15,7 +15,7 @@ pub fn spawn_inventory(mut commands: Commands, font: Res<FontAssets>) {
             style: Style {
                 flex_direction: FlexDirection::ColumnReverse,
                 justify_content: JustifyContent::Center,
-                size: Size::new(Val::Px(100.0), Val::Px(100.0)),
+                size: Size::new(Val::Auto, Val::Px(50.0)),
                 ..default()
             },
             color: UiColor(Color::rgba(0.65, 0.65, 0.65, 0.5)),
@@ -29,18 +29,12 @@ pub fn spawn_inventory(mut commands: Commands, font: Res<FontAssets>) {
                     "Inventory",
                     TextStyle {
                         font: font.fira_sans.clone(),
-                        font_size: 16.,
+                        font_size: 14.,
                         color: Color::BLACK,
                     },
                 )
                 .with_style(Style {
                     size: Size::new(Val::Undefined, Val::Px(25.)),
-                    margin: UiRect {
-                        left: Val::Auto,
-                        right: Val::Auto,
-                        top: Val::Auto,
-                        ..default()
-                    },
                     ..default()
                 }),
             );
@@ -90,11 +84,6 @@ pub fn update_inventory_hud(
                 )
                 .with_style(Style {
                     size: Size::new(Val::Undefined, Val::Px(25.)),
-                    margin: UiRect {
-                        left: Val::Auto,
-                        top: Val::Auto,
-                        ..default()
-                    },
                     ..default()
                 }),
             );

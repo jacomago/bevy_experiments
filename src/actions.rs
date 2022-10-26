@@ -143,9 +143,6 @@ fn set_movement_actions(
             actions.player_movement = Some(player_movement);
             mut_keyboard_input.clear();
         }
-    } else if GameControl::Wait.just_released(keyboard_input) {
-        info!("Keyboard input made player wait");
-        actions.player_movement = Some(Vec2::ZERO);
     } else {
         actions.player_movement = None;
     }
@@ -195,8 +192,6 @@ enum GameControl {
     Left,
     /// Move right
     Right,
-    /// Wait a turn
-    Wait,
     /// Pick up Item
     PickUp,
     /// Use Item
@@ -224,7 +219,6 @@ impl GameControl {
                     || keyboard_input.just_released(KeyCode::Right)
             }
             GameControl::PickUp => keyboard_input.just_released(KeyCode::G),
-            GameControl::Wait => keyboard_input.just_released(KeyCode::Space),
             GameControl::UseItem(0) => keyboard_input.just_released(KeyCode::Key0),
             GameControl::UseItem(1) => keyboard_input.just_released(KeyCode::Key1),
             GameControl::UseItem(2) => keyboard_input.just_released(KeyCode::Key2),
@@ -255,7 +249,6 @@ impl GameControl {
                 keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right)
             }
             GameControl::PickUp => keyboard_input.pressed(KeyCode::G),
-            GameControl::Wait => keyboard_input.pressed(KeyCode::Space),
             GameControl::UseItem(0) => keyboard_input.pressed(KeyCode::Key0),
             GameControl::UseItem(1) => keyboard_input.pressed(KeyCode::Key1),
             GameControl::UseItem(2) => keyboard_input.pressed(KeyCode::Key2),
@@ -289,7 +282,6 @@ impl GameControl {
                     || keyboard_input.just_pressed(KeyCode::Right)
             }
             GameControl::PickUp => keyboard_input.just_pressed(KeyCode::G),
-            GameControl::Wait => keyboard_input.just_pressed(KeyCode::Space),
             GameControl::UseItem(0) => keyboard_input.just_pressed(KeyCode::Key0),
             GameControl::UseItem(1) => keyboard_input.just_pressed(KeyCode::Key1),
             GameControl::UseItem(2) => keyboard_input.just_pressed(KeyCode::Key2),

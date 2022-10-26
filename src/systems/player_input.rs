@@ -3,7 +3,7 @@ use iyes_loopless::prelude::*;
 
 use crate::{
     actions::Actions,
-    components::{health::Health, map_position::MapPosition},
+    components::map_position::MapPosition,
     entities::{ActivateItem, Item, Monster, Player},
     stages::TurnState,
     GameState,
@@ -23,7 +23,6 @@ impl Plugin for PlayerInputPlugin {
             SystemSet::on_update(GameState::Playing)
                 .with_system(pick_up.run_if_resource_equals(TurnState::AwaitingInput))
                 .with_system(movement.run_if_resource_equals(TurnState::AwaitingInput))
-                .with_system(wait.run_if_resource_equals(TurnState::AwaitingInput))
                 .with_system(use_item.run_if_resource_equals(TurnState::AwaitingInput)),
         );
     }
@@ -83,23 +82,6 @@ fn movement(
 
             commands.insert_resource(TurnState::PlayerTurn);
         }
-    }
-}
-
-fn wait(
-    mut commands: Commands,
-    actions: Res<Actions>,
-    mut player_health: Query<&mut Health, With<Player>>,
-) {
-    if actions.player_movement.is_some() {
-        let movement = actions.player_movement.unwrap().as_ivec2();
-
-        if movement == IVec2::ZERO {
-            let mut health = player_health.single_mut();
-            health.current = (health.current + 1).min(health.max);
-        }
-
-        commands.insert_resource(TurnState::PlayerTurn);
     }
 }
 

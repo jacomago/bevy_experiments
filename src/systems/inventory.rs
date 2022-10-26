@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{components::health::Health, entities::Player, GameState};
+use crate::{entities::Player, GameState};
 
 #[derive(Debug, Component, Clone, Copy)]
 pub struct Carried {
@@ -12,8 +12,7 @@ pub struct InventoryPlugin;
 impl Plugin for InventoryPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_inventory))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(update_inventory))
-            ;
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(update_inventory));
     }
 }
 
@@ -29,7 +28,6 @@ pub struct InventoryBundle {
 fn spawn_inventory(mut commands: Commands) {
     commands.spawn_bundle(InventoryBundle { ..default() });
 }
-
 
 #[derive(Component, Default, Debug)]
 pub struct PlayerInventory {

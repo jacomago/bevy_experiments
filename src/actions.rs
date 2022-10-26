@@ -174,14 +174,14 @@ fn use_item(mut actions: ResMut<Actions>, mut mut_keyboard_input: ResMut<Input<K
             || GameControl::UseItem(n).just_pressed(keyboard_input)
         {
             actions.use_item = Some(n);
-            info!("Keyboard input made player pick up");
+            info!("Keyboard input made player use item {}", n);
             used = true;
-        } else {
-            actions.use_item = None;
         }
     });
     if used {
         mut_keyboard_input.clear();
+    } else {
+        actions.use_item = None;
     }
 }
 

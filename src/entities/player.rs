@@ -1,6 +1,5 @@
 use crate::actions::Actions;
 use crate::cleanup::cleanup_components;
-use crate::components::carried::Carried;
 use crate::components::health::Health;
 use crate::components::map_position::MapPosition;
 use crate::config::Settings;
@@ -9,6 +8,7 @@ use crate::map::map_builder::MapBuilder;
 use crate::stages::{end_turn, GameStage, TurnState};
 use crate::systems::combat::{combat, WantsToAttack};
 use crate::systems::fov::{fov, set_fov_visibility, FieldOfView};
+use crate::systems::inventory::Carried;
 use crate::systems::movement::{movement, WantsToMove};
 use crate::GameState;
 

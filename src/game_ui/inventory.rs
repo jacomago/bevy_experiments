@@ -1,10 +1,6 @@
-use bevy::{prelude::*, utils::HashMap};
+use bevy::prelude::*;
 
-use crate::{
-    components::{carried::Carried, name::EntityName},
-    entities::Player,
-    loading::FontAssets,
-};
+use crate::{loading::FontAssets, systems::inventory::PlayerInventory};
 
 use super::hud::HudComponent;
 
@@ -90,36 +86,4 @@ pub fn update_inventory_hud(
         });
     });
     inventory.is_dirty = false;
-}
-
-#[derive(Component, Default)]
-pub struct PlayerInventory {
-    key_map: Vec<String>,
-    counts: HashMap<String, u32>,
-    is_dirty: bool,
-}
-
-pub fn update_inventory(
-    player_query: Query<(Entity, With<Player>)>,
-    player_items: Query<(&Carried, &EntityName)>,
-    mut inventory_query: Query<&mut PlayerInventory>,
-) {
-    let mut new_inventory = HashMap::new();
-    let (player, _) = player_query.single();
-    player_items
-        .iter()
-        .filter(|(c, _)| c.entity == player)
-        .for_each(|(_, i)| {
-            let current = new_inventory.entry(i.0.clone()).or_insert(0);
-            *current += 1;
-        });
-    let mut inventory = inventory_query.single_mut();
-    if new_inventory != inventory.counts {
-        inventory.is_dirty = true;
-
-        let mut keys = new_inventory.keys().cloned().collect::<Vec<_>>();
-        keys.sort();
-        inventory.key_map = keys;
-        inventory.counts = new_inventory;
-    }
 }

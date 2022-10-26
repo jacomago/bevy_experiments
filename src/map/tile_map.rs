@@ -28,7 +28,7 @@ impl BaseMap for TileMap {
             && self
                 .tiles
                 .get(point.as_utuple())
-                .map_or(false, |&s| s == TileType::Floor)
+                .map_or(false, |&s| s == TileType::Floor || s == TileType::Exit)
     }
     fn height(&self) -> usize {
         self.height

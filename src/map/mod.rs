@@ -5,9 +5,9 @@ pub mod tile_map;
 use bevy::prelude::*;
 use bevy_turborand::{GlobalRng, RngComponent};
 
-use crate::{config::Settings, GameState};
+use crate::{config::Settings, entities::TileType, GameState};
 
-use self::map_builder::MapBuilder;
+use self::{grid_map::base_map::BaseMap, map_builder::MapBuilder};
 
 pub struct MapPlugin;
 
@@ -21,12 +21,14 @@ impl Plugin for MapPlugin {
 }
 
 fn insert_mapbuilder(mut commands: Commands, mut rng: ResMut<GlobalRng>, settings: Res<Settings>) {
-    commands.insert_resource(MapBuilder::new(
+    let mut mb = MapBuilder::new(
         RngComponent::from(&mut rng),
         settings.map_settings.height,
         settings.map_settings.width,
         &settings.map_settings.architect,
-    ));
+    );
+    mb.map.set(&mb.winitem_start, TileType::Exit);
+    commands.insert_resource(mb);
 }
 
 fn end_gen(mut state: ResMut<State<GameState>>) {

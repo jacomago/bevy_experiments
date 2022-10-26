@@ -3,7 +3,8 @@ use iyes_loopless::prelude::IntoConditionalSystem;
 
 use crate::{
     components::{health::Health, map_position::MapPosition},
-    entities::{Player, WinItem},
+    entities::{Player, TileType, WinItem},
+    map::{grid_map::base_map::BaseMap, map_builder::MapBuilder},
     menu::{PlayerMessage, LOST_MESSAGE, WELCOME_MESSAGE, WIN_MESSAGE},
     GameState,
 };
@@ -41,6 +42,8 @@ pub enum TurnState {
     GameOver,
     /// The game has been won
     Victory,
+    /// Moving Level
+    NextLevel,
 }
 
 /// Plugin for adding all the stages and the sequences of them
@@ -87,7 +90,8 @@ impl Plugin for StagePlugin {
         .add_system_set(
             SystemSet::on_update(GameState::Playing)
                 .with_system(end_game.run_if_resource_equals(TurnState::GameOver))
-                .with_system(end_game.run_if_resource_equals(TurnState::Victory)),
+                .with_system(end_game.run_if_resource_equals(TurnState::Victory))
+                .with_system(advance_level.run_if_resource_equals(TurnState::NextLevel)),
         );
     }
 }
@@ -98,12 +102,15 @@ pub fn end_turn(
     turn_state: Res<TurnState>,
     win_item: Query<(&MapPosition, With<WinItem>)>,
     player: Query<(&Health, &MapPosition, With<Player>)>,
+    map_builder: Res<MapBuilder>,
 ) {
     info!("end turn: {:?}", turn_state);
     let (player_health, player_position, _) = player.single();
     let (win_item_position, _) = win_item.single();
     let new_state: TurnState = if player_health.current < 1 {
         TurnState::GameOver
+    } else if map_builder.map.value(player_position) == TileType::Exit {
+        TurnState::NextLevel
     } else if player_position == win_item_position {
         TurnState::Victory
     } else {
@@ -136,4 +143,13 @@ fn end_game(
     commands.insert_resource(TurnState::AwaitingInput);
 
     state.set(GameState::Menu).unwrap();
+}
+
+/// Trigures the change of level
+fn advance_level(
+    mut commands: Commands,
+    mut state: ResMut<State<GameState>>,
+    turn_state: Res<TurnState>,
+) {
+    commands.insert_resource(TurnState::AwaitingInput);
 }

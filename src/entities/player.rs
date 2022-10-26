@@ -21,9 +21,15 @@ pub struct PlayerPlugin;
 #[derive(Component, Default)]
 pub struct Player;
 
+#[derive(Component, Default)]
+pub struct Level {
+    value: u32,
+}
+
 #[derive(Bundle, Default)]
 pub struct PlayerBundle {
     _player: Player,
+    pub level: Level,
     pub position: MapPosition,
     pub health: Health,
     pub fov: FieldOfView,

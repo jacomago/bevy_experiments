@@ -1,0 +1,11 @@
+# Mini setup for testing
+
+
+map_settings: 
+    width: 20
+    height: 20
+    architect: 
+      num_monsters: 1
+
+player_settings: 
+    max_health: 50

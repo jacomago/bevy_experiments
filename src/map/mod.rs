@@ -6,7 +6,12 @@ use bevy::prelude::*;
 use bevy_turborand::{GlobalRng, RngComponent};
 use iyes_loopless::prelude::IntoConditionalSystem;
 
-use crate::{config::Settings, entities::TileType, stages::TurnState, GameState};
+use crate::{
+    config::Settings,
+    entities::{MapLevel, TileType},
+    stages::TurnState,
+    GameState,
+};
 
 use self::{grid_map::base_map::BaseMap, map_builder::MapBuilder};
 
@@ -32,6 +37,7 @@ fn respawn_map(
     mut map_builder: ResMut<MapBuilder>,
     mut rng: ResMut<GlobalRng>,
     settings: Res<Settings>,
+    level: Query<&MapLevel>,
 ) {
     let mut mb = MapBuilder::new(
         RngComponent::from(&mut rng),
@@ -39,7 +45,9 @@ fn respawn_map(
         settings.map_settings.width,
         &settings.map_settings.architect,
     );
-    mb.map.set(&mb.winitem_start, TileType::Exit);
+    if settings.end_level - 1 > level.single().value {
+        mb.map.set(&mb.winitem_start, TileType::Exit);
+    }
     *map_builder = mb;
 }
 

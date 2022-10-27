@@ -20,9 +20,10 @@ pub fn spawn_wintitem(
     player_level: Query<&MapLevel>,
 ) {
     let level = player_level.get_single();
-    if level.is_err() || level.unwrap().value != settings.end_level {
+    if level.is_err() || settings.end_level - 1 > level.unwrap().value {
         return;
     }
+    info!("Spawn winitem");
     commands
         .spawn_bundle(ItemBundle {
             entity: GameEntityBundle::from_settings(

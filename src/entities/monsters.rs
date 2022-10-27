@@ -19,7 +19,7 @@ use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use iyes_loopless::prelude::{ConditionSet, IntoConditionalSystem};
 
-use super::items::use_items;
+use super::items::activate;
 use super::MapLevel;
 use super::RESPAWN_LABEL;
 
@@ -42,7 +42,7 @@ impl Plugin for MonstersPlugin {
                 GameStage::MonsterCombat,
                 ConditionSet::new()
                     .run_if_resource_equals(TurnState::MonsterTurn)
-                    .with_system(use_items)
+                    .with_system(activate)
                     .with_system(combat)
                     .into(),
             )
@@ -109,7 +109,7 @@ fn spawn_monsters(
         let rng_comp = RngComponent::from(&mut rng);
         spawn_monster(
             &mut commands,
-            position,
+            *position,
             &textures,
             rng_comp,
             monster_settings,
@@ -128,7 +128,7 @@ fn weights(setting: &&MonsterSettings) -> f64 {
 
 fn spawn_monster(
     commands: &mut Commands,
-    position: &MapPosition,
+    position: MapPosition,
     textures: &Res<TextureAtlasAssets>,
     mut rng: RngComponent,
     settings: &MonstersSettings,
@@ -143,7 +143,7 @@ fn spawn_monster(
     let config = rng.weighted_sample(level_monsters, weights).unwrap();
     let mut monster = commands.spawn_bundle(MonsterBundle {
         name: EntityName(config.actor.entity.name.clone()),
-        position: *position,
+        position,
         health: Health {
             current: config.actor.max_health,
             max: config.actor.max_health,

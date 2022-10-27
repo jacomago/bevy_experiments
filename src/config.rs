@@ -140,6 +140,6 @@ mod tests {
     fn test_load() {
         let config = Settings::new();
         dbg!(&config);
-        assert!(&config.is_ok())
+        assert!(&config.is_ok());
     }
 }

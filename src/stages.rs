@@ -1,34 +1,34 @@
 //! This code is probably way more complicated than it needs to be.
-//! We have Four different stage systems, GameState, GameStage, TurnState
+//! We have Four different stage systems, [`GameState`], [`GameStage`], [`TurnState`]
 //! and labels.
 //!
-//! GameState is the top level and uses the Bevy state system.
-//! TurnState is the next level as a resource and uses the iyes_loopless crate.
-//! GameStage is the next level and uses the Bevy Stage system.
-//! Finally for TurnState::NextLevel we use labels.
+//! [`GameState`] is the top level and uses the Bevy state system.
+//! [`TurnState`] is the next level as a resource and uses the [`iyes_loopless`] crate.
+//! [`GameStage`] is the next level and uses the Bevy Stage system.
+//! Finally for `TurnState::NextLevel` we use labels.
 
 //! Generally we go:
 //!
-//!  - GameState::Menu
-//!  - GameState::Generate (generate MapBuilder)
-//!  - GameState::Playing
-//!      - TurnState::AwaitingInput
-//!      - TurnState::PlayerTurn
-//!         - GameStage::PlayerCombat (and use items)
-//!         - GameStage::MovePlayer
-//!         - GameStage::PlayerFOV
-//!      - TurnState::MonsterTurn
-//!         - GameStage::MonsterCombat
-//!         - GameStage::MoveMonsters
-//!         - GameStage::MonsterFOV
-//!      - TurnState::NextLevel
-//!         - systems before GEN_MAP_LABEL
-//!         - system GEN_MAP_LABEL
-//!         - systems after GEN_MAP_LABEL (mostly labelled RESPAWN_LABEL)
-//!         - system after RESPAWN_LABEL (advance_level)
-//!     - back to TurnState::AwaitingInput
-//!     - possible TurnState::GameOver or TurnState::Victory
-//!  - Return to GameState::Menu
+//!  - [`GameState::Menu`]
+//!  - [`GameState::Generate`] (generate [`MapBuilder`])
+//!  - [`GameState::Playing`]
+//!      - [`TurnState::AwaitingInput`]
+//!      - [`TurnState::PlayerTurn`]
+//!         - [`GameStage::PlayerCombat`] (and use items)
+//!         - [`GameStage::MovePlayer`]
+//!         - [`GameStage::PlayerFOV`]
+//!      - [`TurnState::MonsterTurn`]
+//!         - [`GameStage::MonsterCombat`]
+//!         - [`GameStage::MoveMonsters`]
+//!         - [`GameStage::MonsterFOV`]
+//!      - [`TurnState::NextLevel`]
+//!         - systems before [`GEN_MAP_LABEL`]
+//!         - system [`GEN_MAP_LABEL`]
+//!         - systems after [`GEN_MAP_LABEL`] (mostly labelled [`RESPAWN_LABEL`])
+//!         - system after [`RESPAWN_LABEL`] ([`advance_level`])
+//!     - back to [`TurnState::AwaitingInput`]
+//!     - possible [`TurnState::GameOver`] or [`TurnState::Victory`]
+//!  - Return to [`GameState::Menu`]
 //!         
 
 use bevy::prelude::*;
@@ -146,7 +146,7 @@ pub fn end_turn(
     let win_item_position = win_item.get_single();
     let new_state: TurnState = if player_health.current < 1 {
         TurnState::GameOver
-    } else if map_builder.map.value(player_position) == TileType::Exit {
+    } else if map_builder.map.value(*player_position) == TileType::Exit {
         TurnState::NextLevel
     } else if win_item_position.is_ok() && win_item_position.unwrap().0 == player_position {
         TurnState::Victory

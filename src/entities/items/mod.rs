@@ -82,7 +82,7 @@ fn spawn_items(
         let rng_comp = RngComponent::from(&mut rng);
         spawn_item(
             &mut commands,
-            position,
+            *position,
             &textures,
             rng_comp,
             item_settings,
@@ -101,7 +101,7 @@ fn weights(setting: &&ItemSettings) -> f64 {
 
 fn spawn_item(
     commands: &mut Commands,
-    position: &MapPosition,
+    position: MapPosition,
     textures: &Res<TextureAtlasAssets>,
     mut rng: RngComponent,
     settings: &ItemsSettings,
@@ -138,7 +138,7 @@ pub struct ActivateItem {
     pub item: Entity,
 }
 
-pub fn use_items(
+pub fn activate(
     mut commands: Commands,
     mut activation_events: EventReader<ActivateItem>,
     mut healths: Query<&mut Health>,
@@ -164,7 +164,7 @@ pub fn use_items(
                 info!("reveal map");
                 visibility_query.iter_mut().for_each(|(mut visibility, _)| {
                     visibility.is_visible = true;
-                })
+                });
             }
             commands.entity(event.item).despawn_recursive();
         }
@@ -174,5 +174,5 @@ pub fn use_items(
         if let Ok(mut health) = healths.get_mut(*entity) {
             health.current = health.max.min(health.current + heal_amount);
         }
-    })
+    });
 }

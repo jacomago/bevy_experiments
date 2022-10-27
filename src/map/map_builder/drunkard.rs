@@ -37,7 +37,7 @@ impl DrunkardArchitect {
         let mut distance_staggered = 0;
 
         loop {
-            map.set(&drunkard, TileType::Floor);
+            map.set(drunkard, TileType::Floor);
 
             match rng.usize(0..4) {
                 0 => drunkard.position.x -= 1,
@@ -45,7 +45,7 @@ impl DrunkardArchitect {
                 2 => drunkard.position.y -= 1,
                 _ => drunkard.position.y += 1,
             }
-            if !map.in_bounds(&drunkard) {
+            if !map.in_bounds(drunkard) {
                 break;
             }
 
@@ -83,15 +83,15 @@ impl MapArchitect for DrunkardArchitect {
             let rand_pos = MapPosition::new(rng.i32(0..width as i32), rng.i32(0..height as i32));
             self.drunkard(rand_pos, rng, &mut mb.map);
             mb.map
-                .djikstra_map(&mb.player_start)
+                .djikstra_map(mb.player_start)
                 .far_points(Some(self.max_distance))
                 .iter()
                 .for_each(|p| {
-                    mb.map.set(p, TileType::Wall);
+                    mb.map.set(*p, TileType::Wall);
                 });
         }
-        mb.monster_spawns = self.entity_spawns(&mb.player_start, &mb.map, rng);
-        mb.item_spawns = self.entity_spawns(&mb.player_start, &mb.map, rng);
+        mb.monster_spawns = self.entity_spawns(mb.player_start, &mb.map, rng);
+        mb.item_spawns = self.entity_spawns(mb.player_start, &mb.map, rng);
         mb.winitem_start = mb.find_most_distant();
         mb
     }

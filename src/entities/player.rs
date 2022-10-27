@@ -15,7 +15,7 @@ use crate::GameState;
 use bevy::prelude::*;
 use iyes_loopless::prelude::*;
 
-use super::items::use_items;
+use super::items::activate;
 use super::RESPAWN_LABEL;
 
 pub struct PlayerPlugin;
@@ -51,7 +51,7 @@ impl Plugin for PlayerPlugin {
                 GameStage::PlayerCombat,
                 ConditionSet::new()
                     .run_if_resource_equals(TurnState::PlayerTurn)
-                    .with_system(use_items)
+                    .with_system(activate)
                     .with_system(combat)
                     .into(),
             )
@@ -92,7 +92,7 @@ fn spawn_player(
 ) {
     let player_start = map_builder.player_start;
     let mut fov = FieldOfView::new(settings.player_settings.fov_radius);
-    fov.update(&player_start, &map_builder.map);
+    fov.update(player_start, &map_builder.map);
     commands.spawn_bundle(PlayerBundle {
         position: player_start,
         health: Health {
@@ -133,5 +133,5 @@ fn player_next_level(
         .player_start
         .translation(settings.monsters_settings.z_level, settings.tile_size);
     *fov = FieldOfView::new(settings.player_settings.fov_radius);
-    fov.update(&pos, &map_builder.map);
+    fov.update(*pos, &map_builder.map);
 }

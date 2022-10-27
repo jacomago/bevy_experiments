@@ -48,7 +48,7 @@ pub fn apply_prefab(
 ) {
     let fortress = Fortress::default();
     let mut placed = false;
-    let dmap = map_builder.map.djikstra_map(&map_builder.player_start);
+    let dmap = map_builder.map.djikstra_map(map_builder.player_start);
 
     let mut attempts = 0;
     while !placed && attempts < max_attempts {
@@ -60,7 +60,7 @@ pub fn apply_prefab(
         (poss_rect.0..poss_rect.0 + fortress.width + 1).for_each(|x| {
             (poss_rect.1..poss_rect.1 + fortress.height + 1).for_each(|y| {
                 let mp = MapPosition::from_utuple(&(y, x));
-                let distance = dmap.value(&mp);
+                let distance = dmap.value(mp);
                 if distance.is_some()
                     && distance.map(|v| v > min && v < max).unwrap()
                     && map_builder.winitem_start != mp
@@ -93,12 +93,12 @@ fn place_fortress(map_builder: &mut MapBuilder, fortress: &Fortress, placement: 
                     let p = MapPosition::from_utuple(&(y + placement.1, x + placement.0));
                     map_builder.monster_spawns.remove(&p);
                     match cs {
-                        "." => map_builder.map.set(&p, TileType::Floor),
+                        "." => map_builder.map.set(p, TileType::Floor),
                         "M" => {
-                            map_builder.map.set(&p, TileType::Floor);
+                            map_builder.map.set(p, TileType::Floor);
                             map_builder.monster_spawns.insert(p);
                         }
-                        "#" => map_builder.map.set(&p, TileType::Wall),
+                        "#" => map_builder.map.set(p, TileType::Wall),
                         _ => info!("nothing to match on {}", cs),
                     };
                 });

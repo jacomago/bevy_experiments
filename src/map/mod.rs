@@ -46,7 +46,7 @@ fn respawn_map(
         &settings.map_settings.architect,
     );
     if settings.end_level - 1 > level.single().value {
-        mb.map.set(&mb.winitem_start, TileType::Exit);
+        mb.map.set(mb.winitem_start, TileType::Exit);
     }
     *map_builder = mb;
 }
@@ -58,7 +58,7 @@ fn insert_mapbuilder(mut commands: Commands, mut rng: ResMut<GlobalRng>, setting
         settings.map_settings.width,
         &settings.map_settings.architect,
     );
-    mb.map.set(&mb.winitem_start, TileType::Exit);
+    mb.map.set(mb.winitem_start, TileType::Exit);
     commands.insert_resource(mb);
 }
 

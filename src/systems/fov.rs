@@ -11,7 +11,7 @@ pub fn fov(mut query: Query<(&MapPosition, &mut FieldOfView)>, map: Res<MapBuild
     query
         .iter_mut()
         .filter(|(_, f)| f.is_dirty)
-        .for_each(|(p, mut f)| {
+        .for_each(|(&p, mut f)| {
             f.update(p, &map.map);
         });
 }
@@ -59,7 +59,7 @@ impl FieldOfView {
             is_dirty: true,
         }
     }
-    pub fn update(&mut self, p: &MapPosition, map: &TileMap) {
+    pub fn update(&mut self, p: MapPosition, map: &TileMap) {
         self.visible_positions = field_of_view_set(p, self.radius, map);
         self.is_dirty = false;
     }
@@ -86,12 +86,7 @@ fn circle_set(radius: i32) -> HashSet<(i32, i32)> {
         .collect()
 }
 
-fn trace_path(
-    p: &MapPosition,
-    p2: &MapPosition,
-    radius: i32,
-    map: &TileMap,
-) -> HashSet<MapPosition> {
+fn trace_path(p: MapPosition, p2: MapPosition, radius: i32, map: &TileMap) -> HashSet<MapPosition> {
     let scale_vector = (p2.position - p.position).as_vec2() / radius as f32;
     let mut res = HashSet::new();
     for p in (0..(radius + 1) as usize)
@@ -101,14 +96,14 @@ fn trace_path(
         })
     {
         res.insert(p);
-        if !map.can_enter_tile(&p) {
+        if !map.can_enter_tile(p) {
             break;
         }
     }
     res
 }
 
-fn field_of_view_set(p: &MapPosition, radius: i32, map: &TileMap) -> HashSet<MapPosition> {
+fn field_of_view_set(p: MapPosition, radius: i32, map: &TileMap) -> HashSet<MapPosition> {
     // go through values of circle making a paht
     // adding to visible points on the way
     // if hit wall halt path
@@ -117,7 +112,7 @@ fn field_of_view_set(p: &MapPosition, radius: i32, map: &TileMap) -> HashSet<Map
         .iter()
         .flat_map(|(x, y)| {
             let end_pos = MapPosition::from_ivec2(p.position + ivec2(*x, *y));
-            trace_path(p, &end_pos, radius, map)
+            trace_path(p, end_pos, radius, map)
         })
         .collect()
 }
@@ -167,7 +162,7 @@ mod tests {
         let p2 = MapPosition::new(2, 0);
         let map = TileMap::new(10, 10);
         assert_eq!(
-            trace_path(&p, &p2, 2, &map),
+            trace_path(p, p2, 2, &map),
             vec![
                 MapPosition::new(0, 0),
                 MapPosition::new(1, 0),
@@ -183,7 +178,7 @@ mod tests {
         let p2 = MapPosition::new(5, 5);
         let map = TileMap::new(10, 10);
         assert_eq!(
-            trace_path(&p, &p2, 5, &map),
+            trace_path(p, p2, 5, &map),
             vec![
                 MapPosition::new(1, 2),
                 MapPosition::new(2, 3),
@@ -202,7 +197,7 @@ mod tests {
         let p2 = MapPosition::new(1, 5);
         let map = TileMap::new(10, 10);
         assert_eq!(
-            trace_path(&p, &p2, 4, &map),
+            trace_path(p, p2, 4, &map),
             vec![
                 MapPosition::new(1, 5),
                 MapPosition::new(2, 5),
@@ -220,7 +215,7 @@ mod tests {
         let map = TileMap::new(10, 10);
         // In corner so no negatives other than walls
         assert_eq!(
-            field_of_view_set(&p, 2, &map),
+            field_of_view_set(p, 2, &map),
             vec![
                 MapPosition::new(0, 0),
                 MapPosition::new(1, 1),
@@ -247,7 +242,7 @@ mod tests {
         let map = TileMap::new(10, 10);
         // In corner so no negatives
         assert_eq!(
-            field_of_view_set(&p, 1, &map),
+            field_of_view_set(p, 1, &map),
             vec![
                 MapPosition::new(4, 3),
                 MapPosition::new(3, 3),

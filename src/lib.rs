@@ -1,7 +1,7 @@
 //! Cake Addict is a rogue like game made in bevy. Inspired by
 //! the health industry.
 
-// #![warn(clippy::pedantic)] // turn on for extra hints
+//#![warn(clippy::pedantic)] // turn on for extra hints
 #![deny(
     missing_docs,
     rustdoc::missing_doc_code_examples,

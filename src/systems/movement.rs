@@ -40,7 +40,7 @@ pub fn movement(
              entity,
              destination,
          }| {
-            if map_builder.map.can_enter_tile(&destination) {
+            if map_builder.map.can_enter_tile(destination) {
                 if let Ok((mut transform, mut position, _)) = query.get_mut(entity) {
                     transform.translation =
                         destination.translation(settings.monsters_settings.z_level, tile_size);

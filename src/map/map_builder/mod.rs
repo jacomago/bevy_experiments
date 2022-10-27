@@ -21,7 +21,7 @@ mod drunkard;
 mod empty;
 mod prefab;
 mod standard;
-
+const MAX_ATTEMPTS: usize = 10;
 trait MapArchitect {
     fn entity_distance(&self) -> f32;
     fn num_monsters(&self) -> usize;
@@ -30,7 +30,7 @@ trait MapArchitect {
 
     fn entity_spawns(
         &self,
-        start: &MapPosition,
+        start: MapPosition,
         map: &TileMap,
         rng: &mut RngComponent,
     ) -> HashSet<MapPosition> {
@@ -99,13 +99,13 @@ impl MapBuilder {
     {
         let mut map_arch = pick_architect(architect);
         let mut mb = map_arch.builder(height, width, &mut rng);
-        const MAX_ATTEMPTS: usize = 10;
+
         apply_prefab(&mut mb, MAX_ATTEMPTS, &mut rng, 20, 2000);
         mb
     }
 
     fn find_most_distant(&self) -> MapPosition {
-        self.map.djikstra_map(&self.player_start).furthest_point()
+        self.map.djikstra_map(self.player_start).furthest_point()
     }
 
     fn fill(&mut self, tile: TileType) {
@@ -114,11 +114,11 @@ impl MapBuilder {
 
     fn fill_in_unreachable(&mut self) {
         self.map
-            .djikstra_map(&self.player_start)
+            .djikstra_map(self.player_start)
             .far_points(None)
             .iter()
             .for_each(|p| {
-                self.map.set(p, TileType::Wall);
+                self.map.set(*p, TileType::Wall);
             });
     }
 }
@@ -146,8 +146,7 @@ impl Display for MapBuilder {
                             format!("{}", tile)
                         }
                     })
-                    .collect::<Vec<String>>()
-                    .join("")
+                    .collect::<String>()
             })
             .collect::<Vec<String>>()
             .join("\n");

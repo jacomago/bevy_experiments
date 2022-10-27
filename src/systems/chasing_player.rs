@@ -23,11 +23,11 @@ pub fn chase_player(
 ) {
     let (player, player_position, _) = player_query.single();
     let max_fov = settings.max_fov;
-    let dmap = map.map.depth_djikstra_map(player_position, Some(max_fov));
+    let dmap = map.map.depth_djikstra_map(*player_position, Some(max_fov));
     // Find all the new positions
     chasers.iter_mut().for_each(|(entity, _, fov, p)| {
         if fov.visible_positions.contains(player_position) {
-            let destination = dmap.next_along_path(p);
+            let destination = dmap.next_along_path(*p);
 
             if destination == *player_position {
                 info!("Attacking Player");

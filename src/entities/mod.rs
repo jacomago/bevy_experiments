@@ -46,14 +46,14 @@ pub const RESPAWN_LABEL: &str = "RespawnEntities";
 impl GameEntityBundle {
     fn from_settings(
         settings: &EntitySettings,
-        position: &MapPosition,
+        position: MapPosition,
         texture_atlas: &Handle<TextureAtlas>,
         z_level: f32,
         tile_size: i32,
     ) -> Self {
         Self {
             name: EntityName(settings.name.clone()),
-            position: *position,
+            position,
             interactive: Interactive {
                 text: settings.name.clone(),
             },

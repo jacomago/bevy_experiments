@@ -28,7 +28,7 @@ pub fn spawn_wintitem(
         .spawn_bundle(ItemBundle {
             entity: GameEntityBundle::from_settings(
                 &settings.items_settings.winitem,
-                &map_builder.winitem_start,
+                map_builder.winitem_start,
                 &textures.texture_atlas,
                 settings.items_settings.z_level,
                 settings.tile_size,

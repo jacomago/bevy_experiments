@@ -47,9 +47,9 @@ impl MapArchitect for CellularAutomataArchitect {
         self.iteration(&mut mb.map);
         mb.player_start = self.find_start(&mb.map);
         mb.fill_in_unreachable();
-        mb.monster_spawns = self.entity_spawns(&mb.player_start, &mb.map, rng);
+        mb.monster_spawns = self.entity_spawns(mb.player_start, &mb.map, rng);
 
-        mb.item_spawns = self.entity_spawns(&mb.player_start, &mb.map, rng);
+        mb.item_spawns = self.entity_spawns(mb.player_start, &mb.map, rng);
         mb.winitem_start = mb.find_most_distant();
         mb
     }
@@ -73,7 +73,7 @@ impl CellularAutomataArchitect {
             .filter(|(_, t)| **t == TileType::Floor)
             .map(|(idx, _)| {
                 let pos = MapPosition::new(idx.1 as i32, idx.0 as i32);
-                (pos, center.distance(&pos))
+                (pos, center.distance(pos))
             })
             .min_by(|(_, d), (_, d2)| d.partial_cmp(d2).unwrap())
             .map(|(idx, _)| idx)
@@ -96,7 +96,7 @@ impl CellularAutomataArchitect {
         let mut count = 0;
         (-1..1).for_each(|xi| {
             (-1..1).for_each(|yi| {
-                if !(xi == 0 && yi == 0) && map.value(&MapPosition::from_ivec2(v)) == TileType::Wall
+                if !(xi == 0 && yi == 0) && map.value(MapPosition::from_ivec2(v)) == TileType::Wall
                 {
                     count += 1
                 }

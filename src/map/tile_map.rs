@@ -23,7 +23,7 @@ pub fn in_bounds(point: IVec2, width: usize, height: usize) -> bool {
 
 impl BaseMap for TileMap {
     type Output = TileType;
-    fn can_enter_tile(&self, point: &MapPosition) -> bool {
+    fn can_enter_tile(&self, point: MapPosition) -> bool {
         self.in_bounds(point)
             && self
                 .tiles
@@ -38,11 +38,11 @@ impl BaseMap for TileMap {
         self.width
     }
 
-    fn value(&self, p: &MapPosition) -> Self::Output {
+    fn value(&self, p: MapPosition) -> Self::Output {
         self.tiles[p.as_utuple()]
     }
 
-    fn set(&mut self, p: &MapPosition, value: Self::Output) {
+    fn set(&mut self, p: MapPosition, value: Self::Output) {
         self.tiles[p.as_utuple()] = value;
     }
 }
@@ -58,8 +58,7 @@ impl Display for TileMap {
             .map(|row| {
                 row.iter()
                     .map(|tile| format!("{}", tile))
-                    .collect::<Vec<String>>()
-                    .join("")
+                    .collect::<String>()
             })
             .collect::<Vec<String>>()
             .join("\n");
@@ -76,7 +75,7 @@ impl TileMap {
         }
     }
 
-    pub fn in_bounds(&self, point: &MapPosition) -> bool {
+    pub fn in_bounds(&self, point: MapPosition) -> bool {
         in_bounds(point.position, self.width, self.height)
     }
 }
@@ -86,6 +85,6 @@ fn test_djikstra() {
     let map = TileMap::new(10, 20);
 
     let start = MapPosition::new(0, 0);
-    let dmap = map.djikstra_map(&start);
-    assert_eq!(dmap.value(&MapPosition::new(1, 1)), Some(2));
+    let dmap = map.djikstra_map(start);
+    assert_eq!(dmap.value(MapPosition::new(1, 1)), Some(2));
 }

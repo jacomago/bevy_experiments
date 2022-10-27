@@ -39,7 +39,7 @@ impl MapArchitect for StandardArchitect {
     }
     fn entity_spawns(
         &self,
-        _: &MapPosition,
+        _: MapPosition,
         _: &TileMap,
         _: &mut RngComponent,
     ) -> HashSet<MapPosition> {
@@ -65,9 +65,9 @@ impl MapArchitect for StandardArchitect {
             self.num_rooms,
         );
         self.build_corridors(&self.rooms.clone(), &mut mb.map, rng);
-        mb.monster_spawns = self.entity_spawns(&MapPosition::ZERO, &mb.map, rng);
-        mb.item_spawns = self.entity_spawns(&MapPosition::ZERO, &mb.map, rng);
-        let dmap = mb.map.djikstra_map(&MapPosition::new(
+        mb.monster_spawns = self.entity_spawns(MapPosition::ZERO, &mb.map, rng);
+        mb.item_spawns = self.entity_spawns(MapPosition::ZERO, &mb.map, rng);
+        let dmap = mb.map.djikstra_map(MapPosition::new(
             self.rooms[0].x() as i32,
             self.rooms[0].y() as i32,
         ));

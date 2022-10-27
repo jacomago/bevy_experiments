@@ -24,12 +24,12 @@ impl DjikstraMap {
         }
     }
 
-    pub fn next_along_path(&self, p: &MapPosition) -> MapPosition {
+    pub fn next_along_path(&self, p: MapPosition) -> MapPosition {
         *self
             .neighbours(p)
             .iter()
-            .min_by(|n1, n2| self.value(n1).cmp(&self.value(n2)))
-            .unwrap_or(p)
+            .min_by(|n1, n2| self.value(**n1).cmp(&self.value(**n2)))
+            .unwrap_or(&p)
     }
 
     pub fn furthest_point(&self) -> MapPosition {
@@ -52,11 +52,11 @@ impl DjikstraMap {
             .collect()
     }
 
-    fn path_to(&self, p: &MapPosition) -> Vec<MapPosition> {
-        let mut path = vec![p.to_owned()];
-        let mut current = *p;
+    fn path_to(&self, p: MapPosition) -> Vec<MapPosition> {
+        let mut path = vec![p];
+        let mut current = p;
         while current.as_utuple() != self.start {
-            let next = self.next_along_path(&current);
+            let next = self.next_along_path(current);
             path.push(next);
             current = next;
         }
@@ -64,15 +64,15 @@ impl DjikstraMap {
     }
 
     pub fn calculate_longest_path(&self) -> Vec<MapPosition> {
-        let new_dmap = self.djikstra_map(&self.furthest_point());
+        let new_dmap = self.djikstra_map(self.furthest_point());
         let new_furthest = new_dmap.furthest_point();
-        new_dmap.path_to(&new_furthest)
+        new_dmap.path_to(new_furthest)
     }
 }
 
 impl BaseMap for DjikstraMap {
     type Output = Option<i32>;
-    fn can_enter_tile(&self, p: &MapPosition) -> bool {
+    fn can_enter_tile(&self, p: MapPosition) -> bool {
         self.result.get(p.as_utuple()).unwrap_or(&None).is_some()
     }
 
@@ -84,11 +84,11 @@ impl BaseMap for DjikstraMap {
         self.width
     }
 
-    fn value(&self, p: &MapPosition) -> Option<i32> {
+    fn value(&self, p: MapPosition) -> Option<i32> {
         *self.result.get(p.as_utuple()).unwrap_or(&None)
     }
 
-    fn set(&mut self, p: &MapPosition, value: Option<i32>) {
+    fn set(&mut self, p: MapPosition, value: Option<i32>) {
         self.result[p.as_utuple()] = value;
     }
 }
@@ -123,14 +123,14 @@ mod tests {
         fn width(&self) -> usize {
             self.width
         }
-        fn can_enter_tile(&self, p: &MapPosition) -> bool {
+        fn can_enter_tile(&self, p: MapPosition) -> bool {
             self.result.get(p.as_utuple()).is_some()
         }
 
-        fn value(&self, p: &MapPosition) -> Self::Output {
+        fn value(&self, p: MapPosition) -> Self::Output {
             self.result[p.as_utuple()]
         }
-        fn set(&mut self, p: &MapPosition, value: Self::Output) {
+        fn set(&mut self, p: MapPosition, value: Self::Output) {
             self.result[p.as_utuple()] = value;
         }
     }
@@ -140,15 +140,15 @@ mod tests {
     #[test]
     fn test_next_along_path() {
         let map = TestMap::new(10, 1);
-        let dmap = map.djikstra_map(&MapPosition::new(0, 0));
-        let next = dmap.next_along_path(&MapPosition::new(0, 1));
+        let dmap = map.djikstra_map(MapPosition::new(0, 0));
+        let next = dmap.next_along_path(MapPosition::new(0, 1));
         assert_eq!(next, MapPosition::new(0, 0));
     }
 
     #[test]
     fn test_furthest_point() {
         let map = TestMap::new(10, 1);
-        let dmap = map.djikstra_map(&MapPosition::new(0, 0));
+        let dmap = map.djikstra_map(MapPosition::new(0, 0));
         let furthest = dmap.furthest_point();
         assert_eq!(furthest, MapPosition::new(0, 9));
     }
@@ -156,8 +156,8 @@ mod tests {
     #[test]
     fn test_path_to() {
         let map = TestMap::new(10, 1);
-        let dmap = map.djikstra_map(&MapPosition::new(0, 0));
-        let path = dmap.path_to(&MapPosition::new(0, 2));
+        let dmap = map.djikstra_map(MapPosition::new(0, 0));
+        let path = dmap.path_to(MapPosition::new(0, 2));
         assert_eq!(
             path,
             vec![
@@ -170,7 +170,7 @@ mod tests {
     #[test]
     fn test_calculate_longest_path() {
         let map = TestMap::new(10, 1);
-        let dmap = map.djikstra_map(&MapPosition::new(0, 0));
+        let dmap = map.djikstra_map(MapPosition::new(0, 0));
         let path = dmap.calculate_longest_path();
         assert_eq!(
             path,

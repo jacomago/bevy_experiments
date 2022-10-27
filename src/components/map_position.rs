@@ -41,7 +41,7 @@ impl MapPosition {
         (self.position.y as usize, self.position.x as usize)
     }
 
-    pub fn distance(&self, p: &MapPosition) -> f32 {
+    pub fn distance(self, p: MapPosition) -> f32 {
         let diff = p.position - self.position;
         ((diff.x.pow(2) + diff.y.pow(2)) as f32).powf(0.5)
     }

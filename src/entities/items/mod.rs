@@ -116,7 +116,9 @@ fn spawn_item(
         ..default()
     });
     match &config.item_type {
-        ItemType::Healing => item.insert(ProvidesHealing { amount: 6 }),
+        ItemType::Healing => item.insert(ProvidesHealing {
+            amount: config.effect_amount.unwrap(),
+        }),
         ItemType::DungeonMap => item.insert(ProvidesMap),
     };
 }

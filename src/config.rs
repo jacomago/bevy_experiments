@@ -86,6 +86,7 @@ pub struct ItemSettings {
     pub entity: EntitySettings,
     pub proportion: f64,
     pub item_type: ItemType,
+    pub effect_amount: Option<i32>,
 }
 
 #[derive(Debug, Deserialize)]

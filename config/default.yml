@@ -82,6 +82,7 @@ items_settings:
             },
             item_type: Healing,
             proportion: 80,
+            effect_amount: 4
         },
         {
             entity: {

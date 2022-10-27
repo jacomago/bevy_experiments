@@ -2,6 +2,7 @@ use bevy::{ecs::system::Resource, prelude::*};
 
 /// Remove any entities with the components
 pub fn cleanup_components<T: Component>(mut commands: Commands, q: Query<Entity, With<T>>) {
+    info!("Cleanup");
     for e in q.iter() {
         commands.entity(e).despawn_recursive();
     }

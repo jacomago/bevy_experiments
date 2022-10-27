@@ -143,12 +143,12 @@ pub fn end_turn(
 ) {
     info!("end turn: {:?}", turn_state);
     let (player_health, player_position, _) = player.single();
-    let (win_item_position, _) = win_item.single();
+    let win_item_position = win_item.get_single();
     let new_state: TurnState = if player_health.current < 1 {
         TurnState::GameOver
     } else if map_builder.map.value(player_position) == TileType::Exit {
         TurnState::NextLevel
-    } else if player_position == win_item_position {
+    } else if win_item_position.is_ok() && win_item_position.unwrap().0 == player_position {
         TurnState::Victory
     } else {
         match *turn_state {
@@ -191,5 +191,6 @@ pub fn advance_level(
     // increase player level
     level.value += 1;
 
+    info!("Advance level to {}", level.value);
     commands.insert_resource(TurnState::AwaitingInput);
 }

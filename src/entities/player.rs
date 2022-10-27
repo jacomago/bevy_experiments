@@ -4,6 +4,7 @@ use crate::components::map_position::MapPosition;
 use crate::config::Settings;
 use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
+use crate::map::GEN_MAP_LABEL;
 use crate::stages::{end_turn, GameStage, TurnState};
 use crate::systems::combat::combat;
 use crate::systems::fov::{fov, set_fov_visibility, FieldOfView};
@@ -15,6 +16,7 @@ use bevy::prelude::*;
 use iyes_loopless::prelude::*;
 
 use super::items::use_items;
+use super::RESPAWN_LABEL;
 
 pub struct PlayerPlugin;
 
@@ -69,6 +71,14 @@ impl Plugin for PlayerPlugin {
                     .into(),
             )
             .add_system_set(
+                SystemSet::on_update(GameState::Playing).with_system(
+                    player_next_level
+                        .run_if_resource_equals(TurnState::NextLevel)
+                        .label(RESPAWN_LABEL)
+                        .after(GEN_MAP_LABEL),
+                ),
+            )
+            .add_system_set(
                 SystemSet::on_exit(GameState::Playing).with_system(cleanup_components::<Player>),
             );
     }
@@ -89,7 +99,7 @@ fn spawn_player(
             current: settings.player_settings.max_health,
             max: settings.player_settings.max_health,
         },
-        fov: FieldOfView::new(8),
+        fov,
         sprite: SpriteSheetBundle {
             transform: Transform {
                 translation: player_start
@@ -105,4 +115,23 @@ fn spawn_player(
         },
         ..default()
     });
+}
+
+fn player_next_level(
+    mut player_location: Query<(
+        &mut MapPosition,
+        &mut Transform,
+        &mut FieldOfView,
+        With<Player>,
+    )>,
+    map_builder: Res<MapBuilder>,
+    settings: Res<Settings>,
+) {
+    let (mut pos, mut trans, mut fov, _) = player_location.single_mut();
+    *pos = map_builder.player_start;
+    trans.translation = map_builder
+        .player_start
+        .translation(settings.monsters_settings.z_level, settings.tile_size);
+    *fov = FieldOfView::new(settings.player_settings.fov_radius);
+    fov.update(&pos, &map_builder.map);
 }

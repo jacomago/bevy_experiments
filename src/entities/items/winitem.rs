@@ -19,7 +19,8 @@ pub fn spawn_wintitem(
     settings: Res<Settings>,
     player_level: Query<&MapLevel>,
 ) {
-    if player_level.single().value != settings.end_level {
+    let level = player_level.get_single();
+    if level.is_err() || level.unwrap().value != settings.end_level {
         return;
     }
     commands

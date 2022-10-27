@@ -21,11 +21,26 @@ impl Plugin for MapPlugin {
         )
         .add_system_set(
             SystemSet::on_update(GameState::Playing)
-                .with_system(insert_mapbuilder.run_if_resource_equals(TurnState::NextLevel))
+                .with_system(respawn_map.run_if_resource_equals(TurnState::NextLevel))
                 .label(GEN_MAP_LABEL),
         )
         .add_system_set(SystemSet::on_update(GameState::Generation).with_system(end_gen));
     }
+}
+
+fn respawn_map(
+    mut map_builder: ResMut<MapBuilder>,
+    mut rng: ResMut<GlobalRng>,
+    settings: Res<Settings>,
+) {
+    let mut mb = MapBuilder::new(
+        RngComponent::from(&mut rng),
+        settings.map_settings.height,
+        settings.map_settings.width,
+        &settings.map_settings.architect,
+    );
+    mb.map.set(&mb.winitem_start, TileType::Exit);
+    *map_builder = mb;
 }
 
 fn insert_mapbuilder(mut commands: Commands, mut rng: ResMut<GlobalRng>, settings: Res<Settings>) {

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{entities::Player, GameState};
+use crate::{cleanup::cleanup_components, entities::Player, GameState};
 
 #[derive(Debug, Component, Clone, Copy)]
 pub struct Carried {
@@ -12,7 +12,11 @@ pub struct InventoryPlugin;
 impl Plugin for InventoryPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_inventory))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(update_inventory));
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(update_inventory))
+            .add_system_set(
+                SystemSet::on_exit(GameState::Playing)
+                    .with_system(cleanup_components::<PlayerInventory>),
+            );
     }
 }
 

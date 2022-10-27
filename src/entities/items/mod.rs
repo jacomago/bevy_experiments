@@ -19,7 +19,7 @@ mod winitem;
 
 pub use winitem::WinItem;
 
-use super::{GameEntityBundle, RESPAWN_LABEL};
+use super::{GameEntityBundle, RESPAWN_LABEL, MapLevel};
 
 pub struct ItemsPlugin;
 
@@ -75,6 +75,7 @@ fn spawn_items(
     map_builder: Res<MapBuilder>,
     mut rng: ResMut<GlobalRng>,
     settings: Res<Settings>,
+    map_level: Query<&MapLevel>
 ) {
     let item_settings = &settings.items_settings;
     map_builder.item_spawns.iter().for_each(|position| {
@@ -87,11 +88,15 @@ fn spawn_items(
             item_settings,
             settings.tile_size,
             settings.items_settings.z_level,
+            match map_level.get_single() {
+                Ok(res) => res.value,
+                Err(_) => 0
+            }
         );
     });
 }
 
-fn weights(setting: &ItemSettings) -> f64 {
+fn weights(setting: &&ItemSettings) -> f64 {
     0.01 * setting.proportion
 }
 
@@ -103,8 +108,14 @@ fn spawn_item(
     settings: &ItemsSettings,
     tile_size: i32,
     z_level: f32,
+    map_level: u32,
 ) {
-    let config = rng.weighted_sample(&settings.items, weights).unwrap();
+    let level_items = &settings
+        .items
+        .iter()
+        .filter(|s| s.entity.levels.contains(&map_level))
+        .collect::<Vec<_>>();
+    let config = rng.weighted_sample(&level_items, weights).unwrap();
     let mut item = commands.spawn_bundle(ItemBundle {
         entity: GameEntityBundle::from_settings(
             &config.entity,

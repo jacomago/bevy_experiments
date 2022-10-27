@@ -5,6 +5,7 @@ use crate::components::name::EntityName;
 use crate::config::{Behaviour, MonsterSettings, MonstersSettings, Settings};
 use crate::game_ui::tooltip::Interactive;
 use crate::map::map_builder::MapBuilder;
+use crate::map::GEN_MAP_LABEL;
 use crate::stages::{end_turn, TurnState};
 use crate::systems::chasing_player::{chase_player, ChasingPlayer};
 use crate::systems::combat::combat;
@@ -16,9 +17,10 @@ use crate::{loading::TextureAtlasAssets, stages::GameStage};
 
 use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
-use iyes_loopless::prelude::ConditionSet;
+use iyes_loopless::prelude::{ConditionSet, IntoConditionalSystem};
 
 use super::items::use_items;
+use super::RESPAWN_LABEL;
 
 pub struct MonstersPlugin;
 
@@ -57,6 +59,21 @@ impl Plugin for MonstersPlugin {
                     .with_system(fov)
                     .with_system(end_turn)
                     .into(),
+            )
+            .add_system_set(
+                SystemSet::on_update(GameState::Playing).with_system(
+                    spawn_monsters
+                        .run_if_resource_equals(TurnState::NextLevel)
+                        .label(RESPAWN_LABEL)
+                        .after(GEN_MAP_LABEL),
+                ),
+            )
+            .add_system_set(
+                SystemSet::on_update(GameState::Playing).with_system(
+                    cleanup_components::<Monster>
+                        .run_if_resource_equals(TurnState::NextLevel)
+                        .before(GEN_MAP_LABEL),
+                ),
             )
             .add_system_set(
                 SystemSet::on_exit(GameState::Playing).with_system(cleanup_components::<Monster>),

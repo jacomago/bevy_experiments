@@ -22,14 +22,14 @@ pub struct PlayerPlugin;
 pub struct Player;
 
 #[derive(Component, Default)]
-pub struct Level {
-    value: u32,
+pub struct MapLevel {
+    pub value: u32,
 }
 
 #[derive(Bundle, Default)]
 pub struct PlayerBundle {
     _player: Player,
-    pub level: Level,
+    pub level: MapLevel,
     pub position: MapPosition,
     pub health: Health,
     pub fov: FieldOfView,

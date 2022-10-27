@@ -4,17 +4,25 @@ pub mod tile_map;
 
 use bevy::prelude::*;
 use bevy_turborand::{GlobalRng, RngComponent};
+use iyes_loopless::prelude::IntoConditionalSystem;
 
-use crate::{config::Settings, entities::TileType, GameState};
+use crate::{config::Settings, entities::TileType, stages::TurnState, GameState};
 
 use self::{grid_map::base_map::BaseMap, map_builder::MapBuilder};
 
 pub struct MapPlugin;
 
+pub const GEN_MAP_LABEL: &str = "GenearateMapBuilder";
+
 impl Plugin for MapPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(
             SystemSet::on_enter(GameState::Generation).with_system(insert_mapbuilder),
+        )
+        .add_system_set(
+            SystemSet::on_update(GameState::Playing)
+                .with_system(insert_mapbuilder.run_if_resource_equals(TurnState::NextLevel))
+                .label(GEN_MAP_LABEL),
         )
         .add_system_set(SystemSet::on_update(GameState::Generation).with_system(end_gen));
     }

@@ -1,6 +1,7 @@
 
 tile_size: 32
 max_fov: 15
+end_level: 3
 monsters_settings: 
     z_level: 1
     monsters: [

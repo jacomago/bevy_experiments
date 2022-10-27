@@ -27,7 +27,7 @@ pub struct Interactive {
 }
 
 #[derive(Component)]
-struct ToolTip;
+pub struct ToolTip;
 
 #[derive(Debug)]
 struct ToolTipInfo {

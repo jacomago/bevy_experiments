@@ -16,6 +16,7 @@ pub use items::ActivateItem;
 pub use items::Item;
 pub use items::WinItem;
 pub use monsters::Monster;
+pub use player::MapLevel;
 pub use player::Player;
 pub use tile::Tile;
 pub use tile::TileType;
@@ -39,6 +40,8 @@ pub struct GameEntityBundle {
     #[bundle]
     sprite: SpriteSheetBundle,
 }
+
+pub const RESPAWN_LABEL: &str = "RespawnEntities";
 
 impl GameEntityBundle {
     fn from_settings(

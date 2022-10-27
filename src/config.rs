@@ -99,6 +99,7 @@ pub struct ItemsSettings {
 pub struct Settings {
     pub tile_size: i32,
     pub max_fov: i32,
+    pub end_level: u32,
     pub monsters_settings: MonstersSettings,
     pub map_settings: MapSettings,
     pub items_settings: ItemsSettings,

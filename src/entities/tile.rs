@@ -1,18 +1,41 @@
 use std::fmt::Display;
 
 use bevy::prelude::*;
+use iyes_loopless::prelude::IntoConditionalSystem;
 use serde::Deserialize;
 
 use crate::{
-    cleanup::cleanup_components, components::map_position::MapPosition, config::Settings,
-    loading::TextureAtlasAssets, map::map_builder::MapBuilder, GameState,
+    cleanup::cleanup_components,
+    components::map_position::MapPosition,
+    config::Settings,
+    loading::TextureAtlasAssets,
+    map::{map_builder::MapBuilder, GEN_MAP_LABEL},
+    stages::TurnState,
+    GameState,
 };
+
+use super::RESPAWN_LABEL;
 
 pub struct TilePlugin;
 
 impl Plugin for TilePlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_map))
+            .add_system_set(
+                SystemSet::on_update(GameState::Playing).with_system(
+                    spawn_map
+                        .run_if_resource_equals(TurnState::NextLevel)
+                        .label(RESPAWN_LABEL)
+                        .after(GEN_MAP_LABEL),
+                ),
+            )
+            .add_system_set(
+                SystemSet::on_update(GameState::Playing).with_system(
+                    cleanup_components::<Tile>
+                        .run_if_resource_equals(TurnState::NextLevel)
+                        .before(GEN_MAP_LABEL),
+                ),
+            )
             .add_system_set(
                 SystemSet::on_exit(GameState::Playing).with_system(cleanup_components::<Tile>),
             );

@@ -7,6 +7,9 @@ mod hud;
 mod inventory;
 pub mod tooltip;
 
+pub use hud::HudComponent;
+pub use tooltip::ToolTip;
+
 pub struct GameUiPlugin;
 
 impl Plugin for GameUiPlugin {

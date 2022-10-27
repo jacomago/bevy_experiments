@@ -1,12 +1,14 @@
 use bevy::{prelude::*, utils::HashMap};
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
+use iyes_loopless::prelude::IntoConditionalSystem;
 
 use crate::{
     cleanup::cleanup_components,
     components::{health::Health, map_position::MapPosition},
     config::{ItemSettings, ItemType, ItemsSettings, Settings},
     loading::TextureAtlasAssets,
-    map::map_builder::MapBuilder,
+    map::{map_builder::MapBuilder, GEN_MAP_LABEL},
+    stages::TurnState,
     GameState,
 };
 
@@ -17,7 +19,7 @@ mod winitem;
 
 pub use winitem::WinItem;
 
-use super::GameEntityBundle;
+use super::{GameEntityBundle, RESPAWN_LABEL};
 
 pub struct ItemsPlugin;
 
@@ -30,6 +32,28 @@ impl Plugin for ItemsPlugin {
         )
         .add_system_set(
             SystemSet::on_exit(GameState::Playing).with_system(cleanup_components::<Item>),
+        )
+        .add_system_set(
+            SystemSet::on_update(GameState::Playing)
+                .with_system(
+                    spawn_wintitem
+                        .run_if_resource_equals(TurnState::NextLevel)
+                        .label(RESPAWN_LABEL)
+                        .after(GEN_MAP_LABEL),
+                )
+                .with_system(
+                    spawn_items
+                        .run_if_resource_equals(TurnState::NextLevel)
+                        .label(RESPAWN_LABEL)
+                        .after(GEN_MAP_LABEL),
+                ),
+        )
+        .add_system_set(
+            SystemSet::on_update(GameState::Playing).with_system(
+                cleanup_components::<Item>
+                    .run_if_resource_equals(TurnState::NextLevel)
+                    .before(GEN_MAP_LABEL),
+            ),
         )
         .add_event::<ActivateItem>();
     }

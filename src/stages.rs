@@ -1,9 +1,42 @@
+//! This code is probably way more complicated than it needs to be.
+//! We have Four different stage systems, GameState, GameStage, TurnState
+//! and labels.
+//!
+//! GameState is the top level and uses the Bevy state system.
+//! TurnState is the next level as a resource and uses the iyes_loopless crate.
+//! GameStage is the next level and uses the Bevy Stage system.
+//! Finally for TurnState::NextLevel we use labels.
+
+//! Generally we go:
+//!
+//!  - GameState::Menu
+//!  - GameState::Generate (generate MapBuilder)
+//!  - GameState::Playing
+//!      - TurnState::AwaitingInput
+//!      - TurnState::PlayerTurn
+//!         - GameStage::PlayerCombat (and use items)
+//!         - GameStage::MovePlayer
+//!         - GameStage::PlayerFOV
+//!      - TurnState::MonsterTurn
+//!         - GameStage::MonsterCombat
+//!         - GameStage::MoveMonsters
+//!         - GameStage::MonsterFOV
+//!      - TurnState::NextLevel
+//!         - systems before GEN_MAP_LABEL
+//!         - system GEN_MAP_LABEL
+//!         - systems after GEN_MAP_LABEL (mostly labelled RESPAWN_LABEL)
+//!         - system after RESPAWN_LABEL (advance_level)
+//!     - back to TurnState::AwaitingInput
+//!     - possible TurnState::GameOver or TurnState::Victory
+//!  - Return to GameState::Menu
+//!         
+
 use bevy::prelude::*;
 use iyes_loopless::prelude::IntoConditionalSystem;
 
 use crate::{
     components::{health::Health, map_position::MapPosition},
-    entities::{Player, TileType, WinItem},
+    entities::{MapLevel, Player, TileType, WinItem, RESPAWN_LABEL},
     map::{grid_map::base_map::BaseMap, map_builder::MapBuilder},
     menu::{PlayerMessage, LOST_MESSAGE, WELCOME_MESSAGE, WIN_MESSAGE},
     GameState,
@@ -91,7 +124,11 @@ impl Plugin for StagePlugin {
             SystemSet::on_update(GameState::Playing)
                 .with_system(end_game.run_if_resource_equals(TurnState::GameOver))
                 .with_system(end_game.run_if_resource_equals(TurnState::Victory))
-                .with_system(advance_level.run_if_resource_equals(TurnState::NextLevel)),
+                .with_system(
+                    advance_level
+                        .run_if_resource_equals(TurnState::NextLevel)
+                        .after(RESPAWN_LABEL),
+                ),
         );
     }
 }
@@ -146,10 +183,13 @@ fn end_game(
 }
 
 /// Trigures the change of level
-fn advance_level(
+pub fn advance_level(
     mut commands: Commands,
-    mut state: ResMut<State<GameState>>,
-    turn_state: Res<TurnState>,
+    mut player_query: Query<(&mut MapLevel, With<Player>)>,
 ) {
+    let (mut level, _) = player_query.single_mut();
+    // increase player level
+    level.value += 1;
+
     commands.insert_resource(TurnState::AwaitingInput);
 }

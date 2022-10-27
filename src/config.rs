@@ -24,6 +24,7 @@ pub struct ActorSettings {
 
 #[derive(Debug, Deserialize)]
 pub struct EntitySettings {
+    pub levels: Vec<usize>,
     pub sprite_index: usize,
     pub name: String,
 }

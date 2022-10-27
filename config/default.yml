@@ -10,11 +10,12 @@ monsters_settings:
                 entity: {
                     sprite_index: 69,
                     name: "Yoga Bunny",
+                    levels: [0, 1, 2],
                 },
                 max_health: 1,
                 fov_radius: 6,
             },
-            behaviour: Random,
+            behaviour: Chasing,
             proportion: 50,
         },
         {
@@ -22,6 +23,7 @@ monsters_settings:
                 entity: {
                     sprite_index: 111,
                     name: "Nutritionist",
+                    levels: [1, 2],
                 },
                 max_health: 2,
                 fov_radius: 6,
@@ -34,6 +36,7 @@ monsters_settings:
                 entity: {
                     sprite_index: 79,
                     name: "Gym Bro",
+                    levels: [2],
                 },
                 max_health: 4,
                 fov_radius: 6,
@@ -46,6 +49,7 @@ monsters_settings:
                 entity: {
                     sprite_index: 103,
                     name: "Supplement Pusher",
+                    levels: [1, 2],
                 },
                 max_health: 3,
                 fov_radius: 10,
@@ -58,7 +62,7 @@ map_settings:
     tile_sprites: {
         Floor: 46,
         Wall: 35,
-        Exit: 62
+        Exit: 62,
     }
     width: 80
     height: 50
@@ -67,27 +71,40 @@ map_settings:
         architect: Drunkard,
         num_monsters: 50,
         num_items: 20,
-        entity_distance: 10.0
+        entity_distance: 10.0,
     }
 items_settings: 
     winitem: {
         sprite_index: 124,
         name: "Cake of Destiny",
+        levels: [2],
     }
     items: [
         {
             entity: {
                 sprite_index: 33,
                 name: "Fries",
+                levels: [0, 1, 2],
             },
             item_type: Healing,
             proportion: 80,
-            effect_amount: 4
+            effect_amount: 4,
+        },
+        {
+            entity: {
+                sprite_index: 33,
+                name: "Chips",
+                levels: [1, 2],
+            },
+            item_type: Healing,
+            proportion: 40,
+            effect_amount: 10,
         },
         {
             entity: {
                 sprite_index: 123,
                 name: "Deep Fried Fish",
+                levels: [1],
             },
             item_type: DungeonMap,
             proportion: 20,
@@ -98,6 +115,7 @@ player_settings: {
     entity: {
         sprite_index: 64,
         name: "Cake Addict",
+        levels: [1, 2],
     },
     max_health: 10,
     fov_radius: 10,

@@ -33,8 +33,8 @@ impl Default for Fortress {
         .........
         "
             .to_string(),
-            height: 8,
-            width: 11,
+            height: 11,
+            width: 9,
         }
     }
 }
@@ -57,8 +57,8 @@ pub fn apply_prefab(
             rng.usize(0..(dmap.height() - fortress.height)),
         );
         let mut can_place = false;
-        (poss_rect.0..poss_rect.0 + fortress.width).for_each(|x| {
-            (poss_rect.1..poss_rect.1 + fortress.height).for_each(|y| {
+        (poss_rect.0..poss_rect.0 + fortress.width + 1).for_each(|x| {
+            (poss_rect.1..poss_rect.1 + fortress.height + 1).for_each(|y| {
                 let mp = MapPosition::from_utuple(&(y, x));
                 let distance = dmap.value(&mp);
                 if distance.is_some()

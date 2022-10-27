@@ -174,4 +174,21 @@ mod tests {
         );
         println!("{}", mb);
     }
+    #[test]
+    fn gen_many() {
+        (0..1000).for_each(|_| {
+            let rng = RngComponent::new();
+            MapBuilder::new(
+                rng,
+                40,
+                80,
+                &ArchitectSettings {
+                    architect: Architect::Drunkard,
+                    num_monsters: 40,
+                    num_items: 10,
+                    entity_distance: 10.0,
+                },
+            );
+        });
+    }
 }

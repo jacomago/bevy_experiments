@@ -20,6 +20,7 @@ use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use iyes_loopless::prelude::{ConditionSet, IntoConditionalSystem};
 
 use super::items::use_items;
+use super::MapLevel;
 use super::RESPAWN_LABEL;
 
 pub struct MonstersPlugin;
@@ -101,6 +102,7 @@ fn spawn_monsters(
     map_builder: Res<MapBuilder>,
     mut rng: ResMut<GlobalRng>,
     settings: Res<Settings>,
+    map_level: Query<&MapLevel>,
 ) {
     let monster_settings = &settings.monsters_settings;
     map_builder.monster_spawns.iter().for_each(|position| {
@@ -112,12 +114,15 @@ fn spawn_monsters(
             rng_comp,
             monster_settings,
             settings.tile_size,
-            settings.monsters_settings.z_level,
+            match map_level.get_single() {
+                Ok(res) => res.value,
+                Err(_) => 0,
+            },
         );
     });
 }
 
-fn weights(setting: &MonsterSettings) -> f64 {
+fn weights(setting: &&MonsterSettings) -> f64 {
     0.01 * setting.proportion
 }
 
@@ -128,9 +133,14 @@ fn spawn_monster(
     mut rng: RngComponent,
     settings: &MonstersSettings,
     tile_size: i32,
-    z_level: f32,
+    map_level: u32,
 ) {
-    let config = rng.weighted_sample(&settings.monsters, weights).unwrap();
+    let level_monsters = &settings
+        .monsters
+        .iter()
+        .filter(|s| s.actor.entity.levels.contains(&map_level))
+        .collect::<Vec<_>>();
+    let config = rng.weighted_sample(level_monsters, weights).unwrap();
     let mut monster = commands.spawn_bundle(MonsterBundle {
         name: EntityName(config.actor.entity.name.clone()),
         position: *position,
@@ -147,7 +157,7 @@ fn spawn_monster(
         },
         sprite: SpriteSheetBundle {
             transform: Transform {
-                translation: position.translation(z_level, tile_size),
+                translation: position.translation(settings.z_level, tile_size),
                 ..default()
             },
             texture_atlas: textures.texture_atlas.clone(),

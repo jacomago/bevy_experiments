@@ -14,6 +14,7 @@ mod tile;
 
 pub use items::ActivateItem;
 pub use items::Item;
+pub use items::Weapon;
 pub use items::WinItem;
 pub use monsters::Monster;
 pub use player::MapLevel;

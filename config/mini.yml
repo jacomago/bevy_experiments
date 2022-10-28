@@ -6,6 +6,7 @@ map_settings:
     height: 20
     architect: 
       num_monsters: 1
+      num_items: 30
 
 player_settings: 
     max_health: 50

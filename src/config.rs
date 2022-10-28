@@ -81,7 +81,7 @@ pub enum ItemType {
     Healing,
     #[default]
     DungeonMap,
-    Weapon
+    Weapon,
 }
 
 #[derive(Debug, Deserialize)]

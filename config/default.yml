@@ -92,7 +92,7 @@ items_settings:
                 levels: [0, 1, 2],
             },
             item_type: Healing,
-            proportion: 80,
+            proportion: 50,
             effect_amount: 4,
         },
         {
@@ -102,7 +102,7 @@ items_settings:
                 levels: [1, 2],
             },
             item_type: Healing,
-            proportion: 40,
+            proportion: 30,
             effect_amount: 10,
         },
         {
@@ -112,13 +112,13 @@ items_settings:
                 levels: [1],
             },
             item_type: DungeonMap,
-            proportion: 20,
+            proportion: 10,
         },
         {
             entity: {
                 sprite_index: 115,
                 name: "Rusty Sword",
-                levels: [1, 2, 3],
+                levels: [0, 1, 2, 3],
                 base_damage: 2,
             },
             item_type: Weapon,

@@ -90,8 +90,8 @@ impl MapArchitect for DrunkardArchitect {
                     mb.map.set(*p, TileType::Wall);
                 });
         }
-        mb.monster_spawns = self.entity_spawns(mb.player_start, &mb.map, rng);
-        mb.item_spawns = self.entity_spawns(mb.player_start, &mb.map, rng);
+        mb.monster_spawns = self.entity_spawns(mb.player_start, &mb.map, rng, self.num_monsters);
+        mb.item_spawns = self.entity_spawns(mb.player_start, &mb.map, rng, self.num_items);
         mb.winitem_start = mb.find_most_distant();
         mb
     }

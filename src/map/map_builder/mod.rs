@@ -33,6 +33,7 @@ trait MapArchitect {
         start: MapPosition,
         map: &TileMap,
         rng: &mut RngComponent,
+        amount: usize,
     ) -> HashSet<MapPosition> {
         let tiles = map
             .tiles
@@ -45,7 +46,7 @@ trait MapArchitect {
             .collect::<Vec<MapPosition>>();
 
         let spawns = rng
-            .sample_multiple(&tiles, self.num_monsters())
+            .sample_multiple(&tiles, amount)
             .iter()
             .map(|f| **f)
             .collect();

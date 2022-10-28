@@ -1,4 +1,5 @@
 use crate::cleanup::cleanup_components;
+use crate::components::damage::Damage;
 use crate::components::health::Health;
 use crate::components::map_position::MapPosition;
 use crate::config::Settings;
@@ -35,6 +36,7 @@ pub struct PlayerBundle {
     pub position: MapPosition,
     pub health: Health,
     pub fov: FieldOfView,
+    pub damage: Damage,
     #[bundle]
     sprite: SpriteSheetBundle,
 }
@@ -100,6 +102,7 @@ fn spawn_player(
             max: settings.player_settings.max_health,
         },
         fov,
+        damage: Damage(settings.player_settings.entity.base_damage.unwrap_or(0)),
         sprite: SpriteSheetBundle {
             transform: Transform {
                 translation: player_start

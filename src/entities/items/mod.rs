@@ -4,7 +4,7 @@ use iyes_loopless::prelude::IntoConditionalSystem;
 
 use crate::{
     cleanup::cleanup_components,
-    components::{health::Health, map_position::MapPosition},
+    components::{damage::Damage, health::Health, map_position::MapPosition},
     config::{ItemSettings, ItemType, ItemsSettings, Settings},
     loading::TextureAtlasAssets,
     map::{map_builder::MapBuilder, GEN_MAP_LABEL},
@@ -12,9 +12,12 @@ use crate::{
     GameState,
 };
 
-use self::{dungeonmap::ProvidesMap, healing::ProvidesHealing, winitem::spawn_wintitem};
+use self::{
+    dungeonmap::ProvidesMap, healing::ProvidesHealing, weapon::Weapon, winitem::spawn_wintitem,
+};
 mod dungeonmap;
 mod healing;
+mod weapon;
 mod winitem;
 
 pub use winitem::WinItem;
@@ -129,6 +132,9 @@ fn spawn_item(
             amount: config.effect_amount.unwrap(),
         }),
         ItemType::DungeonMap => item.insert(ProvidesMap),
+        ItemType::Weapon => item
+            .insert(Weapon)
+            .insert(Damage(config.entity.base_damage.unwrap_or(0))),
     };
 }
 

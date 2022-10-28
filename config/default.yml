@@ -121,7 +121,7 @@ items_settings:
                 levels: [1, 2, 3],
                 base_damage: 2,
             },
-            item_type: DungeonMap,
+            item_type: Weapon,
             proportion: 10,
         },
     ]

@@ -1,4 +1,5 @@
 use crate::cleanup::cleanup_components;
+use crate::components::damage::Damage;
 use crate::components::health::Health;
 use crate::components::map_position::MapPosition;
 use crate::components::name::EntityName;
@@ -92,6 +93,7 @@ pub struct MonsterBundle {
     pub interactive: Interactive,
     pub health: Health,
     pub fov: FieldOfView,
+    pub damage: Damage,
     #[bundle]
     sprite: SpriteSheetBundle,
 }
@@ -155,6 +157,7 @@ fn spawn_monster(
                 &config.actor.entity.name, config.actor.max_health
             ),
         },
+        damage: Damage(config.actor.entity.base_damage.unwrap_or(0)),
         sprite: SpriteSheetBundle {
             transform: Transform {
                 translation: position.translation(settings.z_level, tile_size),

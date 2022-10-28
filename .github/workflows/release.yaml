@@ -49,6 +49,7 @@ jobs:
         run: |
           mkdir -p build/macos/src/Game.app/Contents/MacOS/assets
           cp -r assets/ build/macos/src/Game.app/Contents/MacOS/assets
+          cp -r config/ build/macos/src/Game.app/Contents/MacOS/config
           cp -r credits/ build/macos/src/Game.app/Contents/MacOS/credits
           cp target/release/${{ env.GAME_EXECUTABLE_NAME }} build/macos/src/Game.app/Contents/MacOS/
           strip build/macos/src/Game.app/Contents/MacOS/${{ env.GAME_EXECUTABLE_NAME }}
@@ -90,7 +91,7 @@ jobs:
           mv target/release/${{ env.GAME_EXECUTABLE_NAME }} .
       - name: Bundle release
         run: |
-          tar -czf ${{ env.GAME_EXECUTABLE_NAME }}_linux.tar.gz ${{ env.GAME_EXECUTABLE_NAME }} assets credits
+          tar -czf ${{ env.GAME_EXECUTABLE_NAME }}_linux.tar.gz ${{ env.GAME_EXECUTABLE_NAME }} assets credits config
       - name: Upload release
         uses: svenstaro/upload-release-action@v2
         with:
@@ -121,10 +122,11 @@ jobs:
         run: |
           mkdir target/release/assets && cp -r assets target/release/assets
           mkdir target/release/credits && cp -r credits target/release/credits
+          mkdir target/release/config && cp -r credits target/release/config
       - name: Zip release
         uses: vimtor/action-zip@v1
         with:
-          files: target/release/assets/ target/release/credits/ target/release/${{ env.GAME_EXECUTABLE_NAME }}.exe
+          files: target/release/assets/ target/release/credits/ target/release/config/ target/release/${{ env.GAME_EXECUTABLE_NAME }}.exe
           dest: ${{ env.GAME_EXECUTABLE_NAME }}_windows.zip
       - name: Upload release
         uses: svenstaro/upload-release-action@v2

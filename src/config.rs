@@ -27,6 +27,7 @@ pub struct EntitySettings {
     pub levels: Vec<u32>,
     pub sprite_index: usize,
     pub name: String,
+    pub base_damage: Option<i32>,
 }
 
 #[derive(Debug, Deserialize, Default)]

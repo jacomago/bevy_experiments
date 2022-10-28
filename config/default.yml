@@ -11,12 +11,14 @@ monsters_settings:
                     sprite_index: 69,
                     name: "Yoga Bunny",
                     levels: [0, 1, 2],
+                    base_damage: 2,
                 },
                 max_health: 1,
                 fov_radius: 6,
             },
             behaviour: Chasing,
             proportion: 50,
+            base_damage: 1,
         },
         {
             actor: {
@@ -24,6 +26,7 @@ monsters_settings:
                     sprite_index: 111,
                     name: "Nutritionist",
                     levels: [1, 2],
+                    base_damage: 2,
                 },
                 max_health: 2,
                 fov_radius: 6,
@@ -37,6 +40,7 @@ monsters_settings:
                     sprite_index: 79,
                     name: "Gym Bro",
                     levels: [2],
+                    base_damage: 4,
                 },
                 max_health: 4,
                 fov_radius: 6,
@@ -50,6 +54,7 @@ monsters_settings:
                     sprite_index: 103,
                     name: "Supplement Pusher",
                     levels: [1, 2],
+                    base_damage: 3,
                 },
                 max_health: 3,
                 fov_radius: 10,
@@ -109,6 +114,16 @@ items_settings:
             item_type: DungeonMap,
             proportion: 20,
         },
+        {
+            entity: {
+                sprite_index: 115,
+                name: "Rusty Sword",
+                levels: [1, 2, 3],
+                base_damage: 2,
+            },
+            item_type: DungeonMap,
+            proportion: 10,
+        },
     ]
     z_level: 1.0
 player_settings: {
@@ -116,6 +131,7 @@ player_settings: {
         sprite_index: 64,
         name: "Cake Addict",
         levels: [1, 2],
+        base_damage: 1,
     },
     max_health: 10,
     fov_radius: 10,

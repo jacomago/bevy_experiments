@@ -1026,7 +1026,7 @@ checksum = "c1db59621ec70f09c5e9b597b220c7a2b43611f4710dc03ceb8748637775692c"
 
 [[package]]
 name = "cake-addict"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "bevy",
  "bevy-inspector-egui",

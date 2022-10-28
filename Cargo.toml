@@ -3,7 +3,7 @@ name = "cake-addict"
 description = """
 A dungeon crawler with proc-gen levels, and fighting the evil health gurus.
 """
-version = "0.1.0"
+version = "0.1.1"
 publish = false
 authors = ["Sky Brewer <jaco.brewer@gmail.com>"]
 edition = "2021"

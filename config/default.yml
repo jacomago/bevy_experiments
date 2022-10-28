@@ -124,6 +124,26 @@ items_settings:
             item_type: Weapon,
             proportion: 10,
         },
+        {
+            entity: {
+                sprite_index: 83,
+                name: "Shiny Sword",
+                levels: [0, 1, 2, 3],
+                base_damage: 3,
+            },
+            item_type: Weapon,
+            proportion: 10,
+        },
+        {
+            entity: {
+                sprite_index: 47,
+                name: "Super Sword",
+                levels: [1, 2, 3],
+                base_damage: 4,
+            },
+            item_type: Weapon,
+            proportion: 10,
+        },
     ]
     z_level: 1.0
 player_settings: {

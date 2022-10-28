@@ -4,7 +4,7 @@ use iyes_loopless::prelude::*;
 use crate::{
     actions::Actions,
     components::map_position::MapPosition,
-    entities::{ActivateItem, Item, Monster, Player},
+    entities::{ActivateItem, Item, Monster, Player, Weapon},
     stages::TurnState,
     GameState,
 };
@@ -32,17 +32,38 @@ fn pick_up(
     mut commands: Commands,
     actions: Res<Actions>,
     player_query: Query<(Entity, &MapPosition, With<Player>)>,
-    items: Query<(Entity, &MapPosition, With<Item>)>,
+    pickable_items: Query<(Entity, &MapPosition, With<Item>)>,
+    weapons: Query<(Entity, With<Weapon>)>,
+    carried_weapons: Query<(Entity, &Carried, With<Weapon>)>,
 ) {
     if actions.pick_up_item.is_some() {
-        let (entity, position, _) = player_query.single();
-        let poss_item = items.iter().filter(|(_, p, _)| position == *p).last();
+        let (player_entity, position, _) = player_query.single();
+        let poss_item = pickable_items
+            .iter()
+            .filter(|(_, p, _)| position == *p)
+            .last();
         if let Some((item_entity, _, _)) = poss_item {
+            // Remove item from map
             commands.entity(item_entity).remove::<MapPosition>();
             commands
                 .entity(item_entity)
                 .remove_bundle::<SpriteSheetBundle>();
-            commands.entity(item_entity).insert(Carried { entity });
+
+            // Add to players inventory
+            commands.entity(item_entity).insert(Carried {
+                entity: player_entity,
+            });
+
+            // if item is a weapon remove the current weapon (if there is one)
+            if weapons.contains(item_entity) {
+                if let Some((current_weapon, _, _)) = carried_weapons
+                    .iter()
+                    .filter(|(_, c, _)| c.entity == player_entity)
+                    .last()
+                {
+                    commands.entity(current_weapon).despawn_recursive();
+                }
+            }
         }
 
         commands.insert_resource(TurnState::PlayerTurn);

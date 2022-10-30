@@ -12,6 +12,7 @@ pub mod inventory;
 pub mod movement;
 pub mod player_input;
 pub mod random_actor;
+pub mod quest;
 
 pub struct SystemsPlugin;
 

@@ -11,14 +11,21 @@ use super::{MapArchitect, MapBuilder};
 pub struct EmptyArchitect {
     num_monsters: usize,
     num_items: usize,
+    num_npcs: usize,
     entity_distance: f32,
 }
 
 impl EmptyArchitect {
-    pub fn new(num_monsters: usize, num_items: usize, entity_distance: f32) -> Self {
+    pub fn new(
+        num_monsters: usize,
+        num_items: usize,
+        num_npcs: usize,
+        entity_distance: f32,
+    ) -> Self {
         Self {
             num_monsters,
             num_items,
+            num_npcs,
             entity_distance,
         }
     }
@@ -49,6 +56,10 @@ impl MapArchitect for EmptyArchitect {
     fn num_items(&self) -> usize {
         self.num_items
     }
+
+    fn num_npcs(&self) -> usize {
+        self.num_npcs
+    }
 }
 
 #[cfg(test)]
@@ -56,7 +67,7 @@ mod tests {
     use super::*;
     #[test]
     fn build() {
-        let mut arch = EmptyArchitect::new(50, 20, 10.0);
+        let mut arch = EmptyArchitect::new(50, 20, 10, 10.0);
         let mut rng = RngComponent::new();
         let mb = arch.builder(40, 60, &mut rng);
         println!("{}", mb);

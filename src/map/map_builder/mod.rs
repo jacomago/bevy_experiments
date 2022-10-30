@@ -70,21 +70,25 @@ fn pick_architect(architect: &ArchitectSettings) -> Box<dyn MapArchitect> {
         Architect::Empty => Box::new(EmptyArchitect::new(
             architect.num_monsters,
             architect.num_items,
+            architect.num_npcs,
             architect.entity_distance,
         )),
         Architect::Standard => Box::new(StandardArchitect::new(
             architect.num_monsters,
             architect.num_items,
+            architect.num_npcs,
             architect.entity_distance,
         )),
         Architect::Automata => Box::new(CellularAutomataArchitect::new(
             architect.num_monsters,
             architect.num_items,
+            architect.num_npcs,
             architect.entity_distance,
         )),
         Architect::Drunkard => Box::new(DrunkardArchitect::new(
             architect.num_monsters,
             architect.num_items,
+            architect.num_npcs,
             architect.entity_distance,
         )),
     }
@@ -175,6 +179,7 @@ mod tests {
                 architect: Architect::Drunkard,
                 num_monsters: 40,
                 num_items: 10,
+                num_npcs: 5,
                 entity_distance: 10.0,
             },
         );
@@ -192,6 +197,7 @@ mod tests {
                     architect: Architect::Drunkard,
                     num_monsters: 40,
                     num_items: 10,
+                    num_npcs: 5,
                     entity_distance: 10.0,
                 },
             );

@@ -37,6 +37,9 @@ impl MapArchitect for StandardArchitect {
     fn num_items(&self) -> usize {
         self.num_rooms
     }
+    fn num_npcs(&self) -> usize {
+        self.num_rooms
+    }
     fn entity_spawns(
         &self,
         _: MapPosition,
@@ -81,7 +84,12 @@ impl MapArchitect for StandardArchitect {
 }
 
 impl StandardArchitect {
-    pub fn new(_num_monsters: usize, num_items: usize, entity_distance: f32) -> Self {
+    pub fn new(
+        _num_monsters: usize,
+        num_items: usize,
+        _num_npcs: usize,
+        entity_distance: f32,
+    ) -> Self {
         Self {
             max_room_size: entity_distance as usize,
             num_rooms: num_items,
@@ -199,7 +207,7 @@ mod tests {
     use super::*;
     #[test]
     fn build() {
-        let mut arch = StandardArchitect::new(50, 20, 10.0);
+        let mut arch = StandardArchitect::new(50, 20, 10, 10.0);
         let mut rng = RngComponent::new();
         let mb = arch.builder(40, 80, &mut rng);
         println!("{}", mb);

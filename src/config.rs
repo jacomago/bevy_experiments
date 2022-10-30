@@ -86,6 +86,7 @@ pub struct ArchitectSettings {
     pub architect: Architect,
     pub num_monsters: usize,
     pub num_items: usize,
+    pub num_npcs: usize,
     pub entity_distance: f32,
 }
 

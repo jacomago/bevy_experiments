@@ -114,6 +114,9 @@ impl MapArchitect for DrunkardArchitect {
     fn num_items(&self) -> usize {
         self.num_items
     }
+    fn num_npcs(&self) -> usize {
+        self.num_npcs
+    }
 }
 
 #[cfg(test)]
@@ -121,7 +124,7 @@ mod tests {
     use super::*;
     #[test]
     fn build() {
-        let mut arch = DrunkardArchitect::new(50, 20, 10.0);
+        let mut arch = DrunkardArchitect::new(50, 20, 10, 10.0);
         let mut rng = RngComponent::new();
         let mb = arch.builder(40, 80, &mut rng);
         println!("{}", mb);

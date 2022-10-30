@@ -18,6 +18,7 @@ pub struct CellularAutomataArchitect {
     min_neighbours: usize,
     num_monsters: usize,
     num_items: usize,
+    num_npcs: usize,
     entity_distance: f32,
 }
 
@@ -31,6 +32,9 @@ impl MapArchitect for CellularAutomataArchitect {
     }
     fn num_items(&self) -> usize {
         self.num_items
+    }
+    fn num_npcs(&self) -> usize {
+        self.num_npcs
     }
 
     fn builder(
@@ -50,18 +54,25 @@ impl MapArchitect for CellularAutomataArchitect {
         mb.monster_spawns = self.entity_spawns(mb.player_start, &mb.map, rng, self.num_monsters);
 
         mb.item_spawns = self.entity_spawns(mb.player_start, &mb.map, rng, self.num_items);
+        mb.npc_spawns = self.entity_spawns(mb.player_start, &mb.map, rng, self.num_npcs);
         mb.winitem_start = mb.find_most_distant();
         mb
     }
 }
 impl CellularAutomataArchitect {
-    pub fn new(num_monsters: usize, num_items: usize, entity_distance: f32) -> Self {
+    pub fn new(
+        num_monsters: usize,
+        num_items: usize,
+        num_npcs: usize,
+        entity_distance: f32,
+    ) -> Self {
         Self {
             percent_floor: 45,
             max_neighbours: 4,
             min_neighbours: 0,
             num_items,
             num_monsters,
+            num_npcs,
             entity_distance,
         }
     }
@@ -128,7 +139,7 @@ mod tests {
 
     #[test]
     fn build() {
-        let mut arch = CellularAutomataArchitect::new(50, 20, 10.0);
+        let mut arch = CellularAutomataArchitect::new(50, 20, 10, 10.0);
         let mut rng = RngComponent::new();
         let mb = arch.builder(40, 80, &mut rng);
         println!("{}", mb);

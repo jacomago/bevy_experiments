@@ -26,6 +26,7 @@ trait MapArchitect {
     fn entity_distance(&self) -> f32;
     fn num_monsters(&self) -> usize;
     fn num_items(&self) -> usize;
+    fn num_npcs(&self) -> usize;
     fn builder(&mut self, height: usize, width: usize, rng: &mut RngComponent) -> MapBuilder;
 
     fn entity_spawns(
@@ -144,6 +145,10 @@ impl Display for MapBuilder {
                             "?".to_string()
                         } else if self.monster_spawns.contains(&mp) {
                             "M".to_string()
+                        } else if self.npc_spawns.contains(&mp) {
+                            "N".to_string()
+                        } else if self.item_spawns.contains(&mp) {
+                            "I".to_string()
                         } else {
                             format!("{}", tile)
                         }

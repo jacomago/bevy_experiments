@@ -17,17 +17,24 @@ pub struct DrunkardArchitect {
     ratio: f32,
     num_monsters: usize,
     num_items: usize,
+    num_npcs: usize,
     entity_distance: f32,
     max_distance: i32,
 }
 
 impl DrunkardArchitect {
-    pub fn new(num_monsters: usize, num_items: usize, entity_distance: f32) -> Self {
+    pub fn new(
+        num_monsters: usize,
+        num_items: usize,
+        num_npcs: usize,
+        entity_distance: f32,
+    ) -> Self {
         Self {
             stagger_distance: 400,
             ratio: 0.3,
             num_monsters,
             num_items,
+            num_npcs,
             entity_distance,
             max_distance: 2000,
         }
@@ -92,6 +99,7 @@ impl MapArchitect for DrunkardArchitect {
         }
         mb.monster_spawns = self.entity_spawns(mb.player_start, &mb.map, rng, self.num_monsters);
         mb.item_spawns = self.entity_spawns(mb.player_start, &mb.map, rng, self.num_items);
+        mb.npc_spawns = self.entity_spawns(mb.player_start, &mb.map, rng, self.num_npcs);
         mb.winitem_start = mb.find_most_distant();
         mb
     }

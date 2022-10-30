@@ -51,6 +51,19 @@ pub struct MonstersSettings {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct NPCSettings {
+    pub actor: ActorSettings,
+    pub behaviour: Behaviour,
+    pub proportion: f64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct NPCsSettings {
+    pub npcs: Vec<NPCSettings>,
+    pub z_level: f32,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct MapSettings {
     pub tile_sprites: HashMap<TileType, usize>,
     pub width: usize,
@@ -105,6 +118,7 @@ pub struct Settings {
     pub max_fov: i32,
     pub end_level: u32,
     pub monsters_settings: MonstersSettings,
+    pub npcs_settings: NPCsSettings,
     pub map_settings: MapSettings,
     pub items_settings: ItemsSettings,
     pub player_settings: ActorSettings,

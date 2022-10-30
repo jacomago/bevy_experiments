@@ -59,6 +59,7 @@ pub struct MapBuilder {
     pub map: TileMap,
     pub monster_spawns: HashSet<MapPosition>,
     pub item_spawns: HashSet<MapPosition>,
+    pub npc_spawns: HashSet<MapPosition>,
     pub player_start: MapPosition,
     pub winitem_start: MapPosition,
 }

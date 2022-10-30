@@ -11,6 +11,7 @@ mod items;
 mod monsters;
 mod player;
 mod tile;
+mod npc;
 
 pub use items::ActivateItem;
 pub use items::Item;

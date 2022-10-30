@@ -53,8 +53,8 @@ pub struct MonstersSettings {
 #[derive(Debug, Deserialize)]
 pub struct NPCSettings {
     pub actor: ActorSettings,
-    pub behaviour: Behaviour,
     pub proportion: f64,
+    pub quest_item_type: ItemType,
 }
 
 #[derive(Debug, Deserialize)]
@@ -89,7 +89,7 @@ pub struct ArchitectSettings {
     pub entity_distance: f32,
 }
 
-#[derive(Debug, Deserialize, Default, Serialize)]
+#[derive(Debug, Deserialize, Default, Serialize, Clone, Copy)]
 pub enum ItemType {
     Healing,
     #[default]

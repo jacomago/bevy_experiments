@@ -8,6 +8,7 @@ use crate::map::GEN_MAP_LABEL;
 use crate::stages::{end_turn, TurnState};
 use crate::systems::fov::{fov, FieldOfView};
 use crate::systems::movement::movement;
+use crate::systems::quest::Quest;
 use crate::systems::random_actor::{random_move, RandomMover};
 use crate::GameState;
 use crate::{loading::TextureAtlasAssets, stages::GameStage};
@@ -78,6 +79,7 @@ pub struct NPCBundle {
     pub position: MapPosition,
     pub interactive: Interactive,
     pub fov: FieldOfView,
+    pub quest: Quest,
     #[bundle]
     sprite: SpriteSheetBundle,
 }
@@ -153,4 +155,8 @@ fn spawn_npc(
         ..default()
     });
     npc.insert(RandomMover { rng });
+    npc.insert(Quest {
+        giver: Some(npc.id()),
+        requested_item: config.quest_item_type,
+    });
 }

@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 
-use crate::{config::ItemType, entities::Player};
+use crate::{
+    config::ItemType,
+    entities::{Npc, Player},
+};
 
 use super::inventory::Carried;
 
@@ -10,7 +13,10 @@ pub struct Quest {
     pub requested_item: ItemType,
 }
 
-pub struct RecieveQuest {}
+pub struct RecieveQuest {
+    giver: Entity,
+    reciever: Entity,
+}
 
 pub struct QuestPlugin;
 
@@ -24,6 +30,7 @@ pub fn quest(
     mut commands: Commands,
     mut quest_events: EventReader<RecieveQuest>,
     player_query: Query<(Entity, With<Player>)>,
+    quest_holders: Query<(Entity, &Quest, With<Npc>)>,
 ) {
     let (player, _) = player_query.single();
     quest_events.iter().for_each(|event| {

@@ -9,15 +9,16 @@ use self::{items::ItemsPlugin, monsters::MonstersPlugin, player::PlayerPlugin, t
 
 mod items;
 mod monsters;
+mod npc;
 mod player;
 mod tile;
-mod npc;
 
 pub use items::ActivateItem;
 pub use items::Item;
 pub use items::Weapon;
 pub use items::WinItem;
 pub use monsters::Monster;
+pub use npc::Npc;
 pub use player::MapLevel;
 pub use player::Player;
 pub use tile::Tile;

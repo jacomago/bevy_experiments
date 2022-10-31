@@ -12,12 +12,14 @@ use crate::{
     GameState,
 };
 
-use self::{dungeonmap::ProvidesMap, healing::ProvidesHealing, winitem::spawn_wintitem};
+use self::winitem::spawn_wintitem;
 mod dungeonmap;
 mod healing;
 mod weapon;
 mod winitem;
 
+pub use dungeonmap::ProvidesMap;
+pub use healing::ProvidesHealing;
 pub use weapon::Weapon;
 pub use winitem::WinItem;
 

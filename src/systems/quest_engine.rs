@@ -12,6 +12,9 @@ pub struct AssignedQuest {
     pub assignee: Entity,
 }
 
+#[derive(Debug, Component)]
+pub struct CompletedQuest;
+
 pub struct QuestEnginePlugin;
 
 impl Plugin for QuestEnginePlugin {

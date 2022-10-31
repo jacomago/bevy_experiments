@@ -94,7 +94,7 @@ pub struct ArchitectSettings {
     pub entity_distance: f32,
 }
 
-#[derive(Debug, Deserialize, Default, Serialize, Clone, Copy)]
+#[derive(Debug, Deserialize, Default, Serialize, Clone, Copy, PartialEq, Eq)]
 pub enum ItemType {
     Healing,
     #[default]

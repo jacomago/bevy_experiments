@@ -3,9 +3,13 @@ use bevy::prelude::*;
 use crate::{
     cleanup::cleanup_components,
     components::map_position::MapPosition,
-    entities::{Player, Weapon},
+    config::ItemType,
+    entities::{FetchItem, Player, ProvidesHealing, ProvidesMap, Weapon},
+    systems::quest_engine::CompletedQuest,
     GameState,
 };
+
+use super::quest_engine::AssignedQuest;
 
 #[derive(Debug, Component, Clone, Copy)]
 pub struct Carried {
@@ -34,7 +38,10 @@ pub fn assign_item(
     mut commands: Commands,
     mut pick_up_events: EventReader<PickUpEvent>,
     weapons: Query<(Entity, With<Weapon>)>,
+    healing: Query<(Entity, With<ProvidesHealing>)>,
+    dungeon_maps: Query<(Entity, With<ProvidesMap>)>,
     carried_weapons: Query<(Entity, &Carried, With<Weapon>)>,
+    assigned_fetch_quests: Query<(Entity, &AssignedQuest, &FetchItem)>,
 ) {
     pick_up_events.iter().for_each(|event| {
         info!("Pick up event");
@@ -59,6 +66,19 @@ pub fn assign_item(
                 commands.entity(current_weapon).despawn_recursive();
             }
         }
+        let current_item_type = if healing.contains(event.item) {
+            ItemType::Healing
+        } else if dungeon_maps.contains(event.item) {
+            ItemType::DungeonMap
+        } else {
+            ItemType::Weapon
+        };
+        assigned_fetch_quests
+            .iter()
+            .filter(|(_, _, q)| q.requested_item == current_item_type)
+            .for_each(|(q, _, _)| {
+                commands.entity(q).insert(CompletedQuest);
+            });
     });
 }
 

@@ -104,6 +104,7 @@ fn spawn_npcs(
             rng_comp,
             npc_settings,
             settings.tile_size,
+            settings.entity_z_level,
             match map_level.get_single() {
                 Ok(res) => res.value,
                 Err(_) => 0,
@@ -123,6 +124,7 @@ fn spawn_npc(
     mut rng: RngComponent,
     settings: &NPCsSettings,
     tile_size: i32,
+    z_level: f32,
     map_level: u32,
 ) {
     let level_npcs = &settings
@@ -148,7 +150,7 @@ fn spawn_npc(
         fov: FieldOfView::new(config.actor.fov_radius),
         sprite: SpriteSheetBundle {
             transform: Transform {
-                translation: position.translation(settings.z_level, tile_size),
+                translation: position.translation(z_level, tile_size),
                 ..default()
             },
             texture_atlas: textures.texture_atlas.clone(),

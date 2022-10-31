@@ -30,7 +30,7 @@ pub fn spawn_wintitem(
                 &settings.items_settings.winitem,
                 map_builder.winitem_start,
                 &textures.texture_atlas,
-                settings.items_settings.z_level,
+                settings.entity_z_level,
                 settings.tile_size,
             ),
             ..default()

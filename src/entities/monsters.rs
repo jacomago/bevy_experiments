@@ -116,6 +116,7 @@ fn spawn_monsters(
             rng_comp,
             monster_settings,
             settings.tile_size,
+            settings.entity_z_level,
             match map_level.get_single() {
                 Ok(res) => res.value,
                 Err(_) => 0,
@@ -135,6 +136,7 @@ fn spawn_monster(
     mut rng: RngComponent,
     settings: &MonstersSettings,
     tile_size: i32,
+    z_level: f32,
     map_level: u32,
 ) {
     let level_monsters = &settings
@@ -160,7 +162,7 @@ fn spawn_monster(
         damage: Damage(config.actor.entity.base_damage.unwrap_or(0)),
         sprite: SpriteSheetBundle {
             transform: Transform {
-                translation: position.translation(settings.z_level, tile_size),
+                translation: position.translation(z_level, tile_size),
                 ..default()
             },
             texture_atlas: textures.texture_atlas.clone(),

@@ -108,7 +108,7 @@ fn spawn_player(
         sprite: SpriteSheetBundle {
             transform: Transform {
                 translation: player_start
-                    .translation(settings.monsters_settings.z_level, settings.tile_size),
+                    .translation(settings.entity_z_level, settings.tile_size),
                 ..default()
             },
             texture_atlas: textures.texture_atlas.clone(),
@@ -136,7 +136,7 @@ fn player_next_level(
     *pos = map_builder.player_start;
     trans.translation = map_builder
         .player_start
-        .translation(settings.monsters_settings.z_level, settings.tile_size);
+        .translation(trans.translation.z, settings.tile_size);
     *fov = FieldOfView::new(settings.player_settings.fov_radius);
     fov.update(*pos, &map_builder.map);
 }

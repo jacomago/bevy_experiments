@@ -43,7 +43,7 @@ pub fn movement(
             if map_builder.map.can_enter_tile(destination) {
                 if let Ok((mut transform, mut position, _)) = query.get_mut(entity) {
                     transform.translation =
-                        destination.translation(settings.monsters_settings.z_level, tile_size);
+                        destination.translation(transform.translation.z, tile_size);
                     position.position = destination.position;
 
                     // If moving player also move camera

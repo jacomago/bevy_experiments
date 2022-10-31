@@ -89,6 +89,7 @@ fn spawn_items(
             rng_comp,
             item_settings,
             settings.tile_size,
+            settings.entity_z_level,
             match map_level.get_single() {
                 Ok(res) => res.value,
                 Err(_) => 0,
@@ -108,6 +109,7 @@ fn spawn_item(
     mut rng: RngComponent,
     settings: &ItemsSettings,
     tile_size: i32,
+    z_level: f32,
     map_level: u32,
 ) {
     let level_items = &settings
@@ -121,7 +123,7 @@ fn spawn_item(
             &config.entity,
             position,
             &textures.texture_atlas,
-            settings.z_level,
+            z_level,
             tile_size,
         ),
         ..default()

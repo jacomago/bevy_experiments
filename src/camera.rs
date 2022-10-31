@@ -22,7 +22,7 @@ fn setup_camera(mut commands: Commands, map_builder: Res<MapBuilder>, settings: 
         transform: Transform::from_translation(
             map_builder
                 .player_start
-                .translation(settings.monsters_settings.z_level, settings.tile_size),
+                .translation(settings.entity_z_level, settings.tile_size),
         ),
         ..default()
     });

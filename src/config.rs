@@ -47,7 +47,6 @@ pub struct MonsterSettings {
 #[derive(Debug, Deserialize)]
 pub struct MonstersSettings {
     pub monsters: Vec<MonsterSettings>,
-    pub z_level: f32,
 }
 
 #[derive(Debug, Deserialize)]
@@ -66,7 +65,6 @@ pub struct NPCSettings {
 #[derive(Debug, Deserialize)]
 pub struct NPCsSettings {
     pub npcs: Vec<NPCSettings>,
-    pub z_level: f32,
 }
 
 #[derive(Debug, Deserialize)]
@@ -116,7 +114,6 @@ pub struct ItemSettings {
 pub struct ItemsSettings {
     pub items: Vec<ItemSettings>,
     pub winitem: EntitySettings,
-    pub z_level: f32,
 }
 
 #[derive(Debug, Deserialize)]
@@ -124,6 +121,7 @@ pub struct Settings {
     pub tile_size: i32,
     pub max_fov: i32,
     pub end_level: u32,
+    pub entity_z_level: f32,
     pub monsters_settings: MonstersSettings,
     pub npcs_settings: NPCsSettings,
     pub map_settings: MapSettings,

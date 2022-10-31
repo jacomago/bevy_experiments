@@ -2,6 +2,7 @@
 tile_size: 32
 max_fov: 15
 end_level: 3
+entity_z_level: 1.0
 npcs_settings:
     npcs: [
         {
@@ -22,9 +23,7 @@ npcs_settings:
             }
         },
     ]
-    z_level: 1.0
 monsters_settings: 
-    z_level: 1
     monsters: [
         {
             actor: {
@@ -167,7 +166,6 @@ items_settings:
             proportion: 10,
         },
     ]
-    z_level: 1.0
 player_settings: {
     entity: {
         sprite_index: 64,

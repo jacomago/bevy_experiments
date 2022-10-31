@@ -1,12 +1,12 @@
 # Mini setup for testing
 
-
 map_settings: 
     width: 20
     height: 20
     architect: 
       num_monsters: 1
-      num_items: 30
+      num_items: 10
+      num_npcs: 10
 
 player_settings: 
     max_health: 50

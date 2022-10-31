@@ -4,6 +4,7 @@ mod monsters;
 mod npc;
 mod player;
 
+use iyes_loopless::prelude::ConditionSet;
 pub use monsters::Monster;
 pub use npc::AvailableQuest;
 pub use npc::Npc;
@@ -15,11 +16,21 @@ use crate::components::map_position::MapPosition;
 use crate::components::name::EntityName;
 use crate::config::ActorSettings;
 use crate::game_ui::tooltip::Interactive;
+use crate::stages::end_turn;
+use crate::stages::GameStage;
+use crate::stages::TurnState;
+use crate::systems::chasing_player::chase_player;
+use crate::systems::combat::combat;
+use crate::systems::fov::fov;
 use crate::systems::fov::FieldOfView;
+use crate::systems::movement::movement;
+use crate::systems::random_actor::random_move;
 
 use self::monsters::MonstersPlugin;
 use self::npc::NPCsPlugin;
 use self::player::PlayerPlugin;
+
+use super::items::activate;
 
 pub struct ActorsPlugin;
 
@@ -27,7 +38,38 @@ impl Plugin for ActorsPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugin(PlayerPlugin)
             .add_plugin(MonstersPlugin)
-            .add_plugin(NPCsPlugin);
+            .add_plugin(NPCsPlugin)
+            .add_system_set_to_stage(
+                GameStage::GenerateNPCMoves,
+                ConditionSet::new()
+                    .run_if_resource_equals(TurnState::NPCsTurn)
+                    .with_system(random_move)
+                    .with_system(chase_player)
+                    .into(),
+            )
+            .add_system_set_to_stage(
+                GameStage::NPCActions,
+                ConditionSet::new()
+                    .run_if_resource_equals(TurnState::NPCsTurn)
+                    .with_system(activate)
+                    .with_system(combat)
+                    .into(),
+            )
+            .add_system_set_to_stage(
+                GameStage::MoveNPCs,
+                ConditionSet::new()
+                    .run_if_resource_equals(TurnState::NPCsTurn)
+                    .with_system(movement)
+                    .into(),
+            )
+            .add_system_set_to_stage(
+                GameStage::NPCFieldOfView,
+                ConditionSet::new()
+                    .run_if_resource_equals(TurnState::NPCsTurn)
+                    .with_system(fov)
+                    .with_system(end_turn)
+                    .into(),
+            );
     }
 }
 

@@ -52,13 +52,13 @@ pub enum GameStage {
     /// Stage where player attacks monsters
     PlayerCombat,
     /// Generate the mve of the monsters
-    GenerateMonsterMoves,
+    GenerateNPCMoves,
     /// Do any required movements
-    MoveMonsters,
+    MoveNPCs,
     /// Calculate Monster field of view
-    MonsterFOV,
+    NPCFieldOfView,
     /// Let the monsters attack the player
-    MonsterCombat,
+    NPCActions,
 }
 
 /// States a turn can be in
@@ -70,7 +70,7 @@ pub enum TurnState {
     /// The players turn
     PlayerTurn,
     /// The Monster#s turn
-    MonsterTurn,
+    NPCsTurn,
     /// The game has been lost
     GameOver,
     /// The game has been won
@@ -101,22 +101,22 @@ impl Plugin for StagePlugin {
         )
         .add_stage_after(
             GameStage::PlayerFOV,
-            GameStage::GenerateMonsterMoves,
+            GameStage::GenerateNPCMoves,
             SystemStage::parallel(),
         )
         .add_stage_after(
-            GameStage::GenerateMonsterMoves,
-            GameStage::MonsterCombat,
+            GameStage::GenerateNPCMoves,
+            GameStage::NPCActions,
             SystemStage::parallel(),
         )
         .add_stage_after(
-            GameStage::MonsterCombat,
-            GameStage::MoveMonsters,
+            GameStage::NPCActions,
+            GameStage::MoveNPCs,
             SystemStage::parallel(),
         )
         .add_stage_after(
-            GameStage::MoveMonsters,
-            GameStage::MonsterFOV,
+            GameStage::MoveNPCs,
+            GameStage::NPCFieldOfView,
             SystemStage::parallel(),
         )
         .init_resource::<TurnState>()
@@ -155,8 +155,8 @@ pub fn end_turn(
             // In the source project, AwaitingInput returns AwaitingInput, however, it's actually an unreachable
             // case, because the change to the next state (PlayerTurn) is performed in the `player_input` system.
             TurnState::AwaitingInput => unreachable!(),
-            TurnState::PlayerTurn => TurnState::MonsterTurn,
-            TurnState::MonsterTurn => TurnState::AwaitingInput,
+            TurnState::PlayerTurn => TurnState::NPCsTurn,
+            TurnState::NPCsTurn => TurnState::AwaitingInput,
             _ => *turn_state,
         }
     };

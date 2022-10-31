@@ -2,22 +2,18 @@ use crate::cleanup::cleanup_components;
 use crate::components::damage::Damage;
 use crate::components::map_position::MapPosition;
 use crate::config::{Behaviour, MonsterSettings, MonstersSettings, Settings};
-use crate::entities::items::activate;
 use crate::entities::RESPAWN_LABEL;
+use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
 use crate::map::GEN_MAP_LABEL;
-use crate::stages::{end_turn, TurnState};
-use crate::systems::chasing_player::{chase_player, ChasingPlayer};
-use crate::systems::combat::combat;
-use crate::systems::fov::fov;
-use crate::systems::movement::movement;
-use crate::systems::random_actor::{random_move, RandomMover};
+use crate::stages::TurnState;
+use crate::systems::chasing_player::ChasingPlayer;
+use crate::systems::random_actor::RandomMover;
 use crate::GameState;
-use crate::{loading::TextureAtlasAssets, stages::GameStage};
 
 use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
-use iyes_loopless::prelude::{ConditionSet, IntoConditionalSystem};
+use iyes_loopless::prelude::IntoConditionalSystem;
 
 use super::{ActorBundle, MapLevel};
 
@@ -28,37 +24,6 @@ pub struct MonstersPlugin;
 impl Plugin for MonstersPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_monsters))
-            .add_system_set_to_stage(
-                GameStage::GenerateMonsterMoves,
-                ConditionSet::new()
-                    .run_if_resource_equals(TurnState::MonsterTurn)
-                    .with_system(random_move)
-                    .with_system(chase_player)
-                    .into(),
-            )
-            .add_system_set_to_stage(
-                GameStage::MonsterCombat,
-                ConditionSet::new()
-                    .run_if_resource_equals(TurnState::MonsterTurn)
-                    .with_system(activate)
-                    .with_system(combat)
-                    .into(),
-            )
-            .add_system_set_to_stage(
-                GameStage::MoveMonsters,
-                ConditionSet::new()
-                    .run_if_resource_equals(TurnState::MonsterTurn)
-                    .with_system(movement)
-                    .into(),
-            )
-            .add_system_set_to_stage(
-                GameStage::MonsterFOV,
-                ConditionSet::new()
-                    .run_if_resource_equals(TurnState::MonsterTurn)
-                    .with_system(fov)
-                    .with_system(end_turn)
-                    .into(),
-            )
             .add_system_set(
                 SystemSet::on_update(GameState::Playing).with_system(
                     spawn_monsters

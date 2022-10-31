@@ -20,6 +20,7 @@ impl Plugin for InventoryPlugin {
     }
 }
 
+/// Entity for caching the Inventory of the player
 #[derive(Component, Default, Debug)]
 pub struct Inventory;
 

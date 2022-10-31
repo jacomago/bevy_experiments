@@ -3,18 +3,17 @@ use crate::components::map_position::MapPosition;
 use crate::components::name::EntityName;
 use crate::config::{NPCSettings, NPCsSettings, Settings};
 use crate::game_ui::tooltip::Interactive;
+use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
 use crate::map::GEN_MAP_LABEL;
-use crate::stages::{end_turn, TurnState};
-use crate::systems::fov::{fov, FieldOfView};
-use crate::systems::movement::movement;
-use crate::systems::random_actor::{random_move, RandomMover};
+use crate::stages::TurnState;
+use crate::systems::fov::FieldOfView;
+use crate::systems::random_actor::RandomMover;
 use crate::GameState;
-use crate::{loading::TextureAtlasAssets, stages::GameStage};
 
 use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
-use iyes_loopless::prelude::{ConditionSet, IntoConditionalSystem};
+use iyes_loopless::prelude::IntoConditionalSystem;
 
 use super::quest::spawn_quest;
 use super::MapLevel;

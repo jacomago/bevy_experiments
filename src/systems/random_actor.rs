@@ -3,7 +3,7 @@ use bevy_turborand::{DelegatedRng, RngComponent};
 
 use crate::{
     components::map_position::MapPosition,
-    entities::{Monster, Player, Npc},
+    entities::{Monster, Player},
 };
 
 use super::{combat::WantsToAttack, movement::WantsToMove};

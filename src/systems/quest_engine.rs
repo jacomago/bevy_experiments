@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::{entities::Player, GameState, cleanup::cleanup_components};
+
 pub struct RecieveQuest {
     pub quest: Entity,
     pub reciever: Entity,
@@ -14,7 +16,12 @@ pub struct QuestEnginePlugin;
 
 impl Plugin for QuestEnginePlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<RecieveQuest>();
+        app.add_event::<RecieveQuest>().add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_quests))
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(update_quests))
+            .add_system_set(
+                SystemSet::on_exit(GameState::Playing)
+                    .with_system(cleanup_components::<PlayerQuests>),
+            );
     }
 }
 
@@ -25,4 +32,43 @@ pub fn assign_quest(mut commands: Commands, mut quest_events: EventReader<Reciev
             assignee: event.reciever,
         });
     });
+}
+
+/// Entity for caching the Players Quests
+#[derive(Component, Default, Debug)]
+pub struct Quests;
+
+#[derive(Bundle, Debug, Default)]
+pub struct QuestsBundle {
+    _qs: Quests,
+    player: PlayerQuests,
+}
+
+fn spawn_quests(mut commands: Commands) {
+    commands.spawn_bundle(QuestsBundle { ..default() });
+}
+
+#[derive(Component, Default, Debug)]
+pub struct PlayerQuests {
+    pub key_map: Vec<Entity>,
+    pub is_dirty: bool,
+}
+
+pub fn update_quests(
+    player_query: Query<(Entity, With<Player>)>,
+    all_assigned_quests: Query<(Entity, &AssignedQuest)>,
+    mut quests_query: Query<&mut PlayerQuests>,
+) {
+    let mut quests = quests_query.single_mut();
+    let (player, _) = player_query.single();
+    let mut player_quests = all_assigned_quests
+        .iter()
+        .filter(|(_, c)| c.assignee == player)
+        .map(|(e, _)| e)
+        .collect::<Vec<_>>();
+    player_quests.sort();
+    if quests.key_map != player_quests {
+        quests.is_dirty = true;
+        quests.key_map = player_quests;
+    }
 }

@@ -9,7 +9,7 @@ use crate::map::GEN_MAP_LABEL;
 use crate::stages::{end_turn, TurnState};
 use crate::systems::chasing_player::{chase_player, ChasingPlayer};
 use crate::systems::combat::combat;
-use crate::systems::fov::{fov};
+use crate::systems::fov::fov;
 use crate::systems::movement::movement;
 use crate::systems::random_actor::{random_move, RandomMover};
 use crate::GameState;

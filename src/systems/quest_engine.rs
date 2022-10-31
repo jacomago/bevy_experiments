@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{entities::Player, GameState, cleanup::cleanup_components};
+use crate::{cleanup::cleanup_components, entities::Player, GameState};
 
 pub struct RecieveQuest {
     pub quest: Entity,
@@ -16,7 +16,8 @@ pub struct QuestEnginePlugin;
 
 impl Plugin for QuestEnginePlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<RecieveQuest>().add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_quests))
+        app.add_event::<RecieveQuest>()
+            .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_quests))
             .add_system_set(SystemSet::on_update(GameState::Playing).with_system(update_quests))
             .add_system_set(
                 SystemSet::on_exit(GameState::Playing)
@@ -37,7 +38,6 @@ pub fn assign_quest(mut commands: Commands, mut quest_events: EventReader<Reciev
 // TODO mark a quest as completed
 // TODO mark quest returned if return to quest giver with compeleted quest
 // TODO give reward for returned completed quest
-
 
 /// Entity for caching the Players Quests
 #[derive(Component, Default, Debug)]

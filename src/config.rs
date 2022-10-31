@@ -51,10 +51,16 @@ pub struct MonstersSettings {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct QuestSettings {
+    pub name: String,
+    pub item_type: ItemType,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct NPCSettings {
     pub actor: ActorSettings,
     pub proportion: f64,
-    pub quest_item_type: ItemType,
+    pub quest: Option<QuestSettings>,
 }
 
 #[derive(Debug, Deserialize)]

@@ -8,7 +8,6 @@ use crate::map::GEN_MAP_LABEL;
 use crate::stages::{end_turn, TurnState};
 use crate::systems::fov::{fov, FieldOfView};
 use crate::systems::movement::movement;
-use crate::systems::quest::Quest;
 use crate::systems::random_actor::{random_move, RandomMover};
 use crate::GameState;
 use crate::{loading::TextureAtlasAssets, stages::GameStage};
@@ -17,6 +16,7 @@ use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use iyes_loopless::prelude::{ConditionSet, IntoConditionalSystem};
 
+use super::quest::spawn_quest;
 use super::MapLevel;
 use super::RESPAWN_LABEL;
 
@@ -72,6 +72,9 @@ impl Plugin for NPCsPlugin {
 #[derive(Component, Default)]
 pub struct Npc;
 
+#[derive(Component)]
+pub struct AvailableQuest(Entity);
+
 #[derive(Bundle, Default)]
 pub struct NPCBundle {
     _m: Npc,
@@ -79,7 +82,6 @@ pub struct NPCBundle {
     pub position: MapPosition,
     pub interactive: Interactive,
     pub fov: FieldOfView,
-    pub quest: Quest,
     #[bundle]
     sprite: SpriteSheetBundle,
 }
@@ -129,6 +131,11 @@ fn spawn_npc(
         .filter(|s| s.actor.entity.levels.contains(&map_level))
         .collect::<Vec<_>>();
     let config = rng.weighted_sample(level_npcs, weights).unwrap();
+
+    let quest = config
+        .quest
+        .as_ref()
+        .map(|settings| spawn_quest(commands, settings));
     let mut npc = commands.spawn_bundle(NPCBundle {
         name: EntityName(config.actor.entity.name.clone()),
         position,
@@ -155,8 +162,7 @@ fn spawn_npc(
         ..default()
     });
     npc.insert(RandomMover { rng });
-    npc.insert(Quest {
-        giver: Some(npc.id()),
-        requested_item: config.quest_item_type,
-    });
+    if let Some(q) = quest {
+        npc.insert(AvailableQuest(q));
+    };
 }

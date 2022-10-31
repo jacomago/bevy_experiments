@@ -5,12 +5,14 @@ use crate::components::name::EntityName;
 use crate::config::EntitySettings;
 use crate::game_ui::tooltip::Interactive;
 
+use self::quest::QuestPlugin;
 use self::{items::ItemsPlugin, monsters::MonstersPlugin, player::PlayerPlugin, tile::TilePlugin};
 
 mod items;
 mod monsters;
 mod npc;
 mod player;
+mod quest;
 mod tile;
 
 pub use items::ActivateItem;
@@ -18,9 +20,11 @@ pub use items::Item;
 pub use items::Weapon;
 pub use items::WinItem;
 pub use monsters::Monster;
+pub use npc::AvailableQuest;
 pub use npc::Npc;
 pub use player::MapLevel;
 pub use player::Player;
+pub use quest::Quest;
 pub use tile::Tile;
 pub use tile::TileType;
 
@@ -31,7 +35,8 @@ impl Plugin for ActorsPlugin {
         app.add_plugin(PlayerPlugin)
             .add_plugin(MonstersPlugin)
             .add_plugin(ItemsPlugin)
-            .add_plugin(TilePlugin);
+            .add_plugin(TilePlugin)
+            .add_plugin(QuestPlugin);
     }
 }
 

@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use self::{
     combat::CombatPlugin, inventory::InventoryPlugin, movement::MovementPlugin,
-    player_input::PlayerInputPlugin,
+    player_input::PlayerInputPlugin, quest_engine::QuestEnginePlugin,
 };
 
 pub mod chasing_player;
@@ -11,8 +11,8 @@ pub mod fov;
 pub mod inventory;
 pub mod movement;
 pub mod player_input;
+pub mod quest_engine;
 pub mod random_actor;
-pub mod quest;
 
 pub struct SystemsPlugin;
 
@@ -21,6 +21,7 @@ impl Plugin for SystemsPlugin {
         app.add_plugin(CombatPlugin)
             .add_plugin(MovementPlugin)
             .add_plugin(InventoryPlugin)
-            .add_plugin(PlayerInputPlugin);
+            .add_plugin(PlayerInputPlugin)
+            .add_plugin(QuestEnginePlugin);
     }
 }

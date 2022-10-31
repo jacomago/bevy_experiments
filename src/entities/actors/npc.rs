@@ -2,6 +2,8 @@ use crate::cleanup::cleanup_components;
 use crate::components::map_position::MapPosition;
 use crate::components::name::EntityName;
 use crate::config::{NPCSettings, NPCsSettings, Settings};
+use crate::entities::RESPAWN_LABEL;
+use crate::entities::quest::spawn_quest;
 use crate::game_ui::tooltip::Interactive;
 use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
@@ -15,9 +17,7 @@ use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use iyes_loopless::prelude::IntoConditionalSystem;
 
-use super::quest::spawn_quest;
 use super::MapLevel;
-use super::RESPAWN_LABEL;
 
 pub struct NPCsPlugin;
 

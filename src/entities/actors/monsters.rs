@@ -4,6 +4,8 @@ use crate::components::health::Health;
 use crate::components::map_position::MapPosition;
 use crate::components::name::EntityName;
 use crate::config::{Behaviour, MonsterSettings, MonstersSettings, Settings};
+use crate::entities::items::activate;
+use crate::entities::RESPAWN_LABEL;
 use crate::game_ui::tooltip::Interactive;
 use crate::map::map_builder::MapBuilder;
 use crate::map::GEN_MAP_LABEL;
@@ -20,9 +22,7 @@ use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use iyes_loopless::prelude::{ConditionSet, IntoConditionalSystem};
 
-use super::items::activate;
 use super::MapLevel;
-use super::RESPAWN_LABEL;
 
 pub struct MonstersPlugin;
 

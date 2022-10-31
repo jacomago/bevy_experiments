@@ -3,6 +3,8 @@ use crate::components::damage::Damage;
 use crate::components::health::Health;
 use crate::components::map_position::MapPosition;
 use crate::config::Settings;
+use crate::entities::items::activate;
+use crate::entities::RESPAWN_LABEL;
 use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
 use crate::map::GEN_MAP_LABEL;
@@ -16,9 +18,6 @@ use crate::GameState;
 
 use bevy::prelude::*;
 use iyes_loopless::prelude::*;
-
-use super::items::activate;
-use super::RESPAWN_LABEL;
 
 pub struct PlayerPlugin;
 

@@ -39,7 +39,7 @@ use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::prelude::*;
 use bevy_inspector_egui::WorldInspectorPlugin;
 use camera::CameraPlugin;
-use entities::ActorsPlugin;
+use entities::EntitiesPlugin;
 use game_ui::GameUiPlugin;
 use map::MapPlugin;
 use stages::StagePlugin;
@@ -76,7 +76,7 @@ impl Plugin for GamePlugin {
             .add_plugin(GameUiPlugin)
             .add_plugin(CameraPlugin)
             .add_plugin(MapPlugin)
-            .add_plugin(ActorsPlugin);
+            .add_plugin(EntitiesPlugin);
 
         #[cfg(debug_assertions)]
         {

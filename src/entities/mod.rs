@@ -5,16 +5,12 @@ use crate::components::name::EntityName;
 use crate::config::EntitySettings;
 use crate::game_ui::tooltip::Interactive;
 
+use self::actors::ActorsPlugin;
 use self::quest::QuestPlugin;
-use self::{
-    items::ItemsPlugin, monsters::MonstersPlugin, npc::NPCsPlugin, player::PlayerPlugin,
-    tile::TilePlugin,
-};
+use self::{items::ItemsPlugin, tile::TilePlugin};
 
+mod actors;
 mod items;
-mod monsters;
-mod npc;
-mod player;
 mod quest;
 mod tile;
 
@@ -22,25 +18,23 @@ pub use items::ActivateItem;
 pub use items::Item;
 pub use items::Weapon;
 pub use items::WinItem;
-pub use monsters::Monster;
-pub use npc::AvailableQuest;
-pub use npc::Npc;
-pub use player::MapLevel;
-pub use player::Player;
+pub use actors::Monster;
+pub use actors::AvailableQuest;
+pub use actors::Npc;
+pub use actors::MapLevel;
+pub use actors::Player;
 pub use quest::Quest;
 pub use tile::Tile;
 pub use tile::TileType;
 
-pub struct ActorsPlugin;
+pub struct EntitiesPlugin;
 
-impl Plugin for ActorsPlugin {
+impl Plugin for EntitiesPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugin(PlayerPlugin)
-            .add_plugin(MonstersPlugin)
+        app.add_plugin(ActorsPlugin)
             .add_plugin(ItemsPlugin)
             .add_plugin(TilePlugin)
-            .add_plugin(QuestPlugin)
-            .add_plugin(NPCsPlugin);
+            .add_plugin(QuestPlugin);
     }
 }
 

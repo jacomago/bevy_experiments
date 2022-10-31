@@ -1,6 +1,11 @@
 use bevy::prelude::*;
 
-use crate::{cleanup::cleanup_components, entities::Player, GameState};
+use crate::{
+    cleanup::cleanup_components,
+    components::map_position::MapPosition,
+    entities::{Player, Weapon},
+    GameState,
+};
 
 #[derive(Debug, Component, Clone, Copy)]
 pub struct Carried {
@@ -11,13 +16,55 @@ pub struct InventoryPlugin;
 
 impl Plugin for InventoryPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_inventory))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(update_inventory))
+        app.add_event::<PickUpEvent>()
+            .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_inventory))
+            .add_system_set(
+                SystemSet::on_update(GameState::Playing)
+                    .with_system(update_inventory)
+                    .with_system(assign_item),
+            )
             .add_system_set(
                 SystemSet::on_exit(GameState::Playing)
                     .with_system(cleanup_components::<PlayerInventory>),
             );
     }
+}
+
+pub fn assign_item(
+    mut commands: Commands,
+    mut pick_up_events: EventReader<PickUpEvent>,
+    weapons: Query<(Entity, With<Weapon>)>,
+    carried_weapons: Query<(Entity, &Carried, With<Weapon>)>,
+) {
+    pick_up_events.iter().for_each(|event| {
+        info!("Pick up event");
+        // Remove item from map
+        commands.entity(event.item).remove::<MapPosition>();
+        commands
+            .entity(event.item)
+            .remove_bundle::<SpriteSheetBundle>();
+
+        // Add to players inventory
+        commands.entity(event.item).insert(Carried {
+            entity: event.grabber,
+        });
+
+        // if item is a weapon remove the current weapon (if there is one)
+        if weapons.contains(event.item) {
+            if let Some((current_weapon, _, _)) = carried_weapons
+                .iter()
+                .filter(|(_, c, _)| c.entity == event.grabber)
+                .last()
+            {
+                commands.entity(current_weapon).despawn_recursive();
+            }
+        }
+    });
+}
+
+pub struct PickUpEvent {
+    pub grabber: Entity,
+    pub item: Entity,
 }
 
 /// Entity for caching the Inventory of the player

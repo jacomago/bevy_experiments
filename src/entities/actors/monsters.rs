@@ -1,18 +1,15 @@
 use crate::cleanup::cleanup_components;
 use crate::components::damage::Damage;
-use crate::components::health::Health;
 use crate::components::map_position::MapPosition;
-use crate::components::name::EntityName;
 use crate::config::{Behaviour, MonsterSettings, MonstersSettings, Settings};
 use crate::entities::items::activate;
 use crate::entities::RESPAWN_LABEL;
-use crate::game_ui::tooltip::Interactive;
 use crate::map::map_builder::MapBuilder;
 use crate::map::GEN_MAP_LABEL;
 use crate::stages::{end_turn, TurnState};
 use crate::systems::chasing_player::{chase_player, ChasingPlayer};
 use crate::systems::combat::combat;
-use crate::systems::fov::{fov, FieldOfView};
+use crate::systems::fov::{fov};
 use crate::systems::movement::movement;
 use crate::systems::random_actor::{random_move, RandomMover};
 use crate::GameState;
@@ -22,7 +19,7 @@ use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use iyes_loopless::prelude::{ConditionSet, IntoConditionalSystem};
 
-use super::MapLevel;
+use super::{ActorBundle, MapLevel};
 
 pub struct MonstersPlugin;
 
@@ -88,14 +85,9 @@ pub struct Monster;
 #[derive(Bundle, Default)]
 pub struct MonsterBundle {
     _m: Monster,
-    pub name: EntityName,
-    pub position: MapPosition,
-    pub interactive: Interactive,
-    pub health: Health,
-    pub fov: FieldOfView,
     pub damage: Damage,
     #[bundle]
-    sprite: SpriteSheetBundle,
+    actor: ActorBundle,
 }
 
 fn spawn_monsters(
@@ -146,33 +138,14 @@ fn spawn_monster(
         .collect::<Vec<_>>();
     if let Some(config) = rng.weighted_sample(level_monsters, weights) {
         let mut monster = commands.spawn_bundle(MonsterBundle {
-            name: EntityName(config.actor.entity.name.clone()),
-            position,
-            health: Health {
-                current: config.actor.max_health,
-                max: config.actor.max_health,
-            },
-            fov: FieldOfView::new(config.actor.fov_radius),
-            interactive: Interactive {
-                text: format!(
-                    "{} hp:{}",
-                    &config.actor.entity.name, config.actor.max_health
-                ),
-            },
+            actor: ActorBundle::from_settings(
+                &config.actor,
+                position,
+                &textures.texture_atlas,
+                z_level,
+                tile_size,
+            ),
             damage: Damage(config.actor.entity.base_damage.unwrap_or(0)),
-            sprite: SpriteSheetBundle {
-                transform: Transform {
-                    translation: position.translation(z_level, tile_size),
-                    ..default()
-                },
-                texture_atlas: textures.texture_atlas.clone(),
-                sprite: TextureAtlasSprite {
-                    index: config.actor.entity.sprite_index,
-                    ..default()
-                },
-
-                ..default()
-            },
             ..default()
         });
         match &config.behaviour {

@@ -1,6 +1,5 @@
 use crate::cleanup::cleanup_components;
 use crate::components::damage::Damage;
-use crate::components::health::Health;
 use crate::components::map_position::MapPosition;
 use crate::config::Settings;
 use crate::entities::items::activate;
@@ -19,6 +18,8 @@ use crate::GameState;
 use bevy::prelude::*;
 use iyes_loopless::prelude::*;
 
+use super::ActorBundle;
+
 pub struct PlayerPlugin;
 
 #[derive(Component, Default)]
@@ -33,12 +34,9 @@ pub struct MapLevel {
 pub struct PlayerBundle {
     _player: Player,
     pub level: MapLevel,
-    pub position: MapPosition,
-    pub health: Health,
-    pub fov: FieldOfView,
     pub damage: Damage,
     #[bundle]
-    sprite: SpriteSheetBundle,
+    actor: ActorBundle,
 }
 
 /// This plugin handles player related stuff like movement
@@ -97,25 +95,14 @@ fn spawn_player(
     let mut fov = FieldOfView::new(settings.player_settings.fov_radius);
     fov.update(player_start, &map_builder.map);
     commands.spawn_bundle(PlayerBundle {
-        position: player_start,
-        health: Health {
-            current: settings.player_settings.max_health,
-            max: settings.player_settings.max_health,
-        },
-        fov,
         damage: Damage(settings.player_settings.entity.base_damage.unwrap_or(0)),
-        sprite: SpriteSheetBundle {
-            transform: Transform {
-                translation: player_start.translation(settings.entity_z_level, settings.tile_size),
-                ..default()
-            },
-            texture_atlas: textures.texture_atlas.clone(),
-            sprite: TextureAtlasSprite {
-                index: settings.player_settings.entity.sprite_index,
-                ..default()
-            },
-            ..default()
-        },
+        actor: ActorBundle::from_settings(
+            &settings.player_settings,
+            player_start,
+            &textures.texture_atlas,
+            settings.entity_z_level,
+            settings.tile_size,
+        ),
         ..default()
     });
 }

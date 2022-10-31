@@ -1,15 +1,12 @@
 use crate::cleanup::cleanup_components;
 use crate::components::map_position::MapPosition;
-use crate::components::name::EntityName;
 use crate::config::{NPCSettings, NPCsSettings, Settings};
-use crate::entities::RESPAWN_LABEL;
 use crate::entities::quest::spawn_quest;
-use crate::game_ui::tooltip::Interactive;
+use crate::entities::RESPAWN_LABEL;
 use crate::loading::TextureAtlasAssets;
 use crate::map::map_builder::MapBuilder;
 use crate::map::GEN_MAP_LABEL;
 use crate::stages::TurnState;
-use crate::systems::fov::FieldOfView;
 use crate::systems::random_actor::RandomMover;
 use crate::GameState;
 
@@ -17,7 +14,7 @@ use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
 use iyes_loopless::prelude::IntoConditionalSystem;
 
-use super::MapLevel;
+use super::{ActorBundle, MapLevel};
 
 pub struct NPCsPlugin;
 
@@ -55,12 +52,8 @@ pub struct AvailableQuest(pub Entity);
 #[derive(Bundle, Default)]
 pub struct NPCBundle {
     _m: Npc,
-    pub name: EntityName,
-    pub position: MapPosition,
-    pub interactive: Interactive,
-    pub fov: FieldOfView,
     #[bundle]
-    sprite: SpriteSheetBundle,
+    actor: ActorBundle,
 }
 
 fn spawn_npcs(
@@ -116,28 +109,13 @@ fn spawn_npc(
         .as_ref()
         .map(|settings| spawn_quest(commands, settings));
     let mut npc = commands.spawn_bundle(NPCBundle {
-        name: EntityName(config.actor.entity.name.clone()),
-        position,
-        interactive: Interactive {
-            text: format!(
-                "{} hp:{}",
-                &config.actor.entity.name, config.actor.max_health
-            ),
-        },
-        fov: FieldOfView::new(config.actor.fov_radius),
-        sprite: SpriteSheetBundle {
-            transform: Transform {
-                translation: position.translation(z_level, tile_size),
-                ..default()
-            },
-            texture_atlas: textures.texture_atlas.clone(),
-            sprite: TextureAtlasSprite {
-                index: config.actor.entity.sprite_index,
-                ..default()
-            },
-
-            ..default()
-        },
+        actor: ActorBundle::from_settings(
+            &config.actor,
+            position,
+            &textures.texture_atlas,
+            z_level,
+            tile_size,
+        ),
         ..default()
     });
     npc.insert(RandomMover { rng });

@@ -3,7 +3,7 @@ use bevy_turborand::{DelegatedRng, RngComponent};
 
 use crate::{
     components::map_position::MapPosition,
-    entities::{Monster, Player},
+    entities::{Monster, Player, Npc},
 };
 
 use super::{combat::WantsToAttack, movement::WantsToMove};
@@ -15,7 +15,7 @@ pub struct RandomMover {
 
 pub fn random_move(
     player_query: Query<(Entity, &MapPosition, With<Player>)>,
-    all_positions: Query<&MapPosition, With<Monster>>,
+    monster_positions: Query<&MapPosition, With<Monster>>,
     mut random_movers: Query<(Entity, &mut RandomMover, &MapPosition)>,
     mut move_events: EventWriter<WantsToMove>,
     mut combat_events: EventWriter<WantsToAttack>,
@@ -39,7 +39,7 @@ pub fn random_move(
                 attacker: entity,
                 victim: player,
             });
-        } else if !all_positions
+        } else if !monster_positions
             .iter()
             .any(|entity_position| destination == *entity_position)
         {

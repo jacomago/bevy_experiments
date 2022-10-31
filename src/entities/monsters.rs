@@ -144,39 +144,40 @@ fn spawn_monster(
         .iter()
         .filter(|s| s.actor.entity.levels.contains(&map_level))
         .collect::<Vec<_>>();
-    let config = rng.weighted_sample(level_monsters, weights).unwrap();
-    let mut monster = commands.spawn_bundle(MonsterBundle {
-        name: EntityName(config.actor.entity.name.clone()),
-        position,
-        health: Health {
-            current: config.actor.max_health,
-            max: config.actor.max_health,
-        },
-        fov: FieldOfView::new(config.actor.fov_radius),
-        interactive: Interactive {
-            text: format!(
-                "{} hp:{}",
-                &config.actor.entity.name, config.actor.max_health
-            ),
-        },
-        damage: Damage(config.actor.entity.base_damage.unwrap_or(0)),
-        sprite: SpriteSheetBundle {
-            transform: Transform {
-                translation: position.translation(z_level, tile_size),
-                ..default()
+    if let Some(config) = rng.weighted_sample(level_monsters, weights) {
+        let mut monster = commands.spawn_bundle(MonsterBundle {
+            name: EntityName(config.actor.entity.name.clone()),
+            position,
+            health: Health {
+                current: config.actor.max_health,
+                max: config.actor.max_health,
             },
-            texture_atlas: textures.texture_atlas.clone(),
-            sprite: TextureAtlasSprite {
-                index: config.actor.entity.sprite_index,
-                ..default()
+            fov: FieldOfView::new(config.actor.fov_radius),
+            interactive: Interactive {
+                text: format!(
+                    "{} hp:{}",
+                    &config.actor.entity.name, config.actor.max_health
+                ),
             },
+            damage: Damage(config.actor.entity.base_damage.unwrap_or(0)),
+            sprite: SpriteSheetBundle {
+                transform: Transform {
+                    translation: position.translation(z_level, tile_size),
+                    ..default()
+                },
+                texture_atlas: textures.texture_atlas.clone(),
+                sprite: TextureAtlasSprite {
+                    index: config.actor.entity.sprite_index,
+                    ..default()
+                },
 
+                ..default()
+            },
             ..default()
-        },
-        ..default()
-    });
-    match &config.behaviour {
-        Behaviour::Random => monster.insert(RandomMover { rng }),
-        Behaviour::Chasing => monster.insert(ChasingPlayer {}),
-    };
+        });
+        match &config.behaviour {
+            Behaviour::Random => monster.insert(RandomMover { rng }),
+            Behaviour::Chasing => monster.insert(ChasingPlayer {}),
+        };
+    }
 }

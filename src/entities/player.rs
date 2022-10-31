@@ -107,8 +107,7 @@ fn spawn_player(
         damage: Damage(settings.player_settings.entity.base_damage.unwrap_or(0)),
         sprite: SpriteSheetBundle {
             transform: Transform {
-                translation: player_start
-                    .translation(settings.entity_z_level, settings.tile_size),
+                translation: player_start.translation(settings.entity_z_level, settings.tile_size),
                 ..default()
             },
             texture_atlas: textures.texture_atlas.clone(),

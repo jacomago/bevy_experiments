@@ -27,28 +27,6 @@ pub struct NPCsPlugin;
 impl Plugin for NPCsPlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_npcs))
-            .add_system_set_to_stage(
-                GameStage::GenerateMonsterMoves,
-                ConditionSet::new()
-                    .run_if_resource_equals(TurnState::MonsterTurn)
-                    .with_system(random_move)
-                    .into(),
-            )
-            .add_system_set_to_stage(
-                GameStage::MoveMonsters,
-                ConditionSet::new()
-                    .run_if_resource_equals(TurnState::MonsterTurn)
-                    .with_system(movement)
-                    .into(),
-            )
-            .add_system_set_to_stage(
-                GameStage::MonsterFOV,
-                ConditionSet::new()
-                    .run_if_resource_equals(TurnState::MonsterTurn)
-                    .with_system(fov)
-                    .with_system(end_turn)
-                    .into(),
-            )
             .add_system_set(
                 SystemSet::on_update(GameState::Playing).with_system(
                     spawn_npcs

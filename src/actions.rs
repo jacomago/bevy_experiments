@@ -172,7 +172,7 @@ fn set_interact(mut actions: ResMut<Actions>, mut mut_keyboard_input: ResMut<Inp
         || GameControl::Interact.just_pressed(keyboard_input)
     {
         actions.interact = Some(true);
-        info!("Keyboard input made player pick up");
+        info!("Keyboard input made player interact");
         mut_keyboard_input.clear();
     } else {
         actions.interact = None;

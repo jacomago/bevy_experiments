@@ -6,7 +6,10 @@ use crate::config::EntitySettings;
 use crate::game_ui::tooltip::Interactive;
 
 use self::quest::QuestPlugin;
-use self::{items::ItemsPlugin, monsters::MonstersPlugin, player::PlayerPlugin, tile::TilePlugin};
+use self::{
+    items::ItemsPlugin, monsters::MonstersPlugin, npc::NPCsPlugin, player::PlayerPlugin,
+    tile::TilePlugin,
+};
 
 mod items;
 mod monsters;
@@ -36,7 +39,8 @@ impl Plugin for ActorsPlugin {
             .add_plugin(MonstersPlugin)
             .add_plugin(ItemsPlugin)
             .add_plugin(TilePlugin)
-            .add_plugin(QuestPlugin);
+            .add_plugin(QuestPlugin)
+            .add_plugin(NPCsPlugin);
     }
 }
 

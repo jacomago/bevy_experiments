@@ -45,6 +45,12 @@ fn respawn_map(
         settings.map_settings.width,
         &settings.map_settings.architect,
     );
+
+    #[cfg(debug_assertions)]
+    {
+        info!("map {}", mb);
+    }
+
     if settings.end_level - 1 > level.single().value {
         mb.map.set(mb.winitem_start, TileType::Exit);
     }

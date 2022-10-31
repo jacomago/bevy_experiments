@@ -28,21 +28,6 @@ monsters_settings:
         {
             actor: {
                 entity: {
-                    sprite_index: 69,
-                    name: "Yoga Bunny",
-                    levels: [0, 1, 2],
-                    base_damage: 2,
-                },
-                max_health: 1,
-                fov_radius: 6,
-            },
-            behaviour: Chasing,
-            proportion: 50,
-            base_damage: 1,
-        },
-        {
-            actor: {
-                entity: {
                     sprite_index: 111,
                     name: "Nutritionist",
                     levels: [1, 2],

@@ -38,7 +38,6 @@ pub fn assign_quest(mut commands: Commands, mut quest_events: EventReader<Reciev
     });
 }
 
-// TODO mark a quest as completed
 // TODO mark quest returned if return to quest giver with compeleted quest
 // TODO give reward for returned completed quest
 

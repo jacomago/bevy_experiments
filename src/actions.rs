@@ -12,6 +12,7 @@ impl Plugin for ActionsPlugin {
                 .with_system(set_movement_actions)
                 .with_system(cursor_system)
                 .with_system(set_item_pick_up)
+                .with_system(set_interact)
                 .with_system(use_item),
         );
     }
@@ -26,6 +27,8 @@ pub struct Actions {
     pub mouse_rollover: Option<MousePosition>,
     /// Pick up item
     pub pick_up_item: Option<bool>,
+    /// Interact
+    pub interact: Option<bool>,
     /// Use an item in inventory
     pub use_item: Option<usize>,
 }
@@ -148,7 +151,7 @@ fn set_movement_actions(
     }
 }
 
-/// From keyboard input turn into player movement
+/// From keyboard input turn into item pick up
 fn set_item_pick_up(mut actions: ResMut<Actions>, mut mut_keyboard_input: ResMut<Input<KeyCode>>) {
     let keyboard_input = mut_keyboard_input.as_ref();
     if GameControl::PickUp.just_released(keyboard_input)
@@ -159,6 +162,20 @@ fn set_item_pick_up(mut actions: ResMut<Actions>, mut mut_keyboard_input: ResMut
         mut_keyboard_input.clear();
     } else {
         actions.pick_up_item = None;
+    }
+}
+
+/// From keyboard input turn into item pick up
+fn set_interact(mut actions: ResMut<Actions>, mut mut_keyboard_input: ResMut<Input<KeyCode>>) {
+    let keyboard_input = mut_keyboard_input.as_ref();
+    if GameControl::Interact.just_released(keyboard_input)
+        || GameControl::Interact.just_pressed(keyboard_input)
+    {
+        actions.interact = Some(true);
+        info!("Keyboard input made player pick up");
+        mut_keyboard_input.clear();
+    } else {
+        actions.interact = None;
     }
 }
 
@@ -194,6 +211,8 @@ enum GameControl {
     Right,
     /// Pick up Item
     PickUp,
+    /// Interact button to cover multiple options
+    Interact,
     /// Use Item
     UseItem(usize),
 }
@@ -219,6 +238,7 @@ impl GameControl {
                     || keyboard_input.just_released(KeyCode::Right)
             }
             GameControl::PickUp => keyboard_input.just_released(KeyCode::G),
+            GameControl::Interact => keyboard_input.just_released(KeyCode::E),
             GameControl::UseItem(0) => keyboard_input.just_released(KeyCode::Key0),
             GameControl::UseItem(1) => keyboard_input.just_released(KeyCode::Key1),
             GameControl::UseItem(2) => keyboard_input.just_released(KeyCode::Key2),
@@ -249,6 +269,7 @@ impl GameControl {
                 keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right)
             }
             GameControl::PickUp => keyboard_input.pressed(KeyCode::G),
+            GameControl::Interact => keyboard_input.pressed(KeyCode::E),
             GameControl::UseItem(0) => keyboard_input.pressed(KeyCode::Key0),
             GameControl::UseItem(1) => keyboard_input.pressed(KeyCode::Key1),
             GameControl::UseItem(2) => keyboard_input.pressed(KeyCode::Key2),
@@ -282,6 +303,7 @@ impl GameControl {
                     || keyboard_input.just_pressed(KeyCode::Right)
             }
             GameControl::PickUp => keyboard_input.just_pressed(KeyCode::G),
+            GameControl::Interact => keyboard_input.just_pressed(KeyCode::E),
             GameControl::UseItem(0) => keyboard_input.just_pressed(KeyCode::Key0),
             GameControl::UseItem(1) => keyboard_input.just_pressed(KeyCode::Key1),
             GameControl::UseItem(2) => keyboard_input.just_pressed(KeyCode::Key2),

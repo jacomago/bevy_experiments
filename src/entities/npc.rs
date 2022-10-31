@@ -73,7 +73,7 @@ impl Plugin for NPCsPlugin {
 pub struct Npc;
 
 #[derive(Component)]
-pub struct AvailableQuest(Entity);
+pub struct AvailableQuest(pub Entity);
 
 #[derive(Bundle, Default)]
 pub struct NPCBundle {

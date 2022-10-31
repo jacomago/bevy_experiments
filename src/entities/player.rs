@@ -11,8 +11,8 @@ use crate::systems::combat::combat;
 use crate::systems::fov::{fov, set_fov_visibility, FieldOfView};
 
 use crate::systems::movement::movement;
-use crate::GameState;
 use crate::systems::quest_engine::assign_quest;
+use crate::GameState;
 
 use bevy::prelude::*;
 use iyes_loopless::prelude::*;

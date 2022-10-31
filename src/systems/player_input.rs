@@ -4,7 +4,7 @@ use iyes_loopless::prelude::*;
 use crate::{
     actions::Actions,
     components::map_position::MapPosition,
-    entities::{ActivateItem, Item, Monster, Player, Weapon},
+    entities::{ActivateItem, AvailableQuest, Item, Monster, Player, Weapon},
     stages::TurnState,
     GameState,
 };
@@ -13,6 +13,7 @@ use super::{
     combat::WantsToAttack,
     inventory::{Carried, PlayerInventory},
     movement::WantsToMove,
+    quest_engine::RecieveQuest,
 };
 
 pub struct PlayerInputPlugin;
@@ -23,6 +24,7 @@ impl Plugin for PlayerInputPlugin {
             SystemSet::on_update(GameState::Playing)
                 .with_system(pick_up.run_if_resource_equals(TurnState::AwaitingInput))
                 .with_system(movement.run_if_resource_equals(TurnState::AwaitingInput))
+                .with_system(interact.run_if_resource_equals(TurnState::AwaitingInput))
                 .with_system(use_item.run_if_resource_equals(TurnState::AwaitingInput)),
         );
     }
@@ -66,6 +68,30 @@ fn pick_up(
             }
         }
 
+        commands.insert_resource(TurnState::PlayerTurn);
+    }
+}
+
+fn interact(
+    mut commands: Commands,
+    actions: Res<Actions>,
+    mut recieve_quest_events: EventWriter<RecieveQuest>,
+    player_query: Query<(Entity, &MapPosition, With<Player>)>,
+    available_quests: Query<(Entity, &AvailableQuest, &MapPosition)>,
+) {
+    if actions.interact.is_some() {
+        let (player_entity, position, _) = player_query.single();
+        available_quests
+            .iter()
+            .filter(|(_, _, mp)| {
+                1.0 >= (position.position - mp.position).as_vec2().length_squared()
+            })
+            .for_each(|(_, q, _)| {
+                recieve_quest_events.send(RecieveQuest {
+                    quest: q.0,
+                    reciever: player_entity,
+                })
+            });
         commands.insert_resource(TurnState::PlayerTurn);
     }
 }

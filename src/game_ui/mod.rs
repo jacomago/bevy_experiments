@@ -5,6 +5,7 @@ use self::{hud::HUDPlugin, tooltip::TooltipPlugin};
 mod health_bar;
 mod hud;
 mod inventory;
+mod quests;
 pub mod tooltip;
 
 pub use hud::HudComponent;

@@ -2,6 +2,27 @@
 tile_size: 32
 max_fov: 15
 end_level: 3
+npcs_settings:
+    npcs: [
+        {
+            actor: {
+                entity: {
+                    sprite_index: 69,
+                    name: "NPC Yoga Bunny",
+                    levels: [0, 1, 2],
+                    base_damage: 2,
+                },
+                max_health: 1,
+                fov_radius: 6,
+            },
+            proportion: 50,
+            quest: {
+                name: "Get Weapon",
+                item_type: Weapon,
+            }
+        },
+    ]
+    z_level: 1.0
 monsters_settings: 
     z_level: 1
     monsters: [
@@ -76,6 +97,7 @@ map_settings:
         architect: Drunkard,
         num_monsters: 50,
         num_items: 30,
+        num_npcs: 10,
         entity_distance: 10.0,
     }
 items_settings: 

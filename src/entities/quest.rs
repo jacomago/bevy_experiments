@@ -8,7 +8,7 @@ use crate::{
 pub struct QuestPlugin;
 
 impl Plugin for QuestPlugin {
-    fn build(&self, app: &mut App) {}
+    fn build(&self, _app: &mut App) {}
 }
 
 #[derive(Debug, Component, Default)]

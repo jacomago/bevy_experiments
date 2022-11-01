@@ -2,7 +2,8 @@ use bevy::prelude::*;
 
 use crate::{
     cleanup::cleanup_components,
-    entities::{AvailableQuest, Player, QuestState},
+    entities::{AvailableQuest, Player, QuestState, Reward},
+    systems::inventory::Carried,
     GameState,
 };
 
@@ -34,16 +35,23 @@ impl Plugin for QuestEnginePlugin {
     }
 }
 
-pub fn assign_quest(
+pub fn interact_quest_giver(
     mut commands: Commands,
     mut quest_events: EventReader<InteractQuestGiver>,
-    mut assigned_quests: Query<&mut QuestState, With<AssignedQuest>>,
+    mut assigned_quests: Query<(&mut QuestState, &AssignedQuest)>,
+    rewards: Query<&Reward>,
 ) {
     quest_events.iter().for_each(|event| {
         info!("Interact quest giver");
-        if let Ok(mut s) = assigned_quests.get_mut(event.quest) {
+        if let Ok((mut s, aq)) = assigned_quests.get_mut(event.quest) {
             if *s == QuestState::Updated {
                 *s = QuestState::Completed;
+                // If reward exists, assign to the Quest assignee
+                if let Ok(reward) = rewards.get(event.quest) {
+                    commands.entity(reward.0).insert(Carried {
+                        entity: aq.assignee,
+                    });
+                }
             }
         } else {
             commands.entity(event.quest).insert(AssignedQuest {

@@ -28,6 +28,7 @@ pub use items::WinItem;
 pub use quest::FetchItem;
 pub use quest::Quest;
 pub use quest::QuestState;
+pub use quest::Reward;
 pub use tile::Tile;
 pub use tile::TileType;
 

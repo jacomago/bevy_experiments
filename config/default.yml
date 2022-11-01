@@ -23,7 +23,7 @@ npcs_settings:
                 reward:  {
                     entity: {
                         sprite_index: 33,
-                        name: "Fries",
+                        name: "Reward Fries",
                         levels: [],
                     },
                     item_type: Healing,

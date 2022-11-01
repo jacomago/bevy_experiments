@@ -12,7 +12,7 @@ use crate::systems::combat::combat;
 use crate::systems::fov::{fov, set_fov_visibility, FieldOfView};
 
 use crate::systems::movement::movement;
-use crate::systems::quest_engine::assign_quest;
+use crate::systems::quest_engine::interact_quest_giver;
 use crate::GameState;
 
 use bevy::prelude::*;
@@ -53,7 +53,7 @@ impl Plugin for PlayerPlugin {
                     .run_if_resource_equals(TurnState::PlayerTurn)
                     .with_system(activate)
                     .with_system(combat)
-                    .with_system(assign_quest)
+                    .with_system(interact_quest_giver)
                     .into(),
             )
             .add_system_set_to_stage(

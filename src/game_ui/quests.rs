@@ -93,6 +93,25 @@ pub fn update_quests_hud(
             });
         })
         .with_children(|parent| {
+            quests.updated.iter().for_each(|entity| {
+                let (_, name) = assigned_quests.get(*entity).unwrap();
+                parent.spawn_bundle(
+                    TextBundle::from_section(
+                        format!("{}", name),
+                        TextStyle {
+                            font: font.fira_sans.clone(),
+                            font_size: 10.,
+                            color: Color::YELLOW,
+                        },
+                    )
+                    .with_style(Style {
+                        size: Size::new(Val::Undefined, Val::Px(25.)),
+                        ..default()
+                    }),
+                );
+            })
+        })
+        .with_children(|parent| {
             quests.completed.iter().for_each(|entity| {
                 let (_, name) = assigned_quests.get(*entity).unwrap();
                 parent.spawn_bundle(

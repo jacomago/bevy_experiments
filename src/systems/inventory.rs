@@ -82,6 +82,7 @@ pub fn assign_item(
             .iter_mut()
             .filter(|(q, _)| q.requested_item == current_item_type)
             .for_each(|(_, mut q)| {
+                info!("update the quest");
                 *q = QuestState::Updated;
             });
     });

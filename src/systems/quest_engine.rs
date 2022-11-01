@@ -1,6 +1,10 @@
 use bevy::prelude::*;
 
-use crate::{cleanup::cleanup_components, entities::Player, GameState};
+use crate::{
+    cleanup::cleanup_components,
+    entities::{AvailableQuest, Player},
+    GameState,
+};
 
 pub struct RecieveQuest {
     pub quest: Entity,
@@ -21,7 +25,11 @@ impl Plugin for QuestEnginePlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<RecieveQuest>()
             .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_quests))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(update_quests))
+            .add_system_set(
+                SystemSet::on_update(GameState::Playing)
+                    .with_system(update_quests)
+                    .with_system(update_quest_giver_display),
+            )
             .add_system_set(
                 SystemSet::on_exit(GameState::Playing)
                     .with_system(cleanup_components::<PlayerQuests>),
@@ -90,4 +98,15 @@ pub fn update_quests(
         quests.assigned = assigned;
         quests.completed = completed;
     }
+}
+
+pub fn update_quest_giver_display(
+    mut quest_giver: Query<(&mut TextureAtlasSprite, &AvailableQuest)>,
+    updated_quests: Query<Entity, Changed<UpdatedQuest>>,
+) {
+    quest_giver.iter_mut().for_each(|(mut sprite, q)| {
+        if updated_quests.contains(q.0) && sprite.color != Color::SEA_GREEN {
+            sprite.color = Color::SEA_GREEN;
+        }
+    });
 }

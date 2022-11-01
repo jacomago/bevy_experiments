@@ -76,10 +76,9 @@ pub fn assign_item(
             ItemType::Weapon
         };
 
-        // If quest exists on new holder of item for quest, mark quest as complete
-        // TODO decide if all quests should be marked as complete, or just one
-        // TODO decide if future quests should be marked as complete
-        // TODO decide if complete is the correct term
+        // If quest exists on new holder of item for quest, mark quest as updated
+        // TODO decide if all quests should be marked as updated, or just one
+        // TODO decide if future quests should be marked as updated
         assigned_fetch_quests
             .iter()
             .filter(|(_, _, q)| q.requested_item == current_item_type)

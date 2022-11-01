@@ -14,3 +14,4 @@ A dungeon crawler with proc-gen levels, and fighting the monsters.
 - Uses Turborand for making the randomness only once per game
 - Uses ndarray for storing the map
 - Aiming for using Mazes for programmers as a basis for the maps
+- Includes a Quest system

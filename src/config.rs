@@ -53,6 +53,7 @@ pub struct MonstersSettings {
 pub struct QuestSettings {
     pub name: String,
     pub item_type: ItemType,
+    pub reward: Option<ItemSettings>,
 }
 
 #[derive(Debug, Deserialize)]

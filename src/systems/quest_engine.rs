@@ -93,12 +93,10 @@ pub fn update_quests(
     let mut completed = Vec::new();
     let mut updated = Vec::new();
 
-    player_quests.for_each(|(e, s)| {
-        match s {
-            QuestState::Completed => completed.push(e),
-            QuestState::Updated => updated.push(e),
-            QuestState::Todo => assigned.push(e),
-        } 
+    player_quests.for_each(|(e, s)| match s {
+        QuestState::Completed => completed.push(e),
+        QuestState::Updated => updated.push(e),
+        QuestState::Todo => assigned.push(e),
     });
     if quests.assigned != assigned || quests.updated != updated {
         quests.is_dirty = true;

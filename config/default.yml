@@ -20,6 +20,16 @@ npcs_settings:
             quest: {
                 name: "Get Weapon",
                 item_type: Weapon,
+                reward:  {
+                    entity: {
+                        sprite_index: 33,
+                        name: "Fries",
+                        levels: [],
+                    },
+                    item_type: Healing,
+                    proportion: 50,
+                    effect_amount: 10,
+                },
             }
         },
     ]

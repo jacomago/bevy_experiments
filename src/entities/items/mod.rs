@@ -1,11 +1,11 @@
-use bevy::{prelude::*, utils::HashMap};
-use bevy_turborand::{DelegatedRng, GlobalRng, RngComponent};
+use bevy::{ecs::system::EntityCommands, prelude::*, utils::HashMap};
+use bevy_turborand::{DelegatedRng, GlobalRng};
 use iyes_loopless::prelude::IntoConditionalSystem;
 
 use crate::{
     cleanup::cleanup_components,
     components::{damage::Damage, health::Health, map_position::MapPosition},
-    config::{ItemSettings, ItemType, ItemsSettings, Settings},
+    config::{ItemSettings, ItemType, Settings},
     loading::TextureAtlasAssets,
     map::{map_builder::MapBuilder, GEN_MAP_LABEL},
     stages::TurnState,
@@ -81,21 +81,26 @@ fn spawn_items(
     settings: Res<Settings>,
     map_level: Query<&MapLevel>,
 ) {
-    let item_settings = &settings.items_settings;
+    let level_items = &settings
+        .items_settings
+        .items
+        .iter()
+        .filter(|s| {
+            s.entity.levels.contains(&match map_level.get_single() {
+                Ok(res) => res.value,
+                Err(_) => 0,
+            })
+        })
+        .collect::<Vec<_>>();
     map_builder.item_spawns.iter().for_each(|position| {
-        let rng_comp = RngComponent::from(&mut rng);
+        let config = rng.weighted_sample(level_items, weights).unwrap();
         spawn_item(
             &mut commands,
             *position,
             &textures,
-            rng_comp,
-            item_settings,
+            config,
             settings.tile_size,
             settings.entity_z_level,
-            match map_level.get_single() {
-                Ok(res) => res.value,
-                Err(_) => 0,
-            },
         );
     });
 }
@@ -108,18 +113,10 @@ fn spawn_item(
     commands: &mut Commands,
     position: MapPosition,
     textures: &Res<TextureAtlasAssets>,
-    mut rng: RngComponent,
-    settings: &ItemsSettings,
+    config: &ItemSettings,
     tile_size: i32,
     z_level: f32,
-    map_level: u32,
-) {
-    let level_items = &settings
-        .items
-        .iter()
-        .filter(|s| s.entity.levels.contains(&map_level))
-        .collect::<Vec<_>>();
-    let config = rng.weighted_sample(level_items, weights).unwrap();
+) -> Entity {
     let mut item = commands.spawn_bundle(ItemBundle {
         entity: GameEntityBundle::from_settings(
             &config.entity,
@@ -130,14 +127,27 @@ fn spawn_item(
         ),
         ..default()
     });
-    match &config.item_type {
+    insert_item_type(
+        &mut item,
+        &config.item_type,
+        config.entity.base_damage,
+        config.effect_amount,
+    );
+    item.id()
+}
+
+pub fn insert_item_type(
+    item: &mut EntityCommands,
+    item_type: &ItemType,
+    base_damage: Option<i32>,
+    effect_amount: Option<i32>,
+) {
+    match item_type {
         ItemType::Healing => item.insert(ProvidesHealing {
-            amount: config.effect_amount.unwrap(),
+            amount: effect_amount.unwrap(),
         }),
         ItemType::DungeonMap => item.insert(ProvidesMap),
-        ItemType::Weapon => item
-            .insert(Weapon)
-            .insert(Damage(config.entity.base_damage.unwrap_or(0))),
+        ItemType::Weapon => item.insert(Weapon).insert(Damage(base_damage.unwrap_or(0))),
     };
 }
 

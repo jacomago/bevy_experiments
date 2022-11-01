@@ -5,6 +5,8 @@ use crate::{
     config::{ItemType, QuestSettings},
 };
 
+use super::{items::insert_item_type, Item};
+
 pub struct QuestPlugin;
 
 impl Plugin for QuestPlugin {
@@ -26,6 +28,9 @@ pub struct FetchItem {
     pub requested_item: ItemType,
 }
 
+#[derive(Debug, Component, Clone, Copy)]
+pub struct Reward(pub Entity);
+
 #[derive(Debug, Bundle)]
 pub struct QuestBundle {
     _q: Quest,
@@ -35,14 +40,29 @@ pub struct QuestBundle {
 }
 
 pub fn spawn_quest(commands: &mut Commands, quest_setting: &QuestSettings) -> Entity {
-    commands
-        .spawn_bundle(QuestBundle {
-            _q: Default::default(),
-            name: EntityName(quest_setting.name.clone()),
-            fetch_item: FetchItem {
-                requested_item: quest_setting.item_type,
-            },
-            state: QuestState::Todo,
-        })
-        .id()
+    let reward_id = if let Some(reward_config) = &quest_setting.reward {
+        let mut reward = commands.spawn();
+        reward.insert(Item);
+        insert_item_type(
+            &mut reward,
+            &reward_config.item_type,
+            reward_config.entity.base_damage,
+            reward_config.effect_amount,
+        );
+        Some(reward.id())
+    } else {
+        None
+    };
+    let mut quest = commands.spawn_bundle(QuestBundle {
+        _q: Default::default(),
+        name: EntityName(quest_setting.name.clone()),
+        fetch_item: FetchItem {
+            requested_item: quest_setting.item_type,
+        },
+        state: QuestState::Todo,
+    });
+    if let Some(r_id) = reward_id {
+        quest.insert(Reward(r_id));
+    }
+    quest.id()
 }

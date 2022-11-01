@@ -6,7 +6,7 @@ use crate::{
     GameState,
 };
 
-pub struct RecieveQuest {
+pub struct InteractQuestGiver {
     pub quest: Entity,
     pub reciever: Entity,
 }
@@ -19,11 +19,14 @@ pub struct AssignedQuest {
 #[derive(Debug, Component)]
 pub struct UpdatedQuest;
 
+#[derive(Debug, Component)]
+pub struct CompletedQuest;
+
 pub struct QuestEnginePlugin;
 
 impl Plugin for QuestEnginePlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<RecieveQuest>()
+        app.add_event::<InteractQuestGiver>()
             .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(spawn_quests))
             .add_system_set(
                 SystemSet::on_update(GameState::Playing)
@@ -37,12 +40,24 @@ impl Plugin for QuestEnginePlugin {
     }
 }
 
-pub fn assign_quest(mut commands: Commands, mut quest_events: EventReader<RecieveQuest>) {
+pub fn assign_quest(
+    mut commands: Commands,
+    mut quest_events: EventReader<InteractQuestGiver>,
+    assigned_quests: Query<Entity, With<AssignedQuest>>,
+    updated_quests: Query<Entity, With<UpdatedQuest>>,
+) {
     quest_events.iter().for_each(|event| {
-        info!("Recieve quest");
-        commands.entity(event.quest).insert(AssignedQuest {
-            assignee: event.reciever,
-        });
+        info!("Interact quest giver");
+        if assigned_quests.contains(event.quest) {
+            if updated_quests.contains(event.quest) {
+                commands.entity(event.quest).remove::<UpdatedQuest>();
+                commands.entity(event.quest).insert(CompletedQuest);
+            }
+        } else {
+            commands.entity(event.quest).insert(AssignedQuest {
+                assignee: event.reciever,
+            });
+        }
     });
 }
 

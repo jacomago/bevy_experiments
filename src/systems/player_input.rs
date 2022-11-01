@@ -13,7 +13,7 @@ use super::{
     combat::WantsToAttack,
     inventory::{PickUpEvent, PlayerInventory},
     movement::WantsToMove,
-    quest_engine::RecieveQuest,
+    quest_engine::InteractQuestGiver,
 };
 
 pub struct PlayerInputPlugin;
@@ -57,7 +57,7 @@ fn pick_up(
 fn interact(
     mut commands: Commands,
     actions: Res<Actions>,
-    mut recieve_quest_events: EventWriter<RecieveQuest>,
+    mut recieve_quest_events: EventWriter<InteractQuestGiver>,
     player_query: Query<(Entity, &MapPosition, With<Player>)>,
     available_quests: Query<(Entity, &AvailableQuest, &MapPosition)>,
 ) {
@@ -69,7 +69,7 @@ fn interact(
                 1.0 >= (position.position - mp.position).as_vec2().length_squared()
             })
             .for_each(|(_, q, _)| {
-                recieve_quest_events.send(RecieveQuest {
+                recieve_quest_events.send(InteractQuestGiver {
                     quest: q.0,
                     reciever: player_entity,
                 })

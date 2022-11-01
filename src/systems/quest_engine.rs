@@ -61,8 +61,6 @@ pub fn interact_quest_giver(
     });
 }
 
-// TODO give reward for returned completed quest
-
 /// Entity for caching the Players Quests
 #[derive(Component, Default, Debug)]
 pub struct Quests;

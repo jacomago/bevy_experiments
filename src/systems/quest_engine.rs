@@ -57,25 +57,37 @@ fn spawn_quests(mut commands: Commands) {
 
 #[derive(Component, Default, Debug)]
 pub struct PlayerQuests {
-    pub key_map: Vec<Entity>,
+    pub assigned: Vec<Entity>,
+    pub completed: Vec<Entity>,
     pub is_dirty: bool,
 }
 
 pub fn update_quests(
     player_query: Query<(Entity, With<Player>)>,
     all_assigned_quests: Query<(Entity, &AssignedQuest)>,
+    all_completed_quests: Query<(Entity, &CompletedQuest)>,
     mut quests_query: Query<&mut PlayerQuests>,
 ) {
     let mut quests = quests_query.single_mut();
     let (player, _) = player_query.single();
-    let mut player_quests = all_assigned_quests
+    let player_quests = all_assigned_quests
         .iter()
         .filter(|(_, c)| c.assignee == player)
-        .map(|(e, _)| e)
-        .collect::<Vec<_>>();
-    player_quests.sort();
-    if quests.key_map != player_quests {
+        .map(|(e, _)| e);
+
+    let mut assigned = Vec::new();
+    let mut completed = Vec::new();
+
+    player_quests.for_each(|e| {
+        if all_completed_quests.contains(e) {
+            completed.push(e);
+        } else {
+            assigned.push(e);
+        }
+    });
+    if quests.assigned != assigned {
         quests.is_dirty = true;
-        quests.key_map = player_quests;
+        quests.assigned = assigned;
+        quests.completed = completed;
     }
 }

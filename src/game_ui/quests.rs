@@ -71,24 +71,45 @@ pub fn update_quests_hud(
     // Remove old quests from ui.
     commands.entity(hud_quests).despawn_descendants();
     // Add updated one.
-    commands.entity(hud_quests).with_children(|parent| {
-        quests.key_map.iter().enumerate().for_each(|(i, entity)| {
-            let (_, name) = assigned_quests.get(*entity).unwrap();
-            parent.spawn_bundle(
-                TextBundle::from_section(
-                    format!("{}: {}", i, name),
-                    TextStyle {
-                        font: font.fira_sans.clone(),
-                        font_size: 10.,
-                        color: Color::BLACK,
-                    },
-                )
-                .with_style(Style {
-                    size: Size::new(Val::Undefined, Val::Px(25.)),
-                    ..default()
-                }),
-            );
+    commands
+        .entity(hud_quests)
+        .with_children(|parent| {
+            quests.assigned.iter().for_each(|entity| {
+                let (_, name) = assigned_quests.get(*entity).unwrap();
+                parent.spawn_bundle(
+                    TextBundle::from_section(
+                        format!("{}", name),
+                        TextStyle {
+                            font: font.fira_sans.clone(),
+                            font_size: 10.,
+                            color: Color::BLACK,
+                        },
+                    )
+                    .with_style(Style {
+                        size: Size::new(Val::Undefined, Val::Px(25.)),
+                        ..default()
+                    }),
+                );
+            });
+        })
+        .with_children(|parent| {
+            quests.completed.iter().for_each(|entity| {
+                let (_, name) = assigned_quests.get(*entity).unwrap();
+                parent.spawn_bundle(
+                    TextBundle::from_section(
+                        format!("{}", name),
+                        TextStyle {
+                            font: font.fira_sans.clone(),
+                            font_size: 8.,
+                            color: Color::DARK_GREEN,
+                        },
+                    )
+                    .with_style(Style {
+                        size: Size::new(Val::Undefined, Val::Px(25.)),
+                        ..default()
+                    }),
+                );
+            })
         });
-    });
     quests.is_dirty = false;
 }

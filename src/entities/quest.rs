@@ -11,6 +11,13 @@ impl Plugin for QuestPlugin {
     fn build(&self, _app: &mut App) {}
 }
 
+#[derive(Debug, Component, PartialEq, Eq)]
+pub enum QuestState {
+    Todo,
+    Updated,
+    Completed,
+}
+
 #[derive(Debug, Component, Default)]
 pub struct Quest;
 
@@ -24,6 +31,7 @@ pub struct QuestBundle {
     _q: Quest,
     name: EntityName,
     fetch_item: FetchItem,
+    state: QuestState,
 }
 
 pub fn spawn_quest(commands: &mut Commands, quest_setting: &QuestSettings) -> Entity {
@@ -34,6 +42,7 @@ pub fn spawn_quest(commands: &mut Commands, quest_setting: &QuestSettings) -> En
             fetch_item: FetchItem {
                 requested_item: quest_setting.item_type,
             },
+            state: QuestState::Todo,
         })
         .id()
 }

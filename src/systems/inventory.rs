@@ -4,8 +4,7 @@ use crate::{
     cleanup::cleanup_components,
     components::map_position::MapPosition,
     config::ItemType,
-    entities::{FetchItem, Player, ProvidesHealing, ProvidesMap, Weapon},
-    systems::quest_engine::UpdatedQuest,
+    entities::{FetchItem, Player, ProvidesHealing, ProvidesMap, QuestState, Weapon},
     GameState,
 };
 
@@ -41,7 +40,7 @@ pub fn assign_item(
     healing: Query<(Entity, With<ProvidesHealing>)>,
     dungeon_maps: Query<(Entity, With<ProvidesMap>)>,
     carried_weapons: Query<(Entity, &Carried, With<Weapon>)>,
-    assigned_fetch_quests: Query<(Entity, &AssignedQuest, &FetchItem)>,
+    mut assigned_fetch_quests: Query<(&FetchItem, &mut QuestState), With<AssignedQuest>>,
 ) {
     pick_up_events.iter().for_each(|event| {
         info!("Pick up event");
@@ -80,10 +79,10 @@ pub fn assign_item(
         // TODO decide if all quests should be marked as updated, or just one
         // TODO decide if future quests should be marked as updated
         assigned_fetch_quests
-            .iter()
-            .filter(|(_, _, q)| q.requested_item == current_item_type)
-            .for_each(|(q, _, _)| {
-                commands.entity(q).insert(UpdatedQuest);
+            .iter_mut()
+            .filter(|(q, _)| q.requested_item == current_item_type)
+            .for_each(|(_, mut q)| {
+                *q = QuestState::Updated;
             });
     });
 }

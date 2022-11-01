@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     cleanup::cleanup_components,
-    entities::{AvailableQuest, Player},
+    entities::{AvailableQuest, Player, QuestState},
     GameState,
 };
 
@@ -15,12 +15,6 @@ pub struct InteractQuestGiver {
 pub struct AssignedQuest {
     pub assignee: Entity,
 }
-
-#[derive(Debug, Component)]
-pub struct UpdatedQuest;
-
-#[derive(Debug, Component)]
-pub struct CompletedQuest;
 
 pub struct QuestEnginePlugin;
 
@@ -43,15 +37,13 @@ impl Plugin for QuestEnginePlugin {
 pub fn assign_quest(
     mut commands: Commands,
     mut quest_events: EventReader<InteractQuestGiver>,
-    assigned_quests: Query<Entity, With<AssignedQuest>>,
-    updated_quests: Query<Entity, With<UpdatedQuest>>,
+    mut assigned_quests: Query<&mut QuestState, With<AssignedQuest>>,
 ) {
     quest_events.iter().for_each(|event| {
         info!("Interact quest giver");
-        if assigned_quests.contains(event.quest) {
-            if updated_quests.contains(event.quest) {
-                commands.entity(event.quest).remove::<UpdatedQuest>();
-                commands.entity(event.quest).insert(CompletedQuest);
+        if let Ok(mut s) = assigned_quests.get_mut(event.quest) {
+            if *s == QuestState::Updated {
+                *s = QuestState::Completed;
             }
         } else {
             commands.entity(event.quest).insert(AssignedQuest {
@@ -87,22 +79,21 @@ pub struct PlayerQuests {
 
 pub fn update_quests(
     player_query: Query<(Entity, With<Player>)>,
-    all_assigned_quests: Query<(Entity, &AssignedQuest)>,
-    all_completed_quests: Query<(Entity, &UpdatedQuest)>,
+    all_assigned_quests: Query<(Entity, &QuestState, &AssignedQuest)>,
     mut quests_query: Query<&mut PlayerQuests>,
 ) {
     let mut quests = quests_query.single_mut();
     let (player, _) = player_query.single();
     let player_quests = all_assigned_quests
         .iter()
-        .filter(|(_, c)| c.assignee == player)
-        .map(|(e, _)| e);
+        .filter(|(_, _, c)| c.assignee == player)
+        .map(|(e, s, _)| (e, s));
 
     let mut assigned = Vec::new();
     let mut completed = Vec::new();
 
-    player_quests.for_each(|e| {
-        if all_completed_quests.contains(e) {
+    player_quests.for_each(|(e, s)| {
+        if *s == QuestState::Completed {
             completed.push(e);
         } else {
             assigned.push(e);
@@ -117,11 +108,18 @@ pub fn update_quests(
 
 pub fn update_quest_giver_display(
     mut quest_giver: Query<(&mut TextureAtlasSprite, &AvailableQuest)>,
-    updated_quests: Query<Entity, Changed<UpdatedQuest>>,
+    changed_quests: Query<&QuestState, Changed<QuestState>>,
 ) {
     quest_giver.iter_mut().for_each(|(mut sprite, q)| {
-        if updated_quests.contains(q.0) && sprite.color != Color::SEA_GREEN {
-            sprite.color = Color::SEA_GREEN;
+        if let Ok(s) = changed_quests.get(q.0) {
+            let state_color = match s {
+                QuestState::Todo => Color::default(),
+                QuestState::Updated => Color::GREEN,
+                QuestState::Completed => Color::DARK_GRAY,
+            };
+            if sprite.color != state_color {
+                sprite.color = state_color;
+            }
         }
     });
 }

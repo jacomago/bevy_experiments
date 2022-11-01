@@ -43,6 +43,7 @@ pub fn spawn_quest(commands: &mut Commands, quest_setting: &QuestSettings) -> En
     let reward_id = if let Some(reward_config) = &quest_setting.reward {
         let mut reward = commands.spawn();
         reward.insert(Item);
+        reward.insert(EntityName(reward_config.entity.name.clone()));
         insert_item_type(
             &mut reward,
             &reward_config.item_type,

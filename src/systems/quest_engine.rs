@@ -13,7 +13,7 @@ pub struct AssignedQuest {
 }
 
 #[derive(Debug, Component)]
-pub struct CompletedQuest;
+pub struct UpdatedQuest;
 
 pub struct QuestEnginePlugin;
 
@@ -65,7 +65,7 @@ pub struct PlayerQuests {
 pub fn update_quests(
     player_query: Query<(Entity, With<Player>)>,
     all_assigned_quests: Query<(Entity, &AssignedQuest)>,
-    all_completed_quests: Query<(Entity, &CompletedQuest)>,
+    all_completed_quests: Query<(Entity, &UpdatedQuest)>,
     mut quests_query: Query<&mut PlayerQuests>,
 ) {
     let mut quests = quests_query.single_mut();

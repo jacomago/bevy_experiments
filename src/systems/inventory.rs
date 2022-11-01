@@ -5,7 +5,7 @@ use crate::{
     components::map_position::MapPosition,
     config::ItemType,
     entities::{FetchItem, Player, ProvidesHealing, ProvidesMap, Weapon},
-    systems::quest_engine::CompletedQuest,
+    systems::quest_engine::UpdatedQuest,
     GameState,
 };
 
@@ -66,6 +66,8 @@ pub fn assign_item(
                 commands.entity(current_weapon).despawn_recursive();
             }
         }
+
+        // Find the item type
         let current_item_type = if healing.contains(event.item) {
             ItemType::Healing
         } else if dungeon_maps.contains(event.item) {
@@ -73,11 +75,16 @@ pub fn assign_item(
         } else {
             ItemType::Weapon
         };
+
+        // If quest exists on new holder of item for quest, mark quest as complete
+        // TODO decide if all quests should be marked as complete, or just one
+        // TODO decide if future quests should be marked as complete
+        // TODO decide if complete is the correct term
         assigned_fetch_quests
             .iter()
             .filter(|(_, _, q)| q.requested_item == current_item_type)
             .for_each(|(q, _, _)| {
-                commands.entity(q).insert(CompletedQuest);
+                commands.entity(q).insert(UpdatedQuest);
             });
     });
 }

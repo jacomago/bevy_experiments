@@ -53,7 +53,6 @@ pub fn assign_quest(
     });
 }
 
-// TODO mark quest returned if return to quest giver with compeleted quest
 // TODO give reward for returned completed quest
 
 /// Entity for caching the Players Quests
@@ -73,6 +72,7 @@ fn spawn_quests(mut commands: Commands) {
 #[derive(Component, Default, Debug)]
 pub struct PlayerQuests {
     pub assigned: Vec<Entity>,
+    pub updated: Vec<Entity>,
     pub completed: Vec<Entity>,
     pub is_dirty: bool,
 }
@@ -91,18 +91,20 @@ pub fn update_quests(
 
     let mut assigned = Vec::new();
     let mut completed = Vec::new();
+    let mut updated = Vec::new();
 
     player_quests.for_each(|(e, s)| {
-        if *s == QuestState::Completed {
-            completed.push(e);
-        } else {
-            assigned.push(e);
-        }
+        match s {
+            QuestState::Completed => completed.push(e),
+            QuestState::Updated => updated.push(e),
+            QuestState::Todo => assigned.push(e),
+        } 
     });
-    if quests.assigned != assigned {
+    if quests.assigned != assigned || quests.updated != updated {
         quests.is_dirty = true;
         quests.assigned = assigned;
         quests.completed = completed;
+        quests.updated = updated;
     }
 }
 

@@ -37,11 +37,8 @@ use bevy::app::App;
 #[cfg(debug_assertions)]
 use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::prelude::*;
-use bevy_egui::{egui, EguiContext, EguiPlugin};
-use bevy_inspector_egui::{
-    egui::panel::{Side, TopBottomSide},
-    WorldInspectorPlugin,
-};
+use bevy_egui::{egui, EguiContext};
+use bevy_inspector_egui::WorldInspectorPlugin;
 use camera::CameraPlugin;
 use entities::EntitiesPlugin;
 use game_ui::GameUiPlugin;
@@ -93,11 +90,15 @@ impl Plugin for GamePlugin {
 }
 
 fn ui_example(mut egui_context: ResMut<EguiContext>) {
-    let mut style = egui::Style::default();
-    style.visuals = egui::Visuals::dark();
-    style.visuals.widgets.noninteractive.bg_fill = egui::color::Color32::TRANSPARENT;
-    style.visuals.widgets.noninteractive.bg_stroke = egui::Stroke::none();
-    style.visuals.widgets.noninteractive.fg_stroke.color = egui::color::Color32::WHITE;
+    let mut visuals = egui::Visuals::dark();
+    visuals.widgets.noninteractive.bg_fill = egui::color::Color32::TRANSPARENT;
+    visuals.widgets.noninteractive.bg_stroke = egui::Stroke::none();
+    visuals.widgets.noninteractive.fg_stroke.color = egui::color::Color32::WHITE;
+    visuals.extreme_bg_color = egui::color::Color32::RED;
+    let style = egui::Style {
+        visuals,
+        ..default()
+    };
     let ctx = egui_context.ctx_mut();
     ctx.set_style(style);
     egui::SidePanel::left("left panel").show(ctx, |ui| {

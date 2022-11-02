@@ -25,7 +25,7 @@ pub fn update_quests_hud(
             format!("{}", name)
         })
         .collect();
-    ui_status.quests.assigned = quests
+    ui_status.quests.updated = quests
         .updated
         .iter()
         .map(|entity| {
@@ -33,7 +33,7 @@ pub fn update_quests_hud(
             format!("{}", name)
         })
         .collect();
-    ui_status.quests.assigned = quests
+    ui_status.quests.completed = quests
         .completed
         .iter()
         .map(|entity| {

@@ -98,7 +98,7 @@ fn hud_update(mut egui_context: ResMut<EguiContext>, ui_status: Res<UiState>) {
             ui.visuals_mut().selection.bg_fill = egui::color::Color32::DARK_GREEN;
             let progress_bar = egui::ProgressBar::new(ui_status.player_health_percentage)
                 .show_percentage()
-                .text("Health 100%");
+                .text(format!("Health: {}", ui_status.player_health_percentage));
             ui.add(progress_bar);
         });
     });

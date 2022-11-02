@@ -37,7 +37,11 @@ use bevy::app::App;
 #[cfg(debug_assertions)]
 use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::prelude::*;
-use bevy_inspector_egui::WorldInspectorPlugin;
+use bevy_egui::{egui, EguiContext, EguiPlugin};
+use bevy_inspector_egui::{
+    egui::panel::{Side, TopBottomSide},
+    WorldInspectorPlugin,
+};
 use camera::CameraPlugin;
 use entities::EntitiesPlugin;
 use game_ui::GameUiPlugin;
@@ -76,7 +80,8 @@ impl Plugin for GamePlugin {
             .add_plugin(GameUiPlugin)
             .add_plugin(CameraPlugin)
             .add_plugin(MapPlugin)
-            .add_plugin(EntitiesPlugin);
+            .add_plugin(EntitiesPlugin)
+            .add_system(ui_example);
 
         #[cfg(debug_assertions)]
         {
@@ -85,4 +90,47 @@ impl Plugin for GamePlugin {
                 .add_system(bevy::window::close_on_esc);
         }
     }
+}
+
+fn ui_example(mut egui_context: ResMut<EguiContext>) {
+    let mut style = egui::Style::default();
+    style.visuals = egui::Visuals::dark();
+    style.visuals.widgets.noninteractive.bg_fill = egui::color::Color32::TRANSPARENT;
+    style.visuals.widgets.noninteractive.bg_stroke = egui::Stroke::none();
+    style.visuals.widgets.noninteractive.fg_stroke.color = egui::color::Color32::WHITE;
+    let ctx = egui_context.ctx_mut();
+    ctx.set_style(style);
+    egui::SidePanel::left("left panel").show(ctx, |ui| {
+        ui.vertical(|ui| {
+            ui.heading("Quests");
+            ui.end_row();
+
+            ui.separator();
+
+            ui.colored_label(egui::Color32::WHITE, "Quest Begun");
+            ui.separator();
+            ui.colored_label(egui::Color32::LIGHT_YELLOW, "Quest Updated");
+            ui.separator();
+            ui.colored_label(egui::Color32::LIGHT_GREEN, "Quest Completed");
+        });
+    });
+    egui::SidePanel::left("left panel").show(ctx, |ui| ui.label("hello world"));
+    egui::SidePanel::right("right panel").show(ctx, |ui| {
+        ui.vertical(|ui| {
+            ui.heading("Inventory");
+
+            ui.separator();
+            ui.label("1. Random Item");
+            ui.label("2. Random Item 2");
+        });
+    });
+    egui::TopBottomPanel::top("top").show(ctx, |ui| {
+        ui.horizontal(|ui| {
+            ui.visuals_mut().extreme_bg_color = egui::color::Color32::GREEN;
+            let progress_bar = egui::ProgressBar::new(100.0)
+                .show_percentage()
+                .text("Health 100%");
+            ui.add(progress_bar);
+        });
+    });
 }

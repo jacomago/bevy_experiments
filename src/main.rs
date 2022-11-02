@@ -5,6 +5,7 @@ use bevy::prelude::{App, ClearColor, Color, Msaa, NonSend, WindowDescriptor};
 use bevy::window::WindowId;
 use bevy::winit::WinitWindows;
 use bevy::DefaultPlugins;
+use bevy_egui::EguiPlugin;
 use bevy_turborand::RngPlugin;
 use cake_addict::GamePlugin;
 use std::io::Cursor;
@@ -26,6 +27,7 @@ fn main() {
             ..Default::default()
         })
         .add_plugins(DefaultPlugins)
+        .add_plugin(EguiPlugin)
         .add_plugin(RngPlugin::new())
         .add_plugin(GamePlugin)
         .add_startup_system(set_window_icon)

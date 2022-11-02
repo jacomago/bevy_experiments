@@ -40,6 +40,7 @@ iyes_loopless = "0.7.1"
 config = { version = "0.13" }
 serde = { version = "1" }
 bimap = "0.6.2"
+bevy_egui = "0.16"
 
 # keep the following in sync with Bevy's dependencies
 winit = { version = "0.26.0", default-features = false }

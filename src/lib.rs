@@ -94,7 +94,7 @@ fn ui_example(mut egui_context: ResMut<EguiContext>) {
     visuals.widgets.noninteractive.bg_fill = egui::color::Color32::TRANSPARENT;
     visuals.widgets.noninteractive.bg_stroke = egui::Stroke::none();
     visuals.widgets.noninteractive.fg_stroke.color = egui::color::Color32::WHITE;
-    visuals.extreme_bg_color = egui::color::Color32::RED;
+    visuals.selection.bg_fill = egui::color::Color32::RED;
     let style = egui::Style {
         visuals,
         ..default()
@@ -115,7 +115,6 @@ fn ui_example(mut egui_context: ResMut<EguiContext>) {
             ui.colored_label(egui::Color32::LIGHT_GREEN, "Quest Completed");
         });
     });
-    egui::SidePanel::left("left panel").show(ctx, |ui| ui.label("hello world"));
     egui::SidePanel::right("right panel").show(ctx, |ui| {
         ui.vertical(|ui| {
             ui.heading("Inventory");
@@ -127,7 +126,7 @@ fn ui_example(mut egui_context: ResMut<EguiContext>) {
     });
     egui::TopBottomPanel::top("top").show(ctx, |ui| {
         ui.horizontal(|ui| {
-            ui.visuals_mut().extreme_bg_color = egui::color::Color32::GREEN;
+            ui.visuals_mut().selection.bg_fill = egui::color::Color32::DARK_GREEN;
             let progress_bar = egui::ProgressBar::new(100.0)
                 .show_percentage()
                 .text("Health 100%");

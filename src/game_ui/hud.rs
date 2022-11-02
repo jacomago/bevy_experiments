@@ -59,7 +59,7 @@ fn hud_setup(mut commands: Commands, mut egui_context: ResMut<EguiContext>) {
     };
     let ctx = egui_context.ctx_mut();
     ctx.set_style(style);
-    
+
     let ui_status = UiState::default();
     commands.insert_resource(ui_status);
 }

@@ -23,8 +23,15 @@ impl Plugin for HUDPlugin {
     }
 }
 
-fn hud_cleanup(mut commands: Commands) {
-    commands.remove_resource::<EguiContext>();
+const LEFT_PANEL: &str = "left panel";
+const TOP_PANEL: &str = "top panel";
+const RIGHT_PANEL: &str = "right panel";
+
+fn hud_cleanup(mut egui_context: ResMut<EguiContext>) {
+    let ctx = egui_context.ctx_mut();
+    egui::SidePanel::left(LEFT_PANEL).show(ctx, |_| {});
+    egui::SidePanel::right(RIGHT_PANEL).show(ctx, |_| {});
+    egui::TopBottomPanel::top(TOP_PANEL).show(ctx, |_| {});
 }
 
 #[derive(Debug, Default)]
@@ -62,7 +69,7 @@ fn hud_update(mut egui_context: ResMut<EguiContext>, ui_status: Res<UiState>) {
         return;
     }
     let ctx = egui_context.ctx_mut();
-    egui::SidePanel::left("left panel").show(ctx, |ui| {
+    egui::SidePanel::left(LEFT_PANEL).show(ctx, |ui| {
         ui.vertical(|ui| {
             ui.heading("Quests");
             ui.end_row();
@@ -82,7 +89,7 @@ fn hud_update(mut egui_context: ResMut<EguiContext>, ui_status: Res<UiState>) {
             });
         });
     });
-    egui::SidePanel::right("right panel").show(ctx, |ui| {
+    egui::SidePanel::right(RIGHT_PANEL).show(ctx, |ui| {
         ui.vertical(|ui| {
             ui.heading("Inventory");
 
@@ -93,7 +100,7 @@ fn hud_update(mut egui_context: ResMut<EguiContext>, ui_status: Res<UiState>) {
             });
         });
     });
-    egui::TopBottomPanel::top("top").show(ctx, |ui| {
+    egui::TopBottomPanel::top(TOP_PANEL).show(ctx, |ui| {
         ui.horizontal(|ui| {
             ui.visuals_mut().selection.bg_fill = egui::color::Color32::DARK_GREEN;
             let progress_bar = egui::ProgressBar::new(ui_status.player_health_percentage)

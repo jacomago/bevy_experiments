@@ -8,7 +8,6 @@ mod inventory;
 mod quests;
 pub mod tooltip;
 
-pub use hud::HudComponent;
 pub use tooltip::ToolTip;
 
 pub struct GameUiPlugin;

@@ -37,7 +37,6 @@ use bevy::app::App;
 #[cfg(debug_assertions)]
 use bevy::diagnostic::LogDiagnosticsPlugin;
 use bevy::prelude::*;
-use bevy_egui::{egui, EguiContext};
 use bevy_inspector_egui::WorldInspectorPlugin;
 use camera::CameraPlugin;
 use entities::EntitiesPlugin;
@@ -77,8 +76,7 @@ impl Plugin for GamePlugin {
             .add_plugin(GameUiPlugin)
             .add_plugin(CameraPlugin)
             .add_plugin(MapPlugin)
-            .add_plugin(EntitiesPlugin)
-            .add_system(ui_example);
+            .add_plugin(EntitiesPlugin);
 
         #[cfg(debug_assertions)]
         {
@@ -87,50 +85,4 @@ impl Plugin for GamePlugin {
                 .add_system(bevy::window::close_on_esc);
         }
     }
-}
-
-fn ui_example(mut egui_context: ResMut<EguiContext>) {
-    let mut visuals = egui::Visuals::dark();
-    visuals.widgets.noninteractive.bg_fill = egui::color::Color32::TRANSPARENT;
-    visuals.widgets.noninteractive.bg_stroke = egui::Stroke::none();
-    visuals.widgets.noninteractive.fg_stroke.color = egui::color::Color32::WHITE;
-    visuals.selection.bg_fill = egui::color::Color32::RED;
-    let style = egui::Style {
-        visuals,
-        ..default()
-    };
-    let ctx = egui_context.ctx_mut();
-    ctx.set_style(style);
-    egui::SidePanel::left("left panel").show(ctx, |ui| {
-        ui.vertical(|ui| {
-            ui.heading("Quests");
-            ui.end_row();
-
-            ui.separator();
-
-            ui.colored_label(egui::Color32::WHITE, "Quest Begun");
-            ui.separator();
-            ui.colored_label(egui::Color32::LIGHT_YELLOW, "Quest Updated");
-            ui.separator();
-            ui.colored_label(egui::Color32::LIGHT_GREEN, "Quest Completed");
-        });
-    });
-    egui::SidePanel::right("right panel").show(ctx, |ui| {
-        ui.vertical(|ui| {
-            ui.heading("Inventory");
-
-            ui.separator();
-            ui.label("1. Random Item");
-            ui.label("2. Random Item 2");
-        });
-    });
-    egui::TopBottomPanel::top("top").show(ctx, |ui| {
-        ui.horizontal(|ui| {
-            ui.visuals_mut().selection.bg_fill = egui::color::Color32::DARK_GREEN;
-            let progress_bar = egui::ProgressBar::new(100.0)
-                .show_percentage()
-                .text("Health 100%");
-            ui.add(progress_bar);
-        });
-    });
 }

@@ -1,6 +1,9 @@
 use std::env;
 
-use bevy::{prelude::{Plugin, Resource}, utils::HashMap};
+use bevy::{
+    prelude::{Plugin, Resource},
+    utils::HashMap,
+};
 use config::{Config, ConfigError, Environment, File};
 use serde::{Deserialize, Serialize};
 

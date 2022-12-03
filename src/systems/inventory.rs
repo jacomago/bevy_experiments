@@ -46,9 +46,7 @@ pub fn assign_item(
         info!("Pick up event");
         // Remove item from map
         commands.entity(event.item).remove::<MapPosition>();
-        commands
-            .entity(event.item)
-            .remove::<SpriteSheetBundle>();
+        commands.entity(event.item).remove::<SpriteSheetBundle>();
 
         // Add to players inventory
         commands.entity(event.item).insert(Carried {

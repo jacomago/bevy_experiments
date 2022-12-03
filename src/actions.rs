@@ -19,7 +19,7 @@ impl Plugin for ActionsPlugin {
 }
 
 /// Possible input actions
-#[derive(Default)]
+#[derive(Default, Resource)]
 pub struct Actions {
     /// moving the player
     pub player_movement: Option<Vec2>,

@@ -18,7 +18,7 @@ impl Plugin for CameraPlugin {
 
 /// Insert the game camera
 fn setup_camera(mut commands: Commands, map_builder: Res<MapBuilder>, settings: Res<Settings>) {
-    commands.spawn_bundle(Camera2dBundle {
+    commands.spawn(Camera2dBundle {
         transform: Transform::from_translation(
             map_builder
                 .player_start

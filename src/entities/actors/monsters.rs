@@ -102,7 +102,7 @@ fn spawn_monster(
         .filter(|s| s.actor.entity.levels.contains(&map_level))
         .collect::<Vec<_>>();
     if let Some(config) = rng.weighted_sample(level_monsters, weights) {
-        let mut monster = commands.spawn_bundle(MonsterBundle {
+        let mut monster = commands.spawn(MonsterBundle {
             actor: ActorBundle::from_settings(
                 &config.actor,
                 position,

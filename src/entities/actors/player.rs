@@ -94,7 +94,7 @@ fn spawn_player(
     let player_start = map_builder.player_start;
     let mut fov = FieldOfView::new(settings.player_settings.fov_radius);
     fov.update(player_start, &map_builder.map);
-    commands.spawn_bundle(PlayerBundle {
+    commands.spawn(PlayerBundle {
         damage: Damage(settings.player_settings.entity.base_damage.unwrap_or(0)),
         actor: ActorBundle::from_settings(
             &settings.player_settings,

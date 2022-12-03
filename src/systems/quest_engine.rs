@@ -72,7 +72,7 @@ pub struct QuestsBundle {
 }
 
 fn spawn_quests(mut commands: Commands) {
-    commands.spawn_bundle(QuestsBundle { ..default() });
+    commands.spawn(QuestsBundle { ..default() });
 }
 
 #[derive(Component, Default, Debug)]

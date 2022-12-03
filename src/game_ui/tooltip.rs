@@ -68,7 +68,7 @@ fn mouse_rollover(
 
 fn spawn_tooltip(mut commands: Commands, font: Res<FontAssets>) {
     commands
-        .spawn_bundle(NodeBundle {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size::new(Val::Px(10.0), Val::Px(10.)),
                 position_type: PositionType::Absolute,
@@ -79,12 +79,12 @@ fn spawn_tooltip(mut commands: Commands, font: Res<FontAssets>) {
                 },
                 ..default()
             },
-            color: UiColor(Color::rgba(0.65, 0.65, 0.65, 0.5)),
+            background_color: BackgroundColor(Color::rgba(0.65, 0.65, 0.65, 0.5)),
             ..default()
         })
         .with_children(|parent| {
             parent
-                .spawn_bundle(TextBundle {
+                .spawn(TextBundle {
                     visibility: Visibility { is_visible: false },
                     text: Text {
                         sections: vec![TextSection {

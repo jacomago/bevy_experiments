@@ -72,7 +72,7 @@ pub fn spawn_map(
         .indexed_iter()
         .for_each(|((y, x), t)| {
             let position = MapPosition::new(x.try_into().unwrap(), y.try_into().unwrap());
-            commands.spawn_bundle(TileBundle::new(
+            commands.spawn(TileBundle::new(
                 position,
                 textures.as_ref(),
                 *t,

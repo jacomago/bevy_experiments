@@ -26,7 +26,7 @@ impl Plugin for LoadingPlugin {
 // when done loading, they will be inserted as resources (see https://github.com/NiklasEi/bevy_asset_loader)
 
 /// Font assets
-#[derive(AssetCollection)]
+#[derive(AssetCollection, Resource)]
 pub struct FontAssets {
     /// Fira Sans font
     #[asset(path = "fonts/FiraSans-Bold.ttf")]
@@ -34,7 +34,7 @@ pub struct FontAssets {
 }
 
 /// Audio assets
-#[derive(AssetCollection)]
+#[derive(AssetCollection, Resource)]
 pub struct AudioAssets {
     /// A flying sound
     #[asset(path = "audio/flying.ogg")]
@@ -42,7 +42,7 @@ pub struct AudioAssets {
 }
 
 /// Textures
-#[derive(AssetCollection)]
+#[derive(AssetCollection, Resource)]
 pub struct TextureAssets {
     /// Logo asset
     #[asset(path = "textures/bevy.png")]
@@ -50,7 +50,7 @@ pub struct TextureAssets {
 }
 
 /// Texture maps
-#[derive(AssetCollection)]
+#[derive(AssetCollection, Resource)]
 pub struct TextureAtlasAssets {
     /// Map of sprites
     #[asset(texture_atlas(tile_size_x = 32., tile_size_y = 32., columns = 16, rows = 16,))]

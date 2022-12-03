@@ -41,8 +41,7 @@ pub struct QuestBundle {
 
 pub fn spawn_quest(commands: &mut Commands, quest_setting: &QuestSettings) -> Entity {
     let reward_id = if let Some(reward_config) = &quest_setting.reward {
-        let mut reward = commands.spawn();
-        reward.insert(Item);
+        let mut reward = commands.spawn(Item);
         reward.insert(EntityName(reward_config.entity.name.clone()));
         insert_item_type(
             &mut reward,
@@ -54,7 +53,7 @@ pub fn spawn_quest(commands: &mut Commands, quest_setting: &QuestSettings) -> En
     } else {
         None
     };
-    let mut quest = commands.spawn_bundle(QuestBundle {
+    let mut quest = commands.spawn(QuestBundle {
         _q: Default::default(),
         name: EntityName(quest_setting.name.clone()),
         fetch_item: FetchItem {

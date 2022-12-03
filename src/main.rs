@@ -1,8 +1,8 @@
 // disable console on windows for release builds
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use bevy::prelude::{App, ClearColor, Color, Msaa, NonSend, WindowDescriptor};
-use bevy::window::WindowId;
+use bevy::prelude::*;
+use bevy::window::{WindowId, WindowPlugin};
 use bevy::winit::WinitWindows;
 use bevy::DefaultPlugins;
 use bevy_egui::EguiPlugin;
@@ -19,14 +19,16 @@ fn main() {
     App::new()
         .insert_resource(Msaa { samples: 1 })
         .insert_resource(ClearColor(Color::rgb(0.4, 0.4, 0.4)))
-        .insert_resource(WindowDescriptor {
-            width: WIDTH,
-            height: HEIGHT,
-            title: "Cake Addict".to_string(),
-            canvas: Some("#bevy".to_owned()),
-            ..Default::default()
-        })
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            window: WindowDescriptor {
+                width: WIDTH,
+                height: HEIGHT,
+                title: "Cake Addict".to_string(),
+                canvas: Some("#bevy".to_owned()),
+                ..default()
+            },
+            ..default()
+        }))
         .add_plugin(EguiPlugin)
         .add_plugin(RngPlugin::new())
         .add_plugin(GamePlugin)

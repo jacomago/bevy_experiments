@@ -25,7 +25,7 @@ pub fn spawn_wintitem(
     }
     info!("Spawn winitem");
     commands
-        .spawn_bundle(ItemBundle {
+        .spawn(ItemBundle {
             entity: GameEntityBundle::from_settings(
                 &settings.items_settings.winitem,
                 map_builder.winitem_start,

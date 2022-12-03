@@ -41,7 +41,7 @@ pub struct QuestsStrings {
     pub completed: Vec<String>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Resource)]
 pub struct UiState {
     pub player_health_percentage: f32,
     pub quests: QuestsStrings,

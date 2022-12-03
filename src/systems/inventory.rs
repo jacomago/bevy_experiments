@@ -46,9 +46,7 @@ pub fn assign_item(
         info!("Pick up event");
         // Remove item from map
         commands.entity(event.item).remove::<MapPosition>();
-        commands
-            .entity(event.item)
-            .remove_bundle::<SpriteSheetBundle>();
+        commands.entity(event.item).remove::<SpriteSheetBundle>();
 
         // Add to players inventory
         commands.entity(event.item).insert(Carried {
@@ -104,7 +102,7 @@ pub struct InventoryBundle {
 }
 
 fn spawn_inventory(mut commands: Commands) {
-    commands.spawn_bundle(InventoryBundle { ..default() });
+    commands.spawn(InventoryBundle { ..default() });
 }
 
 #[derive(Component, Default, Debug)]

@@ -1,6 +1,9 @@
 use std::env;
 
-use bevy::{prelude::Plugin, utils::HashMap};
+use bevy::{
+    prelude::{Plugin, Resource},
+    utils::HashMap,
+};
 use config::{Config, ConfigError, Environment, File};
 use serde::{Deserialize, Serialize};
 
@@ -117,7 +120,7 @@ pub struct ItemsSettings {
     pub winitem: EntitySettings,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Resource)]
 pub struct Settings {
     pub tile_size: i32,
     pub max_fov: i32,

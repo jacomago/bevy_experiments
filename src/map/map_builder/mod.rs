@@ -3,6 +3,7 @@ use std::fmt::Display;
 use crate::components::map_position::MapPosition;
 use crate::config::{Architect, ArchitectSettings};
 use crate::entities::TileType;
+use bevy::prelude::Resource;
 use bevy::utils::HashSet;
 use bevy_turborand::{DelegatedRng, RngComponent};
 
@@ -55,7 +56,7 @@ trait MapArchitect {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Resource)]
 pub struct MapBuilder {
     pub map: TileMap,
     pub monster_spawns: HashSet<MapPosition>,

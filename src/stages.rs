@@ -62,7 +62,7 @@ pub enum GameStage {
 }
 
 /// States a turn can be in
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Default, Resource)]
 pub enum TurnState {
     /// Waiting input from the player
     #[default]

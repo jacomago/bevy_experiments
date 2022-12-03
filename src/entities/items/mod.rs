@@ -117,7 +117,7 @@ fn spawn_item(
     tile_size: i32,
     z_level: f32,
 ) -> Entity {
-    let mut item = commands.spawn_bundle(ItemBundle {
+    let mut item = commands.spawn(ItemBundle {
         entity: GameEntityBundle::from_settings(
             &config.entity,
             position,

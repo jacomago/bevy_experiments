@@ -22,6 +22,7 @@ impl Plugin for InternalAudioPlugin {
 }
 
 /// Handle for the flying audio
+#[derive(Resource)]
 struct FlyingAudio(Handle<AudioInstance>);
 
 /// Setup the audio

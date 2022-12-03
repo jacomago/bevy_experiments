@@ -108,7 +108,7 @@ fn spawn_npc(
         .quest
         .as_ref()
         .map(|settings| spawn_quest(commands, settings));
-    let mut npc = commands.spawn_bundle(NPCBundle {
+    let mut npc = commands.spawn(NPCBundle {
         actor: ActorBundle::from_settings(
             &config.actor,
             position,

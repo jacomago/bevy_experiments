@@ -26,6 +26,7 @@ impl Plugin for MenuPlugin {
 }
 
 /// Message displayed in the menu
+#[derive(Resource)]
 pub struct PlayerMessage {
     /// The main message
     pub message: String,
@@ -40,11 +41,12 @@ impl Default for PlayerMessage {
 }
 
 /// Colors of the button
+#[derive(Resource)]
 struct ButtonColors {
     /// Color with no hover
-    normal: UiColor,
+    normal: BackgroundColor,
     /// color with hover
-    hovered: UiColor,
+    hovered: BackgroundColor,
 }
 
 impl Default for ButtonColors {
@@ -67,10 +69,10 @@ fn setup_menu(
     button_colors: Res<ButtonColors>,
     message: Res<PlayerMessage>,
 ) {
-    commands.spawn_bundle(Camera2dBundle::default());
+    commands.spawn(Camera2dBundle::default());
 
     commands
-        .spawn_bundle(NodeBundle {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size::new(Val::Px(120.0), Val::Px(100.0)),
                 margin: UiRect::all(Val::Auto),
@@ -78,12 +80,12 @@ fn setup_menu(
                 align_self: AlignSelf::Center,
                 ..Default::default()
             },
-            color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
+            background_color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
             ..default()
         })
         .insert(Menu)
         .with_children(|parent| {
-            parent.spawn_bundle(TextBundle {
+            parent.spawn(TextBundle {
                 text: Text {
                     sections: vec![TextSection {
                         value: message.message.clone(),
@@ -103,7 +105,7 @@ fn setup_menu(
                 ..default()
             });
             parent
-                .spawn_bundle(ButtonBundle {
+                .spawn(ButtonBundle {
                     style: Style {
                         size: Size::new(Val::Undefined, Val::Px(50.0)),
                         margin: UiRect::all(Val::Auto),
@@ -111,11 +113,11 @@ fn setup_menu(
                         align_items: AlignItems::Center,
                         ..Default::default()
                     },
-                    color: button_colors.normal,
+                    background_color: button_colors.normal,
                     ..Default::default()
                 })
                 .with_children(|parent| {
-                    parent.spawn_bundle(TextBundle {
+                    parent.spawn(TextBundle {
                         text: Text {
                             sections: vec![TextSection {
                                 value: "Play".to_string(),
@@ -138,7 +140,7 @@ fn click_play_button(
     button_colors: Res<ButtonColors>,
     mut state: ResMut<State<GameState>>,
     mut interaction_query: Query<
-        (&Interaction, &mut UiColor),
+        (&Interaction, &mut BackgroundColor),
         (Changed<Interaction>, With<Button>),
     >,
 ) {
